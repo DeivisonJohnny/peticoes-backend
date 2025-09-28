@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  LAWYER
+  INTERN // estagiário
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      Role     @default(LAWYER)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  generatedDocuments GeneratedDocument[] @relation("GeneratedBy")
+}
+
+model Client {
+  id            String    @id @default(cuid())
+  name          String
+  cpf           String?   @unique
+  cnpj          String?   @unique
+  address       String?
+  phone         String?
+  dateOfBirth   DateTime?
+  rg            String?
+  maritalStatus String?
+  birthPlace    String?
+  rgIssuer      String?
+  nickname      String?
+  nationality   String?
+  motherName    String?
+  occupation    String?
+  email         String?   @unique
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  documents GeneratedDocument[]
+}
+
+model DocumentTemplate {
+  id            String   @id @default(cuid())
+  title         String   @unique
+  content       String
+  payloadSchema Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model GeneratedDocument {
+  id           String   @id @default(cuid())
+  title        String
+  filePath     String
+  dataSnapshot Json
+  createdAt    DateTime @default(now())
+
+  clientId String
+  client   Client @relation(fields: [clientId], references: [id])
+
+  generatorId String
+  generator   User   @relation("GeneratedBy", fields: [generatorId], references: [id])
+}

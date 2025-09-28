@@ -1,0 +1,13 @@
+services:
+  peticoes-postgres:
+    image: postgres:14-alpine
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - '5434:5432'
+    volumes:
+      - peticoes_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  peticoes_postgres_data:
