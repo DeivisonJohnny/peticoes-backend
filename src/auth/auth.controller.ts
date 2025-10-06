@@ -33,11 +33,12 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
   ) {
     const { access_token } = this.authService.login(user);
+    const isProduction = process.env.NODE_ENV === 'production';
 
     response.cookie('access_token', access_token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'none',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
       expires: new Date(Date.now() + 8 * 60 * 60 * 1000),
     });
 
