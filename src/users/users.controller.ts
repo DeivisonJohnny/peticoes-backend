@@ -13,8 +13,9 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { GetUser } from '../auth/decorators/get-user.decorator';
+import type { AuthUser } from '../auth/types/auth-user.type';
 
-@UseGuards(AuthGuard('jwt'))
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
@@ -35,6 +36,7 @@ export class UsersController {
   }
 
   @Get()
+  @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: 'Lista todos os usuários' })
   @ApiResponse({
     status: 200,
@@ -45,6 +47,7 @@ export class UsersController {
   }
 
   @Get(':id')
+  @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: 'Busca um usuário por ID' })
   @ApiResponse({ status: 200, description: 'Usuário encontrado.' })
   @ApiResponse({ status: 404, description: 'Usuário não encontrado.' })
@@ -53,17 +56,27 @@ export class UsersController {
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: 'Atualiza os dados de um usuário' })
   @ApiResponse({ status: 200, description: 'Usuário atualizado com sucesso.' })
   @ApiResponse({ status: 404, description: 'Usuário não encontrado.' })
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(id, updateUserDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+    @GetUser() user: AuthUser,
+  ) {
+    return this.usersService.update(id, updateUserDto, user);
   }
+
   @Delete(':id')
+  @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: 'Desativa um usuário (Soft Delete)' })
   @ApiResponse({ status: 200, description: 'Usuário desativado com sucesso.' })
   @ApiResponse({ status: 404, description: 'Usuário não encontrado.' })
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
+  remove(
+    @Param('id') id: string,
+    @GetUser() user: AuthUser,
+  ) {
+    return this.usersService.remove(id, user);
   }
 }

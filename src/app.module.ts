@@ -7,6 +7,7 @@ import { DocumentTemplatesModule } from './document-templates/document-templates
 import { GeneratedDocumentsModule } from './generated-documents/generated-documents.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
+import { DocumentsModule } from './documents/documents.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AuthModule } from './auth/auth.module';
     GeneratedDocumentsModule,
     PrismaModule,
     AuthModule,
+    DocumentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

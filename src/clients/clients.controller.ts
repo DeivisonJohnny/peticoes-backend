@@ -7,12 +7,14 @@ import {
   Patch,
   Delete,
   UseGuards,
+  Query
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { FindAllClientsDto } from './dto/find-all-clients.dto';
 
 @UseGuards(AuthGuard('jwt'))
 @ApiTags('clients')
@@ -36,13 +38,13 @@ export class ClientsController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Lista todos os clientes' })
+  @ApiOperation({ summary: 'Lista  e filtra todos os clientes' })
   @ApiResponse({
     status: 200,
     description: 'Lista de clientes retornada com sucesso.',
   })
-  findAll() {
-    return this.clientsService.findAll();
+  findAll(@Query() query: FindAllClientsDto) {
+    return this.clientsService.findAll(query);
   }
 
   @Get(':id')
@@ -69,7 +71,7 @@ export class ClientsController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Desativa um cliente (Soft DElete)' })
+  @ApiOperation({ summary: 'Desativa um cliente (Soft Delete)' })
   @ApiResponse({ status: 200, description: 'Cliente desativado com sucesso  ' })
   @ApiResponse({ status: 404, description: 'Cliente não encontrado.' })
   remove(@Param('id') id: string) {

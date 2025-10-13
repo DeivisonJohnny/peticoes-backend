@@ -4,6 +4,6 @@ import { GeneratedDocumentsService } from './generated-documents.service';
 
 @Module({
   controllers: [GeneratedDocumentsController],
-  providers: [GeneratedDocumentsService]
+  providers: [GeneratedDocumentsService],
 })
 export class GeneratedDocumentsModule {}

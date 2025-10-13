@@ -4,6 +4,6 @@ import { DocumentTemplatesService } from './document-templates.service';
 
 @Module({
   controllers: [DocumentTemplatesController],
-  providers: [DocumentTemplatesService]
+  providers: [DocumentTemplatesService],
 })
 export class DocumentTemplatesModule {}

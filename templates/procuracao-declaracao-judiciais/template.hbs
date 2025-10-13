@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        
+        @font-face {
+            font-family: 'Cambria';
+            src: url(data:font/truetype;charset=utf-8;base64,SUA_STRING_BASE64_DA_FONTE_AQUI) format('truetype');
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        body {
+            font-family: 'Cambria', serif;
+        }
+
+        strong {
+            font-weight: 600;
+        }
+    </style>
+    <title>Procuração e Declaração Judiciais</title>
+</head>
+<body>
+    <main style='display: flex; flex-direction: column; align-items: center'>
+        <section style='width: 85%; margin-top: 0px; display: flex; flex-direction: column; align-items: center;'>
+            <h1 style='text-align: center; font-size: 18px; text-decoration: underline;'>
+                PROCURAÇÃO
+            </h1>
+            <p style='font-size: 15px; text-align: justify; line-height: 25px; letter-spacing: 0.4px; margin-top: 20px; font-weight: 400;'>
+                <strong>{{ client.name }},</strong> {{ client.nationality }}, inscrito no
+                CPF/MF sob n.º {{ client.cpf }}, residente e domiciliado(a) à {{ client.address }},
+                por este instrumento nomeia e constitui seus bastantes
+                procuradores e advogados, <strong>CELSO DE SOUSA BRITO</strong>,
+                brasileiro, casado, advogado, inscrito na OAB/SP Nº 240.574,
+                <strong>RENATO DE OLIVEIRA RIBEIRO,</strong> brasileiro, casado,
+                advogado, inscrito na OAB/SP Nº 279.387,
+                <strong>ÁGATA CUNHA SANTOS FAGUNDES</strong>, brasileira, solteira,
+                advogada, inscrita na OAB/SP Nº 394.664 e
+                <strong>FLÁVIA DA SILVA BRITO</strong>, brasileira, solteira,
+                advogada, inscrita na OAB/SP Nº 394.826, todos integrantes do
+                escritório,
+                <strong> SOUSA BRITO & RIBEIRO SOCIEDADE DE ADVOGADOS </strong>,
+                inscrito no CNPJ nº 16.959.653/0001-32, e na OAB/SP sob o nº 14148,
+                com sede em Cajamar/SP, na Rua Flademir Roberto Lopes, 96, bairro
+                Polvilho, município de Cajamar – SP – CEP: 07790-615 Fone: (011)
+                4448-2301, para com os efeitos da cláusula “ad juditia“ representá-lo
+                (a) com os amplos poderes para o foro em geral, em qualquer Juízo,
+                Instância ou Tribunal, podendo propor contra quem de direito as ações
+                competentes e defendê-lo (a) nas contrárias, seguindo umas e outras,
+                até final decisão, usando dos recursos legais, acompanhando-os,
+                conferindo-lhe e ainda poderes especiais para confessar, desistir,
+                transigir, firmar compromissos ou acordos, receber e dar quitação,
+                agindo em conjunto ou separadamente, independentemente de ordem de
+                nomeação, podendo substabelecer esta em outrem com ou sem reserva de
+                poderes.
+            </p>
+            <p style='font-size: 16px; text-align: center; line-height: 25px; letter-spacing: 0.4px; margin-top: 20px;'>
+                {{ document.location }}, {{ formatDate document.documentDate }}.
+            </p>
+            <input type='text' style='outline: none; border: none; border-bottom: 1px solid black; border-radius: 0px; width: 270px; margin-top: 35px;' />
+        </section>
+
+        <section style='width: 85%; margin-top: 200px; display: flex; flex-direction: column; align-items: center;'>
+            <h1 style='text-align: center; font-size: 18px; text-decoration: underline;'>
+                DECLARAÇÃO DE HIPOSSUFICIÊNCIA
+            </h1>
+            <p style='font-size: 15px; text-align: justify; line-height: 25px; letter-spacing: 0.4px; margin-top: 20px; font-weight: 400;'>
+                <strong>{{ client.name }},</strong> {{ client.nationality }}, inscrito no CPF/MF sob n.º
+                {{ client.cpf }}, residente e domiciliado(a) à {{ client.address }}, declaro
+                que sou pobre na acepção jurídica do termo, não tendo condições de
+                arcar com os custos do processo sem prejuízo do próprio sustento e da
+                família.
+            </p>
+            <p style='font-size: 16px; text-align: center; line-height: 25px; letter-spacing: 0.4px; margin-top: 20px;'>
+                {{ document.location }}, {{ formatDate document.document.Date }}.
+            </p>
+            <input type='text' style='outline: none; border: none; border-bottom: 1px solid black; border-radius: 0px; width: 270px; margin-top: 35px;' />
+        </section>
+    </main>
+</body>
+</html>

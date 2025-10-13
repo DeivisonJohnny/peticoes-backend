@@ -9,7 +9,9 @@ describe('GeneratedDocumentsController', () => {
       controllers: [GeneratedDocumentsController],
     }).compile();
 
-    controller = module.get<GeneratedDocumentsController>(GeneratedDocumentsController);
+    controller = module.get<GeneratedDocumentsController>(
+      GeneratedDocumentsController,
+    );
   });
 
   it('should be defined', () => {

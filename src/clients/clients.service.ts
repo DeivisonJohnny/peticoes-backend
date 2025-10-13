@@ -8,6 +8,7 @@ import { CreateClientDto } from './dto/create-client.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { UpdateClientDto } from './dto/update-client.dto';
+import { FindAllClientsDto } from './dto/find-all-clients.dto';
 
 @Injectable()
 export class ClientsService {
@@ -38,16 +39,30 @@ export class ClientsService {
     }
   }
 
-  async findAll() {
-    return this.prisma.client.findMany({
-      select: {
-        id: true,
-        name: true,
-        cpf: true,
-        cnpj: true,
-        phone: true,
-        occupation: true,
-        createdAt: true,
+  async findAll(query: FindAllClientsDto) {
+    const where: Prisma.ClientWhereInput = {};
+
+    if (query.name) {
+      where.name = { contains: query.name, mode: 'insensitive' };
+    }
+
+    if (query.cpfCnpj) {
+      where.OR = [
+        { cpf: { contains: query.cpfCnpj, mode: 'insensitive' } },
+        { cnpj: { contains: query.cpfCnpj, mode: 'insensitive' } },
+      ];
+    }
+
+    if (query.email) {
+      where.email = { contains: query.email, mode: 'insensitive' };
+    }
+
+    where.isActive = true;
+
+     return this.prisma.client.findMany({
+      where,
+      orderBy: {
+        name: 'asc',
       },
     });
   }
@@ -115,20 +130,22 @@ export class ClientsService {
   }
 
   // Este método implementa um SOFT DELETE
-  async remove(id: string) {
-    try {
-      return await this.prisma.client.update({
-        where: { id },
-        data: { isActive: false },
-      });
-    } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === 'P2025'
-      ) {
-        throw new NotFoundException(`Cliente com o ID #${id} não encontrado.`);
-      }
-      throw error;
+  async remove(id: string): Promise<{ message: string }> {
+
+    const client = await this.prisma.client.findUnique({ where: { id } });
+
+    if (!client) {
+      throw new NotFoundException(`Cliente com o ID #${id} não encontrado.`);
     }
+
+    if (!client.isActive) {
+      return { message: 'Cliente já estava inativo.' };
+    }
+
+    await this.prisma.client.update({
+      where: { id },
+      data: { isActive: false },
+    });
+    return { message: 'Cliente desativado com sucesso.' };
   }
 }
