@@ -9,6 +9,11 @@ const templatesToSeed = [
     title: 'Procuração e Declaração Judicial',
     folderName: 'procuracao-declaracao-judiciais',
   },
+
+  {
+    title: 'Contrato de Honorários',
+    folderName: 'contrato-honorarios',    
+  }
  // {
  //   title: 'Contrato de Honorários',
  //   folderName: 'contrato-honorarios',

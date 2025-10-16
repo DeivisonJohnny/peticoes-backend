@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        @font-face {
+            font-family: 'Cambria';
+            src: url('../assets/Cambria-Font-For-Windows.ttf') format('truetype');
+        }
+        body { font-family: 'Cambria', serif; }
+        strong { font-weight: 600; }
+    </style>
+    <title>Contrato de Honorários</title>
+</head>
+<body>
+    <main style='display: flex; flex-direction: column; align-items: center'>
+        <section style='width: 85%; margin-top: 0px;'>
+            <h1 style='text-align: center; font-size: 18px'>
+                CONTRATO DE HONORÁRIO ADVOCATÍCIOS
+            </h1>
+            <p style='font-size: 15px; text-align: justify; line-height: 25px; letter-spacing: 0.4px; margin-top: 20px;'>
+                <strong>{{ client.name }}</strong>, {{ client.nationality }}, inscrito no
+                CPF/MF sob n.º {{ client.cpf }}, residente e domiciliado(a) à {{ client.address }},
+                por este instrumento nomeia e constitui seu bastante
+                procurador, <strong>CELSO DE SOUSA BRITO</strong>, brasileiro, casado,
+                advogado inscrito na
+                <strong>OAB/SP sob o n° 240.574 e RENATO DE OLIVEIRA RIBEIRO,</strong>
+                brasileiro, casado, inscrito na
+                <strong> OAB/SP sob o nº 279.387, </strong> todos integrantes do
+                escritório,<strong>
+                    SOUSA BRITO & RIBEIRO SOCIEDADE DE ADVOGADOS,</strong>
+                inscrito no CNPJ nº 16.959.653/0001-32, e na OAB/SP sob o nº 14148,
+                com sede em Barueri/SP, na Alameda Grajaú, n.º 614, Sala 1302, Office
+                Grajaú, Alphaville Industrial, Barueri/SP, Fone: (011) 4448-2301, e
+                têm, entre si, de maneira justa e acordada, o presente
+                <strong>CONTRATO DE HONORÁRIOS ADVOCATÍCIOS,</strong> ficando desde já
+                aceito, pelas cláusulas abaixo descritas:
+            </p>
+            <p style='font-size: 14px; text-align: justify; ...'>
+                {{ document.documentLocation }}, {{ formatDate document.documentDate }}.
+            </p>
+            <p style='font-size: 15px; font-weight: bold;'>
+                {{ client.name }}
+            </p>
+        </section>
+    </main>
+</body>
+</html>

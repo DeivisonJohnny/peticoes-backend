@@ -5,6 +5,14 @@ import * as handlebars from 'handlebars';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { GenerateDocumentDto } from './dto/generate-document.dto';
+import { GenerateBatchDto } from './dto/generate-batch.dto';
+import { generateProcuracaoDeclaracaoJudiciais } from './generators/procuracao-declaracao-judiciais.generator';
+import { generateContratoHonorarios } from './generators/contrato-honorarios.generator';
+
+const documentGenerators = {
+  'Procuração e Declaração Judicial': generateProcuracaoDeclaracaoJudiciais,
+  'Contrato de Honorários': generateContratoHonorarios,
+};
 
 @Injectable()
 export class DocumentsService {
@@ -50,48 +58,16 @@ export class DocumentsService {
       document: dto.extraData,
     };
 
-    const compiledTemplate = handlebars.compile(template.content);
-    const finalHtml = compiledTemplate(dataSnapshot);
+    const generator = documentGenerators[template.title];
+    if (!generator) {
+      throw new Error(`Gerador não implementado para o template: ${template.title}`);
+    }
 
-    const logoPath = path.resolve(process.cwd(), 'templates', 'assets', 'souzalogo.png');
-    const logoBuffer = await fs.readFile(logoPath);
-    const logoBase64 = logoBuffer.toString('base64');
-    const imgHeader = `data:image/png;base64,${logoBase64}`;
-
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
-    const page = await browser.newPage();
-    await page.setContent(finalHtml, { waitUntil: 'networkidle0' });
-
-    const pdfBuffer = await page.pdf({
-      format: 'A4',
-      printBackground: true,
-      displayHeaderFooter: true,
-      margin: {
-        top: '200px',
-        bottom: '80px',
-      },
-      headerTemplate: `
-        <div style="width:100%; display: flex; align-items: center; justify-content: end; padding-right: 70px;">
-          <img src="${imgHeader}" style="height:80px; margin-top: 30px;" />
-        </div>
-      `,
-      footerTemplate: `
-        <div style="width: 100%; font-size: 9px; text-align: center; color: #888; font-family: sans-serif;">
-            <p style="margin: 2px 0;">Avenida Copacabana, n.º 268, Sala 1702, Alphaville, Barueri/SP, CEP: 06472-001 Tel.: (11) 4208-7569</p>
-            <p style="margin: 2px 0;">E-mail: contato@sousabritoeribeiro.com.br</p>
-        </div>
-      `,
-    });
-    
-    await browser.close();
+    const pdfBuffer = await generator(dataSnapshot);
 
     const fileName = `${template.title}-${client.name.replace(/\s/g, '_')}-${Date.now()}.pdf`;
     const filePath = path.join('uploads', fileName);
-
-  
+    
     await fs.writeFile(filePath, pdfBuffer);
 
     const createdDocument = await this.prisma.generatedDocument.create({
@@ -108,6 +84,64 @@ export class DocumentsService {
       message: 'Documento gerado com sucesso!',
       path: filePath,
       documentId: createdDocument.id,
+    };
+  }
+
+  async generatePdfBatch(dto: GenerateBatchDto, generatorId: string) {
+    const {clientId, documents } = dto;
+
+    const client = await this.prisma.client.findUnique({ where: { id: clientId } });
+
+    if (!client) {
+      throw new NotFoundException('Cliente não encontrado.');
+    }
+
+    const generatedDocumentsPromises = documents.map(async (docInfo) => {
+      const { templateId, extraData } = docInfo;
+
+      const template = await this.prisma.documentTemplate.findUnique({ where: { id: templateId } });
+
+      if (!template) {
+
+        console.error(`Template com ID ${templateId} não encontrado. Pulando este documento.`);
+        return null; 
+      }
+
+      const generator = documentGenerators[template.title];
+      if (!generator) {
+        console.error(`Gerador não implementado para o template: ${template.title}. Pulando este documento.`);
+        return null; 
+      }
+
+      const dataSnapshot = {
+        client,
+        document: extraData,
+      };
+
+      const pdfBuffer = await generator(dataSnapshot);
+
+      const fileName = `${template.title}-${client.name.replace(/\s/g, '_')}-${Date.now()}.pdf`;
+      const filePath = path.join('uploads', fileName);
+      
+      await fs.writeFile(filePath, pdfBuffer);
+
+      return this.prisma.generatedDocument.create({
+        data: {
+          title: template.title,
+          filePath: filePath,
+          dataSnapshot: dataSnapshot as any, 
+          clientId: clientId,
+          generatorId: generatorId,
+        },
+      });
+    });
+    
+    const results = await Promise.all(generatedDocumentsPromises);
+    const successfulDocuments = results.filter(doc => doc !== null);
+
+    return {
+     message: `Geração em lote concluída. ${successfulDocuments.length} de ${documents.length} documentos gerados com sucesso.`,
+      generated: successfulDocuments,
     };
   }
 }

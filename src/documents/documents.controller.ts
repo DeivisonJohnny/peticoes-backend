@@ -10,6 +10,7 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { GenerateDocumentDto } from './dto/generate-document.dto';
+import { GenerateBatchDto } from './dto/generate-batch.dto';
 
 @ApiTags('documents')
 @ApiBearerAuth()
@@ -31,5 +32,20 @@ export class DocumentsController {
     @GetUser() user: AuthUser,
   ) {
     return this.documentsService.generatePdf(generateDto, user.id);
+  }
+
+  @Post('generate-batch')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({ summary: 'Gera múltiplos documentos em lote para um cliente.' })
+  @ApiResponse({ status: 201, description: 'Documentos gerados com sucesso.' })
+  @ApiResponse({
+    status: 404,
+    description: 'Cliente ou Template não encontrado.',
+  })
+  generateBatch(
+    @Body() generateBatchDto: GenerateBatchDto,
+    @GetUser() user: AuthUser,
+  ) {
+    return this.documentsService.generatePdfBatch(generateBatchDto, user.id);
   }
 }
