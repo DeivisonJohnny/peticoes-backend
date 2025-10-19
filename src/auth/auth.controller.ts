@@ -34,12 +34,13 @@ export class AuthController {
   ) {
     const { access_token } = this.authService.login(user);
     const isProduction = process.env.NODE_ENV === 'production';
+    const expiryDate = new Date(Date.now() + 8 * 60 * 60 * 1000);
 
     response.cookie('access_token', access_token, {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',
-      expires: new Date(Date.now() + 8 * 60 * 60 * 1000),
+      expires: expiryDate,
     });
 
     return { message: 'Login bem-sucedido' };
