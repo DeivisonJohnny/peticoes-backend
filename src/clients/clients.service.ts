@@ -66,7 +66,16 @@ export class ClientsService {
         name: 'asc',
       },
       include: {
-        documents: true,
+        documents: {
+          select: {
+            clientId: true,
+            title: true,
+            createdAt: true,
+            id: true,
+            generatorId: true,
+            filePath: true,
+          },
+        },
       },
     });
   }
