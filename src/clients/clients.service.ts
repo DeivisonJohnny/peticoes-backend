@@ -60,10 +60,13 @@ export class ClientsService {
 
     where.isActive = true;
 
-     return this.prisma.client.findMany({
+    return this.prisma.client.findMany({
       where,
       orderBy: {
         name: 'asc',
+      },
+      include: {
+        documents: true,
       },
     });
   }
@@ -132,7 +135,6 @@ export class ClientsService {
 
   // Este método implementa um SOFT DELETE
   async remove(id: string): Promise<{ message: string }> {
-
     const client = await this.prisma.client.findUnique({ where: { id } });
 
     if (!client) {
@@ -154,27 +156,27 @@ export class ClientsService {
     await this.prisma.client.findUniqueOrThrow({
       where: { id: id },
     });
-  
-  const [allTemplates, generatedForClient] = await Promise.all([
-    this.prisma.documentTemplate.findMany({
-      select: { id: true, title: true },
-    }),
-    this.prisma.generatedDocument.findMany({
-      where: { clientId: id },
-      select: { title: true },
-      distinct: ['title'],    
-    }),
-  ]);
 
-  const generatedTitles = new Set(
-    generatedForClient.map((doc) => doc.title),
-  );
+    const [allTemplates, generatedForClient] = await Promise.all([
+      this.prisma.documentTemplate.findMany({
+        select: { id: true, title: true },
+      }),
+      this.prisma.generatedDocument.findMany({
+        where: { clientId: id },
+        select: { title: true },
+        distinct: ['title'],
+      }),
+    ]);
 
-  const documentStatusList: DocumentStatusDto[] = allTemplates.map((template) => ({
-    templateId: template.id,
-    title: template.title,
-    status: generatedTitles.has(template.title) ? 'gerado' : 'nao_gerado',
-  }));
-  return documentStatusList;
+    const generatedTitles = new Set(generatedForClient.map((doc) => doc.title));
+
+    const documentStatusList: DocumentStatusDto[] = allTemplates.map(
+      (template) => ({
+        templateId: template.id,
+        title: template.title,
+        status: generatedTitles.has(template.title) ? 'gerado' : 'nao_gerado',
+      }),
+    );
+    return documentStatusList;
   }
 }
