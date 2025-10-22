@@ -15,6 +15,7 @@ import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { FindAllClientsDto } from './dto/find-all-clients.dto';
+import { DocumentStatusDto } from '../clients/dto/document-status.dto';
 
 @UseGuards(AuthGuard('jwt'))
 @ApiTags('clients')
@@ -76,5 +77,17 @@ export class ClientsController {
   @ApiResponse({ status: 404, description: 'Cliente não encontrado.' })
   remove(@Param('id') id: string) {
     return this.clientsService.remove(id);
+  }
+
+  @Get(':id/document-status')
+  @ApiOperation({ summary: 'Obtém o status dos documentos para um cliente específico' })
+  @ApiResponse({
+    status: 200,
+    description: 'Status dos documentos retornado com sucesso.',
+    type: [DocumentStatusDto],
+  })
+  @ApiResponse({ status: 404, description: 'Cliente não encontrado.' })
+  getDocumentStatus(@Param('id') id: string): Promise<DocumentStatusDto[]> {
+    return this.clientsService.getDocumentStatus(id);
   }
 }

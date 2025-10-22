@@ -9,6 +9,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { FindAllClientsDto } from './dto/find-all-clients.dto';
+import { DocumentStatusDto } from '../clients/dto/document-status.dto';
 
 @Injectable()
 export class ClientsService {
@@ -147,5 +148,33 @@ export class ClientsService {
       data: { isActive: false },
     });
     return { message: 'Cliente desativado com sucesso.' };
+  }
+
+  async getDocumentStatus(id: string): Promise<DocumentStatusDto[]> {
+    await this.prisma.client.findUniqueOrThrow({
+      where: { id: id },
+    });
+  
+  const [allTemplates, generatedForClient] = await Promise.all([
+    this.prisma.documentTemplate.findMany({
+      select: { id: true, title: true },
+    }),
+    this.prisma.generatedDocument.findMany({
+      where: { clientId: id },
+      select: { title: true },
+      distinct: ['title'],    
+    }),
+  ]);
+
+  const generatedTitles = new Set(
+    generatedForClient.map((doc) => doc.title),
+  );
+
+  const documentStatusList: DocumentStatusDto[] = allTemplates.map((template) => ({
+    templateId: template.id,
+    title: template.title,
+    status: generatedTitles.has(template.title) ? 'gerado' : 'nao_gerado',
+  }));
+  return documentStatusList;
   }
 }
