@@ -1,21 +1,31 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { Prisma } from "@prisma/client";
+
+class LastGeneratedDetailsDto {
+    @ApiProperty()
+    generatedDocumentId: string;
+
+    @ApiProperty()
+    createdAt: Date;
+
+    @ApiProperty()
+    generatorName: string;
+
+    @ApiProperty({ description: 'Snapshot JSON dos dados usados na geração.'})
+    dataSnapshot: Prisma.JsonValue
+}
 
 export class DocumentStatusDto {
-  @ApiProperty({
-    description: 'O ID do modelo de documento (template).',
-    example: 'hkjsakjahs768kjhlkhjas989078',
-})
-templateId: string;
+  @ApiProperty()
+  templateId: string;
 
-    @ApiProperty({
-        description: 'O título do modelo de documento.',
-        example: 'Procuração e Declaração Judiciais',
-    })
-    title: string;
+  @ApiProperty()
+  title: string;
 
-    @ApiProperty({
-        description: 'O status do documento para este cliente.',
-        enum: ['gerado', 'nao_gerado'],
-    })
-    status: 'gerado' | 'nao_gerado';
+  @ApiProperty({ enum: ['gerado', 'nao_gerado'] })
+  status: 'gerado' | 'nao_gerado';
+
+  // Campo opcional que conterá os detalhes se o status for 'gerado'
+  @ApiProperty({ type: LastGeneratedDetailsDto, nullable: true })
+  lastGenerated: LastGeneratedDetailsDto | null;
 }
