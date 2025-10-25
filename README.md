@@ -194,22 +194,37 @@ Todas as rotas exceto `/auth/login` requerem autenticação. Se o token for inv�
 #### Listar todos os clientes
 
 ```http
-GET /clients
+GET /clients?page=1&limit=10&name=João&cpfCnpj=123&email=exemplo@email.com
 ```
 
-**Resposta:**
+**Query params opcionais:**
+- `page` - Número da página (padrão: 1)
+- `limit` - Itens por página (padrão: 10)
+- `name` - Filtrar por nome (busca parcial, case-insensitive)
+- `cpfCnpj` - Filtrar por CPF ou CNPJ (busca parcial)
+- `email` - Filtrar por email (busca parcial, case-insensitive)
+
+**Resposta paginada:**
 ```json
-[
-  {
-    "id": "clxxx123",
-    "name": "João da Silva",
-    "cpf": "123.456.789-00",
-    "email": "joao@email.com",
-    "phone": "(11) 98765-4321",
-    "isActive": true,
-    "createdAt": "2025-10-20T10:00:00.000Z"
+{
+  "data": [
+    {
+      "id": "clxxx123",
+      "name": "João da Silva",
+      "cpf": "123.456.789-00",
+      "email": "joao@email.com",
+      "phone": "(11) 98765-4321",
+      "isActive": true,
+      "createdAt": "2025-10-20T10:00:00.000Z"
+    }
+  ],
+  "meta": {
+    "totalItems": 50,
+    "currentPage": 1,
+    "itemsPerPage": 10,
+    "totalPages": 5
   }
-]
+}
 ```
 
 #### Buscar cliente por ID
@@ -266,6 +281,44 @@ DELETE /clients/:id
 
 > ⚠️ Isso marca o cliente como `isActive: false`, não deleta permanentemente.
 
+#### Status de documentos do cliente
+
+```http
+GET /clients/:id/document-status
+```
+
+Retorna o status de geração de todos os templates de documentos para um cliente específico.
+
+**Resposta:**
+```json
+[
+  {
+    "templateId": "tmpl_123",
+    "title": "Procuração e Declaração Judicial",
+    "status": "gerado",
+    "lastGenerated": {
+      "generatedDocumentId": "doc_456",
+      "createdAt": "2025-10-20T15:30:00.000Z",
+      "generatorName": "Dra. Maria Santos",
+      "dataSnapshot": {
+        "numeroProcesso": "0001234-56.2025.8.26.0100",
+        "vara": "1ª Vara Cível"
+      }
+    }
+  },
+  {
+    "templateId": "tmpl_789",
+    "title": "Contrato de Honorários",
+    "status": "nao_gerado",
+    "lastGenerated": null
+  }
+]
+```
+
+**Status possíveis:**
+- `gerado` - Documento já foi gerado para este cliente (inclui detalhes da última geração)
+- `nao_gerado` - Documento ainda não foi gerado
+
 ---
 
 ### 📄 Templates de Documentos (`/document-templates`)
@@ -319,12 +372,11 @@ Content-Type: application/json
 #### Listar documentos
 
 ```http
-GET /generated-documents
+GET /generated-documents?clientId=xxx
 ```
 
-**Query params opcionais:**
-- `?clientId=xxx` - Filtrar por cliente
-- `?generatorId=xxx` - Filtrar por quem gerou
+**Query params:**
+- `clientId` (obrigatório) - ID do cliente
 
 **Resposta:**
 ```json
@@ -332,16 +384,7 @@ GET /generated-documents
   {
     "id": "doc_123",
     "title": "Procuração - João Silva",
-    "filePath": "/uploads/procuracao-joao-123.pdf",
-    "clientId": "cl_456",
-    "generatorId": "user_789",
-    "createdAt": "2025-10-20T15:30:00.000Z",
-    "client": {
-      "name": "João Silva"
-    },
-    "generator": {
-      "name": "Dra. Maria"
-    }
+    "createdAt": "2025-10-20T15:30:00.000Z"
   }
 ]
 ```
@@ -380,6 +423,23 @@ GET /generated-documents/:id/download
 ```
 
 Retorna o arquivo PDF para download.
+
+#### Download em lote (ZIP)
+
+```http
+POST /generated-documents/download-batch
+Content-Type: application/json
+
+{
+  "documentIds": ["doc_123", "doc_456", "doc_789"]
+}
+```
+
+Retorna um arquivo ZIP contendo todos os PDFs solicitados.
+
+**Headers da resposta:**
+- `Content-Type: application/zip`
+- `Content-Disposition: attachment; filename=documentos.zip`
 
 ---
 
@@ -578,11 +638,34 @@ Todas as datas são retornadas no formato ISO 8601:
 
 ### Paginação
 
-Atualmente não há paginação implementada. Todos os endpoints retornam todos os registros.
+A listagem de clientes implementa paginação com os seguintes parâmetros:
+- `page` - Número da página (padrão: 1)
+- `limit` - Itens por página (padrão: 10)
+
+A resposta inclui metadados de paginação:
+```json
+{
+  "data": [...],
+  "meta": {
+    "totalItems": 50,
+    "currentPage": 1,
+    "itemsPerPage": 10,
+    "totalPages": 5
+  }
+}
+```
+
+### Filtros
+
+Os endpoints de listagem suportam filtros via query params. As buscas textuais são case-insensitive e parciais (LIKE).
 
 ### Upload de Arquivos
 
 Os PDFs gerados são salvos em `/uploads` e servidos estaticamente.
+
+### Download de Arquivos
+
+Para downloads individuais, use `GET /generated-documents/:id/download`. Para múltiplos documentos, use o endpoint de download em lote que retorna um ZIP.
 
 ### Cache
 
@@ -614,4 +697,4 @@ Para dúvidas ou problemas:
 
 ---
 
-**Última atualização:** 20 de outubro de 2025
+**Última atualização:** 23 de outubro de 2025

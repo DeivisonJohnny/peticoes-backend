@@ -1,8 +1,9 @@
-import { Controller, Get, Param, Query, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Res, UseGuards } from '@nestjs/common';
 import type { Response } from 'express';
 import { GeneratedDocumentsService } from './generated-documents.service';
 import { FindAllGeneratedDto } from './dto/find-all-generated.dto';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { DownloadBatchDto } from './dto/download-batch.dto';
 import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('generated-documents')
@@ -27,5 +28,21 @@ export class GeneratedDocumentsController {
     ) {
         const filePath = await this.generatedDocumentsService.getFilePathById(id);
         return res.download(filePath);
+}
+
+@Post('download-batch')
+@ApiOperation({ summary: 'Baixa múltiplos documentos em um único arquivo ZIP.' })
+async downloadBatch(
+    @Body() downloadBatchDto: DownloadBatchDto,
+    @Res() res: Response,
+) {
+    const zipStream = await this.generatedDocumentsService.createZipStream(
+        downloadBatchDto.documentIds
+    );
+
+    res.setHeader('Content-Type', 'application/zip');
+    res.setHeader('Content-Disposition', 'attachment; filename=documentos.zip');
+
+   zipStream.pipe(res);
 }
 }
