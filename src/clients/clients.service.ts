@@ -41,7 +41,8 @@ export class ClientsService {
   }
 
   async findAll(query: FindAllClientsDto) {
-    const { page = 1, limit = 10, name, cpfCnpj, email } = query;
+
+    const { page = 1, limit = 10, name, cpfCnpj, email} = query;
 
     const skip = (page - 1) * limit;
 
@@ -76,74 +77,8 @@ export class ClientsService {
       this.prisma.client.count({ where }),
     ]);
 
-    if (clients.length === 0) {
-      return {
-        data: [],
-        meta: {
-          totalItems: 0,
-          currentPage: page,
-          itemsPerPage: limit,
-          totalPages: Math.ceil(total / limit),
-        },
-      };
-    }
-
-    const clientIds = clients.map((client) => client.id);
-    const [allTemplates, allGeneratedDocs] = await Promise.all([
-      this.prisma.documentTemplate.findMany({
-        select: { id: true, title: true },
-      }),
-      this.prisma.generatedDocument.findMany({
-        where: { clientId: { in: clientIds } },
-        orderBy: { createdAt: 'desc' },
-        include: {
-          generator: {
-            select: { name: true },
-          },
-        },
-      }),
-    ]);
-
-    const latestDocsByClientMap = new Map<string, Map<string, any>>();
-    for (const doc of allGeneratedDocs) {
-      if (!latestDocsByClientMap.has(doc.clientId)) {
-        latestDocsByClientMap.set(doc.clientId, new Map());
-      }
-      const clientDocsMap = latestDocsByClientMap.get(doc.clientId);
-      if (!clientDocsMap?.has(doc.title)) {
-        clientDocsMap?.set(doc.title, doc);
-      }
-    }
-
-    const clientsWithDocuments = clients.map((client) => ({
-      ...client,
-      documents: allTemplates.map((template) => {
-        const latestDoc = latestDocsByClientMap
-          .get(client.id)
-          ?.get(template.title);
-        return latestDoc
-          ? {
-              templateId: template.id,
-              title: template.title,
-              status: 'gerado' as const,
-              lastGenerated: {
-                generatedDocumentId: latestDoc.id,
-                createdAt: latestDoc.createdAt,
-                generatorName: latestDoc.generator.name,
-                dataSnapshot: latestDoc.dataSnapshot,
-              },
-            }
-          : {
-              templateId: template.id,
-              title: template.title,
-              status: 'nao_gerado' as const,
-              lastGenerated: null,
-            };
-      }),
-    }));
-
-    return {
-      data: clientsWithDocuments,
+     return {
+      data: clients,
       meta: {
         totalItems: total,
         currentPage: page,
@@ -217,6 +152,7 @@ export class ClientsService {
 
   // Este método implementa um SOFT DELETE
   async remove(id: string): Promise<{ message: string }> {
+
     const client = await this.prisma.client.findUnique({ where: { id } });
 
     if (!client) {
@@ -235,62 +171,61 @@ export class ClientsService {
   }
 
   async getDocumentStatus(clientId: string): Promise<DocumentStatusDto[]> {
-    // 1. Garante que o cliente existe
-    await this.prisma.client.findUniqueOrThrow({ where: { id: clientId } });
+  // 1. Garante que o cliente existe
+  await this.prisma.client.findUniqueOrThrow({ where: { id: clientId } });
 
-    // 2. Busca todos os templates e os documentos do cliente em paralelo
-    const [allTemplates, generatedForClient] = await Promise.all([
-      this.prisma.documentTemplate.findMany({
-        select: { id: true, title: true },
-      }),
-      this.prisma.generatedDocument.findMany({
-        where: { clientId },
-        orderBy: { createdAt: 'desc' }, // Ordena do mais recente para o mais antigo
-        include: {
-          // Inclui o nome do usuário que gerou o documento [cite: 360, 402]
-          generator: {
-            select: { name: true },
-          },
+  // 2. Busca todos os templates e os documentos do cliente em paralelo
+  const [allTemplates, generatedForClient] = await Promise.all([
+    this.prisma.documentTemplate.findMany({
+      select: { id: true, title: true },
+    }),
+    this.prisma.generatedDocument.findMany({
+      where: { clientId },
+      orderBy: { createdAt: 'desc' }, // Ordena do mais recente para o mais antigo
+      include: { // Inclui o nome do usuário que gerou o documento [cite: 360, 402]
+        generator: {
+          select: { name: true },
         },
-      }),
-    ]);
+      },
+    }),
+  ]);
 
-    // 3. Cria um Map para armazenar apenas o documento MAIS RECENTE de cada tipo
-    const latestGeneratedMap = new Map();
-    for (const doc of generatedForClient) {
-      // Como a lista está ordenada, o primeiro que encontrarmos para cada título é o mais recente
-      if (!latestGeneratedMap.has(doc.title)) {
-        latestGeneratedMap.set(doc.title, doc);
-      }
+  // 3. Cria um Map para armazenar apenas o documento MAIS RECENTE de cada tipo
+  const latestGeneratedMap = new Map();
+  for (const doc of generatedForClient) {
+    // Como a lista está ordenada, o primeiro que encontrarmos para cada título é o mais recente
+    if (!latestGeneratedMap.has(doc.title)) {
+      latestGeneratedMap.set(doc.title, doc);
     }
-
-    // 4. Mapeia todos os templates para construir a resposta final
-    const documentStatuses = allTemplates.map((template) => {
-      const latestDoc = latestGeneratedMap.get(template.title);
-
-      if (latestDoc) {
-        // Se o documento já foi gerado, monta o objeto completo
-        return {
-          templateId: template.id,
-          title: template.title,
-          status: 'gerado' as const,
-          lastGenerated: {
-            generatedDocumentId: latestDoc.id,
-            createdAt: latestDoc.createdAt,
-            generatorName: latestDoc.generator.name,
-            dataSnapshot: latestDoc.dataSnapshot, // Retorna o snapshot conforme solicitado [cite: 397]
-          },
-        };
-      } else {
-        // Se não foi gerado, monta o objeto simples
-        return {
-          templateId: template.id,
-          title: template.title,
-          status: 'nao_gerado' as const,
-          lastGenerated: null,
-        };
-      }
-    });
-    return documentStatuses;
   }
+
+  // 4. Mapeia todos os templates para construir a resposta final
+  const documentStatuses = allTemplates.map((template) => {
+    const latestDoc = latestGeneratedMap.get(template.title);
+
+    if (latestDoc) {
+      // Se o documento já foi gerado, monta o objeto completo
+      return {
+        templateId: template.id,
+        title: template.title,
+        status: 'gerado' as const,
+        lastGenerated: {
+          generatedDocumentId: latestDoc.id,
+          createdAt: latestDoc.createdAt,
+          generatorName: latestDoc.generator.name,
+          dataSnapshot: latestDoc.dataSnapshot, // Retorna o snapshot conforme solicitado [cite: 397]
+        },
+      };
+    } else {
+      // Se não foi gerado, monta o objeto simples
+      return {
+        templateId: template.id,
+        title: template.title,
+        status: 'nao_gerado' as const,
+        lastGenerated: null,
+      };
+    }
+  });
+  return documentStatuses;
+}
 }
