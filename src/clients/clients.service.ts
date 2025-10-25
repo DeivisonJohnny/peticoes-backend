@@ -83,42 +83,63 @@ export class ClientsService {
           totalItems: 0,
           currentPage: page,
           itemsPerPage: limit,
-          totalPages: 0,
+          totalPages: Math.ceil(total / limit),
         },
       };
     }
 
     const clientIds = clients.map((client) => client.id);
-
-    const allGeneratedDocs = await this.prisma.generatedDocument.findMany({
-      where: { clientId: { in: clientIds } },
-      orderBy: { createdAt: 'desc' },
-      include: {
-        generator: {
-          select: { name: true },
+    const [allTemplates, allGeneratedDocs] = await Promise.all([
+      this.prisma.documentTemplate.findMany({
+        select: { id: true, title: true },
+      }),
+      this.prisma.generatedDocument.findMany({
+        where: { clientId: { in: clientIds } },
+        orderBy: { createdAt: 'desc' },
+        include: {
+          generator: {
+            select: { name: true },
+          },
         },
-      },
-    });
+      }),
+    ]);
 
-    const latestDocsByClient = new Map<string, any[]>();
+    const latestDocsByClientMap = new Map<string, Map<string, any>>();
     for (const doc of allGeneratedDocs) {
-      if (!latestDocsByClient.has(doc.clientId)) {
-        latestDocsByClient.set(doc.clientId, []);
+      if (!latestDocsByClientMap.has(doc.clientId)) {
+        latestDocsByClientMap.set(doc.clientId, new Map());
       }
-
-      const clientDocs = latestDocsByClient.get(doc.clientId);
-      if (!clientDocs?.some((d) => d.title === doc.title)) {
-        clientDocs?.push({
-          title: doc.title,
-          generatedDocumentId: doc.id,
-          createdAt: doc.createdAt,
-        });
+      const clientDocsMap = latestDocsByClientMap.get(doc.clientId);
+      if (!clientDocsMap?.has(doc.title)) {
+        clientDocsMap?.set(doc.title, doc);
       }
     }
 
     const clientsWithDocuments = clients.map((client) => ({
       ...client,
-      documents: latestDocsByClient.get(client.id) || [],
+      documents: allTemplates.map((template) => {
+        const latestDoc = latestDocsByClientMap
+          .get(client.id)
+          ?.get(template.title);
+        return latestDoc
+          ? {
+              templateId: template.id,
+              title: template.title,
+              status: 'gerado' as const,
+              lastGenerated: {
+                generatedDocumentId: latestDoc.id,
+                createdAt: latestDoc.createdAt,
+                generatorName: latestDoc.generator.name,
+                dataSnapshot: latestDoc.dataSnapshot,
+              },
+            }
+          : {
+              templateId: template.id,
+              title: template.title,
+              status: 'nao_gerado' as const,
+              lastGenerated: null,
+            };
+      }),
     }));
 
     return {
