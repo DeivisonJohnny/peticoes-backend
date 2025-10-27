@@ -1,15 +1,4 @@
-import { IsDateString, IsNotEmpty, IsObject, IsString, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
-
-
-class ExtraDataDto {
-  @IsString()
-  @IsNotEmpty()
-  documentLocation: string;
-
-  @IsDateString()
-  documentDate: string;
-}
+import { IsNotEmpty, IsObject, IsString } from 'class-validator';
 
 
 export class GenerateDocumentDto {
@@ -22,7 +11,5 @@ export class GenerateDocumentDto {
   templateId: string;
 
   @IsObject()
-  @ValidateNested()
-  @Type(() => ExtraDataDto)
-  extraData: ExtraDataDto;
+  extraData: Record<string, any>;
 }
