@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Cambria', serif;
+    }
+
+    body {
+      font-size: 11pt;
+    }
+
+    #container {
+      width: 85%;
+      margin: auto;
+    }
+
+    input[type='text'] {
+      border: none;
+      outline: none;
+      border-bottom: 1px solid black;
+      background-color: transparent;
+      width: 100%;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      margin-top: 35px;
+    }
+
+    header #brasao {
+      width: 170px;
+      height: auto;
+    }
+
+    header h1 {
+      font-size: 12px;
+      font-family: sans-serif;
+      font-weight: normal;
+    }
+
+    header h2,
+    p {
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+    .title-section {
+      font-size: 15px;
+      font-weight: bold;
+      margin-left: 8px;
+    }
+
+    #step-one {
+      margin-top: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+    }
+
+    #step-one>div {
+      display: flex;
+      align-items: center;
+      justify-content: start;
+    }
+
+    #step-one label {
+      font-size: 15px;
+    }
+
+    #step-one>div>div {
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+    }
+
+    #step-one>div>#inp-name {
+      width: 75%;
+    }
+
+    #step-one>div>#inp-nickname {
+      width: 25%;
+      justify-content: start;
+    }
+
+    #step-one>div>#inp-nasc {
+      width: 60%;
+    }
+
+    #step-one>div>#inp-nasc label {
+      white-space: nowrap;
+    }
+
+    #step-one>div>#inp-local-nasc {
+      width: 70%;
+    }
+
+    #step-one>div>#inp-local-nasc label {
+      white-space: nowrap;
+    }
+
+    #step-one>div>#inp-end {
+      width: 100%;
+    }
+
+    #step-one>div>#inp-end label {
+      white-space: nowrap;
+    }
+
+    #step-one>div>#inp-municipio {
+      width: 90%;
+    }
+
+    #step-one>div>#inp-uf {
+      width: 10%;
+    }
+
+    #step-one>div>#inp-cpf {
+      width: 23%;
+    }
+
+    #step-one>div>#inp-rg {
+      width: 23%;
+    }
+
+    #step-one>div>#inp-date-exp {
+      width: max-content;
+    }
+
+    #step-one>div>#inp-date-exp label {
+      white-space: nowrap;
+    }
+
+    #step-two {
+      margin-top: 15px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    table,
+    th,
+    td {
+      border: 1px solid black;
+    }
+
+    th,
+    td {
+      padding: 5px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      text-align: center;
+      background-color: #f2f2f2;
+      font-weight: bold;
+      font-size: 13px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .checkbox-group * {
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 3px;
+    }
+
+    .checkbox-item input[type='checkbox'] {
+      margin-right: 5px;
+    }
+
+    #box-titular-component {
+      margin-left: 55px;
+      margin-top: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    #titular-component {
+      display: flex;
+      align-items: center;
+      justify-content: start;
+      flex-direction: row;
+      flex-wrap: nowrap;
+    }
+
+    #titular-component *,
+    #group-family * {
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    #titular-component strong {
+      font-weight: normal;
+    }
+
+    .container-line {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      gap: 12px;
+    }
+
+    .line-rep {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      gap: 8px;
+    }
+
+    .container-box-inp {
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      flex-wrap: nowrap;
+    }
+
+    .box-inp {
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      flex-wrap: nowrap;
+    }
+
+    .boxname { width: 45%; }
+    .boxdn { width: 25%; }
+    .boxcpf { width: 30%; }
+    
+    .box-inp label {
+      white-space: nowrap;
+      font-weight: bold;
+      font-size: 12px;
+    }
+    
+    .statecivil { width: 36%; }
+    .parentesco { width: 64%; }
+    
+    .nota-footer {
+      font-weight: normal;
+      text-align: center;
+      font-style: italic;
+      font-size: 14px;
+      margin-top: 50px;
+    }
+
+    #step-three {
+        /* Adicionando quebra de página antes desta seção para melhor layout no PDF */
+        page-break-before: always;
+        padding-top: 50px;
+    }
+
+    #exemplas-3 {
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    #container-list-three {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 13.5px;
+    }
+
+    .line-list {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 7.5px;
+    }
+
+    .line-list .part-one {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      gap: 10px;
+    }
+
+    .line-list label {
+      font-size: 13.2px;
+      white-space: nowrap;
+    }
+
+    .box-inps {
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      flex-wrap: nowrap;
+    }
+
+    .registero-itr { width: 50%; }
+    .name-property { width: 50%; }
+
+    .line-list .part-two {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      width: 100%;
+    }
+
+    .line-list .municipe { width: 43%; }
+    .line-list .areatotal { width: 25%; }
+    .line-list .areaexplorada { width: 35%; }
+
+    .part-three {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+    }
+
+    .nameproperty { width: 60%; }
+    .cpfproperty { width: 40%; }
+    
+    #inpsfordata {
+      width: 70%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      gap: 10px;
+      margin: auto;
+    }
+
+    .boxinpsdata {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      flex-wrap: nowrap;
+    }
+
+    .boxinpsdata label { font-size: 12px; }
+    
+    #step-four {
+        /* Adicionando quebra de página antes da seção final */
+        page-break-before: always;
+        padding-top: 50px;
+    }
+
+  </style>
+  <title>Autodeclaração - Rural</title>
+</head>
+
+<body>
+  <div id='container'>
+    <header>
+      <img id='brasao' src='data:image/png;base64,{{brasaoOficialBase64}}' alt='brasão oficial' />
+      <h1>INSTITUTIO NACIONAL DO SEGURO SOCIAL</h1>
+      <h2>ANEXO I</h2>
+      <p>OFÍCIO-CIRCULAR Nº 46 DIRBEN/INSS, DE 13 DE SETEMBRO DE 2019.</p>
+      <p>AUTODECLARAÇÃO DO SEGURADO ESPECIAL – RURAL</p>
+      <p style='color: red'>TODAS AS INFORMAÇÕES SERÃO CHECADAS NOS SISTEMAS OFICIAIS</p>
+    </header>
+
+    <section id='step-one'>
+      <div>
+        <p class='title-section'>1. Dados do Segurado:</p>
+      </div>
+      <div>
+        <div id='inp-name'><label>NOME:</label><input type='text' value='{{name}}' /></div>
+        <div id='inp-nickname'><label>Apelido:</label><input type='text' value='{{nickname}}' /></div>
+      </div>
+      <div>
+        <div id='inp-nasc'><label>DATA DE NASCIMENTO/DN:</label><input type='text' value='{{dateOfBirth}}' /></div>
+        <div id='inp-local-nasc'><label>LOCAL DE NASCIMENTO:</label><input type='text' value='{{birthPlace}}' /></div>
+      </div>
+      <div>
+        <div id='inp-end'><label>ENDEREÇO RESIDENCIAL:</label><input type='text' value='{{address}}' /></div>
+      </div>
+      <div>
+        <div id='inp-municipio'><label>MUNICÍPIO:</label><input type='text' value='{{city}}' /></div>
+        <div id='inp-uf'><label>UF</label><input type='text' value='{{state}}' /></div>
+      </div>
+      <div>
+        <div id='inp-cpf'><label>CPF:</label><input type='text' value='{{cpf}}' /></div>
+        <div id='inp-rg'><label>RG:</label><input type='text' value='{{rg}}' /></div>
+        <div id='inp-date-exp'><label>DATA/LOCAL DE EXPEDIÇÃO:</label><input type='text' value='{{rgIssuer}}' /></div>
+      </div>
+    </section>
+
+    <section id='step-two'>
+      <div>
+        <p class='title-section'>2. Período(s) de atividade rural (dia/mês/ano):</p>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th style='width: 30%; font-size: 12.5px'>PERÍODO<br />(XX/XX/XXXX A XX/XX/XXXX)</th>
+            <th style='width: 35%; font-size: 12.5px'>CONDIÇÃO EM RELAÇÃO AO IMÓVEL</th>
+            <th style='width: 35%; font-size: 12.5px'>SITUAÇÃO</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each ruralActivityPeriods}}
+          <tr>
+            <td>{{this.period}}</td>
+            <td>{{this.propertyCondition}}</td>
+            <td>
+              <div class='checkbox-group'>
+                <div class='checkbox-item'>(<input type='checkbox' {{#if this.isIndividual}}checked{{/if}} />) INDIVIDUAL</div>
+                <div class='checkbox-item'>(<input type='checkbox' {{#if this.isFamilyEconomy}}checked{{/if}} />) REGIME DE ECONOMIA FAMILIAR</div>
+              </div>
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+      <p style='font-size: 14px; margin-left: 5px; font-weight: normal'>
+        * Proprietário / Possuidor / Comodatário / Arrendatário / Parceiro / Meeiro / Usufrutuário / Condômino / Posseiro Assentado / Acampado
+      </p>
+      <div id='box-titular-component'>
+        <div id='titular-component'>
+          <p>
+            2.1. No caso de exercício de atividade em regime de economia familiar, informe sua condição no grupo na data do requerimento:
+            <strong>(<input type='checkbox' {{#if familyEconomy.isHolder}}checked{{/if}} />) Titular</strong><strong> (<input type='checkbox' {{#if familyEconomy.isComponent}}checked{{/if}} />) Componente</strong>
+          </p>
+        </div>
+        <div id='group-family'>
+          <p>2.2. Grupo Familiar, se exerceu ou exerce a atividade em regime de economia familiar, informe os componentes do grupo familiar:</p>
+        </div>
+      </div>
+      <div class='container-line'>
+        {{#each familyMembers}}
+        <div class='line-rep'>
+          <div class='container-box-inp'>
+            <div class='box-inp boxname'><label>NOME</label><input type='text' value='{{this.name}}' /></div>
+            <div class='box-inp boxdn'><label>DN:</label><input type='text' value='{{this.dateOfBirth}}' /></div>
+            <div class='box-inp boxcpf'><label>CPF(NÚMERO)</label><input type='text' value='{{this.cpf}}' /></div>
+          </div>
+          <div class='container-box-inp'>
+            <div class='box-inp statecivil'><label>ESTADO CIVIL:</label><input type='text' value='{{this.maritalStatus}}' /></div>
+            <div class='box-inp parentesco'><label>PARENTESCO</label><input type='text' value='{{this.relationship}}' /></div>
+          </div>
+        </div>
+        {{/each}}
+      </div>
+    </section>
+
+    <p class='nota-footer'><strong>NOTA:</strong> esta declaração deverá ser assinada em todas as suas páginas</p>
+    
+    <section id='step-three'>
+      <div>
+        <p class='title-section' style='font-size: 12px; margin-bottom: 3px; margin-left: 0px'>3. Se o segurado for proprietário, posseiro/possuidor, assentado, usufrutuário e houve cessão da terra, informar:</p>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th style='width: 30%'>FORMA DE CESSÃO*</th>
+            <th style='width: 35%; font-size: 13px'>PERÍODO(XX/XX/XXXX A XX/XX/XXXX)</th>
+            <th style='width: 35%'>ÁREA CEDIDA em hectare - ha</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each landLeases}}
+          <tr>
+            <td>{{this.leaseType}}</td>
+            <td>{{this.period}}</td>
+            <td>{{this.leasedAreaInHa}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+      <p id='exemplas-3'>*Exemplos: Arrendamento, parceria, meação, comodato, etc.</p>
+      
+      <div style='margin-left: 48px; margin-bottom: 8px; margin-top: 18px'>
+        <p class='title-section' style='font-size: 13.5px; margin-left: 0px'>3.1. Informe os dados da(s) terra(s), onde exerceu ou exerce a atividade rural (conforme item 2):</p>
+        <p style='font-weight: normal; font-size: 13.5px'>* se exploração em condomínio, informar no campo “área total do imóvel” a área pertencente ao condômino.</p>
+      </div>
+
+      <div id='container-list-three'>
+        {{#each properties}}
+        <div class='line-list'>
+          <div class='part-one'>
+            <div class='box-inps registero-itr'><label>Registro ITR, se possuir</label><input type='text' value='{{this.itrRegistration}}'/></div>
+            <div class='box-inps name-property'><label>Nome da propriedade</label><input type='text' value='{{this.propertyName}}'/></div>
+          </div>
+          <div class='part-two'>
+            <div class='box-inps municipe'><label>Município/UF</label><input type='text' value='{{this.municipalityUf}}'/></div>
+            <div class='box-inps areatotal'><label>Área total do imóvel (ha)</label><input type='text' value='{{this.totalAreaInHa}}'/></div>
+            <div class='box-inps areaexplorada'><label>Área explorada pelo requerente (ha)</label><input type='text' value='{{this.exploredAreaInHa}}'/></div>
+          </div>
+          <div class='part-three'>
+            <div class='box-inps nameproperty'><label>Nome do proprietário:</label><input type='text' value='{{this.ownerName}}'/></div>
+            <div class='box-inps cpfproperty'><label>CPF do Proprietário</label><input type='text' value='{{this.ownerCpf}}'/></div>
+          </div>
+        </div>
+        {{/each}}
+      </div>
+      
+      <div style='margin-top: 15px'>
+        <div>
+          <p class='title-section' style='font-size: 13px; margin-left: 45px'>3.2. Informe o que explora na atividade rural e destinação (milho, feijão, porcos, etc.)</p>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th style='width: 50%'>ATIVIDADE</th>
+              <th style='width: 50%'>ATIVIDADE SUBSISTÊNCIA/VENDA</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each exploredActivities}}
+            <tr>
+              <td>{{this.activity}}</td>
+              <td>{{this.purpose}}</td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+      
+      <div style='margin-top: 15px'>
+        <div>
+          <p class='title-section' style='font-size: 13px; margin-left: 45px'>3.3. Informe se houve recolhimento de Imposto Sobre Produtos Industrializados - IPI sobre a venda da produção: SIM (<input type='checkbox' {{#if ipiInfo.hasPayment}}checked{{/if}} />) NÃO(<input type='checkbox' {{#unless ipiInfo.hasPayment}}checked{{/unless}} />)</p>
+        </div>
+        <table>
+          <thead>
+            <tr><th style='width: 100%; font-size: 12px'>PERÍODO (XX/XX/XXXX A XX/XX/XXXX)</th></tr>
+          </thead>
+          <tbody>
+            {{#each ipiInfo.periods}}
+            <tr><td>{{this.period}}</td></tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+
+      <div style='margin-top: 15px;'>
+        <div>
+          <p class='title-section' style='font-size: 13.5px; margin-left: 45px'>3.4. Possui empregado(s) ou prestador(es) de serviço: SIM (<input type='checkbox' {{#if employeeInfo.hasEmployees}}checked{{/if}}/>) NÃO(<input type='checkbox' {{#unless employeeInfo.hasEmployees}}checked{{/unless}}/>) Especificar</p>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th style='width: 35%; font-weight: normal; font-size: 15px'>NOME</th>
+              <th style='width: 25%; font-weight: normal; font-size: 15px'>CPF, se possuir</th>
+              <th style='width: 40%; font-weight: normal; font-size: 13.5px'>PERÍODO (XX/XX/XXXX a XX/XX/XXXX)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each employeeInfo.employees}}
+            <tr>
+              <td>{{this.name}}</td>
+              <td>{{this.cpf}}</td>
+              <td>{{this.period}}</td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    </section>
+    
+    <section id='step-four'>
+        <div style='margin-top: 15px'>
+            <div>
+                <p class='title-section' style='font-size: 14px; margin-left: 0px'>4. Informe se exerce ou exerceu outra atividade e/ou recebe/recebeu outra renda: SIM (<input type='checkbox' {{#if otherIncomeInfo.hasOtherIncome}}checked{{/if}} />) NÃO(<input type='checkbox' {{#unless otherIncomeInfo.hasOtherIncome}}checked{{/unless}} />) Especificar</p>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style='width: 35%; font-weight: normal; font-size: 13px'>ATIVIDADE/RENDA*</th>
+                        <th style='width: 27%; font-weight: normal; font-size: 13px'>LOCAL</th>
+                        <th style='width: 38%; font-weight: normal; font-size: 13px'>PERÍODO (XX/XX/XXXX a XX/XX/XXXX)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each otherIncomeInfo.incomes}}
+                    <tr>
+                        <td>{{this.activity}}</td>
+                        <td>{{this.location}}</td>
+                        <td>{{this.period}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+            <p style='font-weight: normal; font-size: 13px'>*Pedreiro, carpinteiro, pintor, servidor público, empregado rural, entre outros.</p>
+        </div>
+        <div style='margin-top: 15px'>
+            <div>
+                <p class='title-section' style='font-size: 13px; margin-left: 45px'>4.1 Informe se recebe/recebeu outra renda nas seguintes atividades: atividade turística, artística, artesanal, dirigente sindical ou de cooperativa, mandato de vereador: SIM (<input type='checkbox' {{#if specialIncomeInfo.hasIncome}}checked{{/if}} />) NÃO(<input type='checkbox' {{#unless specialIncomeInfo.hasIncome}}checked{{/unless}} />)</p>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style='width: 23%'>ATIVIDADE</th>
+                        <th style='width: 30%; font-weight: normal'><p style='font-weight: normal'><strong>PERÍODO</strong> (xx/xx/xxxx a xx/xx/xxxx)</p></th>
+                        <th style='width: 20%'>RENDA (R$)</th>
+                        <th style='width: 27%'>OUTRAS INFORMAÇÕES*</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each specialIncomeInfo.incomes}}
+                    <tr>
+                        <td>{{this.activity}}</td>
+                        <td>{{this.period}}</td>
+                        <td>{{this.incomeBrl}}</td>
+                        <td>{{this.details}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+        <div style='margin-top: 15px'>
+            <div>
+                <p class='title-section' style='font-size: 14px; margin-left: 45px'>4.2. Informe se participa de cooperativa: SIM (<input type='checkbox' {{#if cooperativeInfo.isMember}}checked{{/if}}/>) NÃO(<input type='checkbox' {{#unless cooperativeInfo.isMember}}checked{{/unless}}/>) Especificar</p>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style='width: 33%; font-size: 13px'>ENTIDADE</th>
+                        <th style='width: 33%; font-size: 13px'>CNPJ</th>
+                        <th style='width: 33%; font-size: 13px'>INFORMAR SE É AGROPECUÁRIA OU DE CREDITO RURAL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each cooperativeInfo.cooperatives}}
+                    <tr>
+                        <td>{{this.entity}}</td>
+                        <td>{{this.cnpj}}</td>
+                        <td>{{this.type}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+
+        <p style='width: 90%; font-size: 13px; text-align: center; margin: auto; margin-top: 25px;'>Declaro sob as penas previstas na legislação, que as informações prestadas nesta declaração são verdadeiras, estando ciente das penalidades do Art. 299 do Código Penal Brasileiro.</p>
+
+        <div style='margin-top: 17px'>
+            <div id='inpsfordata'>
+                <div class='boxinpsdata'><label> Local: </label><input type='text' value='{{documentLocation}}' /></div>
+                <div class='boxinpsdata'><label> Data: </label><input type='text' value='{{documentDate}}' /></div>
+            </div>
+        </div>
+        <div style='margin: auto; display: flex; justify-content: center; margin-top: 25px; flex-direction: column; align-items: center;'>
+            <input type='text' style='width: 55%; text-align: center; font-weight: bold;' value='{{name}}'/>
+            <p>Assinatura do segurado/requerente</p>
+            <div style='width: 145px; height: 135px; border: 1px solid black; margin-top: 8px;'></div>
+            <p style='font-weight: normal'>POLEGAR DIREITO</p>
+        </div>
+    </section>
+  </div>
+</body>
+</html>
+`;

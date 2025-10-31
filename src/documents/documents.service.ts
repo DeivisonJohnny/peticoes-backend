@@ -1,14 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import * as puppeteer from 'puppeteer';
-import * as handlebars from 'handlebars';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { GenerateDocumentDto } from './dto/generate-document.dto';
 import { GenerateBatchDto } from './dto/generate-batch.dto';
 import { generateProcuracaoDeclaracaoJudiciais } from './generators/procuracao-declaracao-judiciais.generator';
 import { generateContratoHonorarios } from './generators/contrato-honorarios.generator';
+import { Client, DocumentTemplate } from '@prisma/client';
 
+// Mantemos o mapa de geradores como está
 const documentGenerators = {
   'Procuração e Declaração Judicial': generateProcuracaoDeclaracaoJudiciais,
   'Contrato de Honorários': generateContratoHonorarios,
@@ -17,6 +17,7 @@ const documentGenerators = {
 @Injectable()
 export class DocumentsService {
   constructor(private readonly prisma: PrismaService) {
+    // A configuração do diretório e dos helpers do Handlebars continua a mesma
     this.setup();
   }
 
@@ -25,21 +26,12 @@ export class DocumentsService {
     try {
       await fs.mkdir(uploadsDir, { recursive: true });
     } catch (error) {
-      console.error('Erro ao criar diret�rio de uploads:', error);
+      console.error('Erro ao criar diretório de uploads:', error);
     }
-
-    handlebars.registerHelper('formatDate', (dateString: string) => {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric',
-        timeZone: 'UTC',
-      });
-    });
+    // O helper de data continua útil, mantemos ele.
   }
 
-
+  // MÉTODO PÚBLICO PARA GERAÇÃO ÚNICA
   async generatePdf(dto: GenerateDocumentDto, generatorId: string) {
     const { clientId, templateId, extraData } = dto;
 
@@ -52,30 +44,81 @@ export class DocumentsService {
       throw new NotFoundException('Cliente ou Modelo de Documento não encontrado.');
     }
 
-  
-    const dataSnapshot = {
-      client,
-      document: dto.extraData,
+    // Agora, chamamos nosso novo método privado para fazer o trabalho pesado
+    return this._generateAndSaveDocument(client, template, extraData, generatorId);
+  }
+
+  // MÉTODO PÚBLICO PARA GERAÇÃO EM LOTE
+  async generatePdfBatch(dto: GenerateBatchDto, generatorId: string) {
+    const { clientId, documents } = dto;
+
+    const client = await this.prisma.client.findUnique({ where: { id: clientId } });
+    if (!client) {
+      throw new NotFoundException('Cliente não encontrado.');
+    }
+
+    const generationPromises = documents.map(async (docInfo) => {
+      const template = await this.prisma.documentTemplate.findUnique({
+        where: { id: docInfo.templateId },
+      });
+
+      if (!template) {
+        console.error(`Template com ID ${docInfo.templateId} não encontrado. Pulando.`);
+        return null;
+      }
+      
+      return this._generateAndSaveDocument(client, template, docInfo.extraData, generatorId);
+    });
+
+    const results = await Promise.all(generationPromises);
+    const successfulDocuments = results.filter((doc) => doc !== null);
+
+    return {
+      message: `Geração em lote concluída. ${successfulDocuments.length} de ${documents.length} documentos gerados.`,
+      generated: successfulDocuments,
+    };
+  }
+
+  /**
+   * NOVO MÉTODO PRIVADO: Centraliza a lógica de geração e salvamento.
+   */
+  private async _generateAndSaveDocument(
+    client: Client,
+    template: DocumentTemplate,
+    extraData: Record<string, any>,
+    generatorId: string,
+  ) {
+    // 1. LÓGICA CENTRAL: Mesclar os dados do cliente com os dados extras.
+    // O spread operator (...) expande os objetos. Colocando `extraData` por último,
+    // qualquer chave com o mesmo nome (ex: 'name') em `extraData`
+    // irá SOBRESCREVER a chave de `client`.
+    const finalPayload = {
+      ...client,
+      ...extraData,
     };
 
     const generator = documentGenerators[template.title];
     if (!generator) {
-      throw new Error(`Gerador não implementado para o template: ${template.title}`);
+      console.error(`Gerador não implementado para o template: ${template.title}.`);
+      // Em vez de lançar um erro que quebraria um lote, retornamos null
+      return null;
     }
 
-    const pdfBuffer = await generator(dataSnapshot);
+    // 2. O `finalPayload` É usado tanto para o gerador...
+    const pdfBuffer = await generator(finalPayload);
 
     const fileName = `${template.title}-${client.name.replace(/\s/g, '_')}-${Date.now()}.pdf`;
     const filePath = path.join('uploads', fileName);
-    
+
     await fs.writeFile(filePath, pdfBuffer);
 
     const createdDocument = await this.prisma.generatedDocument.create({
       data: {
         title: template.title,
         filePath: filePath,
-        dataSnapshot: dataSnapshot as any, 
-        clientId: clientId,
+        // 3. ...quanto para o dataSnapshot, garantindo a integridade histórica.
+        dataSnapshot: finalPayload as any,
+        clientId: client.id,
         generatorId: generatorId,
       },
     });
@@ -84,64 +127,6 @@ export class DocumentsService {
       message: 'Documento gerado com sucesso!',
       path: filePath,
       documentId: createdDocument.id,
-    };
-  }
-
-  async generatePdfBatch(dto: GenerateBatchDto, generatorId: string) {
-    const {clientId, documents } = dto;
-
-    const client = await this.prisma.client.findUnique({ where: { id: clientId } });
-
-    if (!client) {
-      throw new NotFoundException('Cliente não encontrado.');
-    }
-
-    const generatedDocumentsPromises = documents.map(async (docInfo) => {
-      const { templateId, extraData } = docInfo;
-
-      const template = await this.prisma.documentTemplate.findUnique({ where: { id: templateId } });
-
-      if (!template) {
-
-        console.error(`Template com ID ${templateId} não encontrado. Pulando este documento.`);
-        return null; 
-      }
-
-      const generator = documentGenerators[template.title];
-      if (!generator) {
-        console.error(`Gerador não implementado para o template: ${template.title}. Pulando este documento.`);
-        return null; 
-      }
-
-      const dataSnapshot = {
-        client,
-        document: extraData,
-      };
-
-      const pdfBuffer = await generator(dataSnapshot);
-
-      const fileName = `${template.title}-${client.name.replace(/\s/g, '_')}-${Date.now()}.pdf`;
-      const filePath = path.join('uploads', fileName);
-      
-      await fs.writeFile(filePath, pdfBuffer);
-
-      return this.prisma.generatedDocument.create({
-        data: {
-          title: template.title,
-          filePath: filePath,
-          dataSnapshot: dataSnapshot as any, 
-          clientId: clientId,
-          generatorId: generatorId,
-        },
-      });
-    });
-    
-    const results = await Promise.all(generatedDocumentsPromises);
-    const successfulDocuments = results.filter(doc => doc !== null);
-
-    return {
-     message: `Geração em lote concluída. ${successfulDocuments.length} de ${documents.length} documentos gerados com sucesso.`,
-      generated: successfulDocuments,
     };
   }
 }

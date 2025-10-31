@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        @font-face {
+            font-family: 'Cambria';
+            src: url('../assets/Cambria-Font-For-Windows.ttf') format('truetype');
+        }
+
+        body {
+            font-family: 'Cambria', serif;
+        }
+
+        strong {
+            font-weight: 600;
+        }
+    </style>
+    <title>Procuração PPP - SE SOLICITADO</title>
+</head>
+
+<body>
+    <main style='display: flex; flex-direction: column; align-items: center'>
+        <section style='
+          width: 65%;
+          margin-top: 0px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        '>
+            <h1 style='
+            text-align: center;
+            font-size: 18px;
+            text-decoration: underline;
+          '>
+                PROCURAÇÃO
+            </h1>
+            <p style='
+            font-size: 15px;
+            text-align: justify;
+            line-height: 25px;
+            letter-spacing: 0.4px;
+            margin-top: 20px;
+            font-weight: 400;
+          '>
+                <strong>{{ client.name }}, </strong>{{ client.nationality }}, inscrito(a) no CPF/MF sob n.º {{ client.cpf }}, residente e domiciliado(a) à {{ client.address }}, por este instrumento nomeia e constitui seus bastantes procuradores e advogados:
+                <br><br>
+                <strong>CELSO DE SOUSA BRITO,</strong> brasileiro, casado, advogado, inscrito na OAB/SP Nº 240.574,
+                <strong>RENATO DE OLIVEIRA RIBEIRO,</strong> brasileiro, casado, advogado, inscrito na OAB/SP Nº 279.387,
+                <strong>ÁGATA CUNHA SANTOS FAGUNDES,</strong> brasileira, solteira, advogada, inscrita na OAB/SP Nº 394.664,
+                <strong>FLÁVIA DA SILVA BRITO</strong>, brasileira, solteira, advogada, inscrita na OAB/SP Nº 394.826 ,
+                <strong>BARBARA FERREIRA,</strong>  brasileira, solteira, estagiária, portadora da cédula de identidade sob o nº 39.648.483-9, inscrita no CPF/MF sob o nº 495.449.648-94,
+                <strong>VITTORIA TORRES CARVALHO,</strong>  brasileira, solteira, estagiária, portadora da cédula de identidade sob o nº 50.418.496-9, inscrita no CPF/MF sob o nº 123.423.386-00
+                <br><br>
+                e todos os integrantes do escritório, <strong>SOUSA BRITO & RIBEIRO SOCIEDADE DE ADVOGADOS,</strong> inscrito no CNPJ nº 16.959.653/0001-32, e na OAB/SP sob o nº 14148, com sede em Cajamar/SP, na Rua Flademir Roberto Lopes, 96, bairro Polvilho, município de Cajamar – SP – CEP: 07790-615 Fone: (011) 4448-2301,
+                <br><br>
+                <strong style=' font-weight: normal; text-decoration: underline;'>para representá-lo(a)com poderes específicos em quaisquer órgãos públicos e privados, para solicitar, acompanhar e retirar o PPP (Perfil Profissiográfico Previdenciário).</strong>
+            </p>
+
+            <p style='
+            font-size: 16px;
+            text-align: center;
+            line-height: 25px;
+            letter-spacing: 0.4px;
+            margin-top: 50px;
+          '>
+                {{ document.locationAndDate }}
+            </p>
+
+            <div style='
+              border-bottom: 1px solid black;
+              width: 270px;
+              margin-top: 35px;
+            '></div>
+            <p style="text-align: center; margin-top: 5px; font-size: 15px;">{{ client.name }}</p>
+        </section>
+    </main>
+</body>
+</html>
