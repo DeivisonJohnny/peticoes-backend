@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
+import * as handlebars from 'handlebars';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -33,6 +34,19 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
+
+  handlebars.registerHelper('formatDate', (dateString: string | Date) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    date.setUTCDate(date.getUTCDate() + 1);
+
+    return date.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'UTC',
+    });
+  });
 
   await app.listen(process.env.PORT ?? 3000);
 }
