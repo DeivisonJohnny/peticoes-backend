@@ -6,12 +6,18 @@ import { GenerateDocumentDto } from './dto/generate-document.dto';
 import { GenerateBatchDto } from './dto/generate-batch.dto';
 import { generateProcuracaoDeclaracaoJudiciais } from './generators/procuracao-declaracao-judiciais.generator';
 import { generateContratoHonorarios } from './generators/contrato-honorarios.generator';
+import { generateAutodeclaracaoRural } from './generators/autodeclaracao-rural.generator';
+import { generateProcuracaoPp } from './generators/procuracao-pp.generator';
+import { generateLoasDeficiencia } from './generators/loas-deficiencia.generator';
 import { Client, DocumentTemplate } from '@prisma/client';
 
-// Mantemos o mapa de geradores como está
+// Mapa de geradores - deve corresponder exatamente aos títulos no banco
 const documentGenerators = {
   'Procuração e Declaração Judicial': generateProcuracaoDeclaracaoJudiciais,
   'Contrato de Honorários': generateContratoHonorarios,
+  'Autodeclaração Rural': generateAutodeclaracaoRural,
+  'Procuração Pessoa Física': generateProcuracaoPp,
+  'LOAS - Benefício para Deficiente': generateLoasDeficiencia,
 };
 
 @Injectable()
@@ -28,7 +34,23 @@ export class DocumentsService {
     } catch (error) {
       console.error('Erro ao criar diretório de uploads:', error);
     }
-    // O helper de data continua útil, mantemos ele.
+    
+    // Registra helpers do Handlebars para garantir compatibilidade
+    const handlebars = require('handlebars');
+    
+    // Helper para formatação de datas
+    handlebars.registerHelper('formatDate', (dateString: string | Date) => {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      date.setUTCDate(date.getUTCDate() + 1);
+
+      return date.toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+        timeZone: 'UTC',
+      });
+    });
   }
 
   // MÉTODO PÚBLICO PARA GERAÇÃO ÚNICA
@@ -88,13 +110,25 @@ export class DocumentsService {
     extraData: Record<string, any>,
     generatorId: string,
   ) {
-    // 1. LÓGICA CENTRAL: Mesclar os dados do cliente com os dados extras.
-    // O spread operator (...) expande os objetos. Colocando `extraData` por último,
-    // qualquer chave com o mesmo nome (ex: 'name') em `extraData`
-    // irá SOBRESCREVER a chave de `client`.
+    // 1. LÓGICA CENTRAL: Organizar os dados na estrutura esperada pelos templates
+    // Os templates esperam: client.* e document.*
     const finalPayload = {
-      ...client,
-      ...extraData,
+      client: {
+        ...client,
+        // Sobrescreve campos do cliente com dados extras se fornecidos
+        ...(extraData.client || {}),
+      },
+      document: {
+        // Dados padrão do documento
+        documentLocation: 'São Paulo/SP',
+        documentDate: new Date(),
+        // Sobrescreve com dados extras se fornecidos
+        ...(extraData.document || {}),
+      },
+      // Inclui outros dados extras no nível raiz
+      ...Object.fromEntries(
+        Object.entries(extraData).filter(([key]) => !['client', 'document'].includes(key))
+      ),
     };
 
     const generator = documentGenerators[template.title];
@@ -116,7 +150,7 @@ export class DocumentsService {
       data: {
         title: template.title,
         filePath: filePath,
-        // 3. ...quanto para o dataSnapshot, garantindo a integridade histórica.
+        // 3. Salva o payload completo estruturado para o dataSnapshot
         dataSnapshot: finalPayload as any,
         clientId: client.id,
         generatorId: generatorId,

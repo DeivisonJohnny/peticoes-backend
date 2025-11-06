@@ -9,16 +9,23 @@ const templatesToSeed = [
     title: 'Procuração e Declaração Judicial',
     folderName: 'procuracao-declaracao-judiciais',
   },
-
   {
     title: 'Contrato de Honorários',
     folderName: 'contrato-honorarios',    
-  }
- // {
- //   title: 'Contrato de Honorários',
- //   folderName: 'contrato-honorarios',
- // },
-  // ... ADICIONAR OS DEMAIS TEMPLATES AQUI
+  },
+  {
+    title: 'Autodeclaração Rural',
+    folderName: 'autodeclaracao-rural',
+  },  
+  {
+    title: 'Procuração Pessoa Física',
+    folderName: 'procuracao-pp',
+  },
+  {
+    title: 'LOAS - Benefício para Deficiente',
+    folderName: 'loas-deficiencia',
+  },
+  // ... ADICIONAR MAIS TEMPLATES AQUI CONFORME NECESSÁRIO
 ];
 
 async function main() {

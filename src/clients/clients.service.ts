@@ -65,14 +65,17 @@ export class ClientsService {
 
     where.isActive = true;
 
+    // Define ordenação: se há filtros, ordena por nome; senão, por data de criação (mais recentes primeiro)
+    const hasFilters = name || cpfCnpj || email;
+    
     const [clients, total] = await Promise.all([
       this.prisma.client.findMany({
         where,
         skip,
         take: limit,
-        orderBy: {
-          name: 'asc',
-        },
+        orderBy: hasFilters 
+          ? { name: 'asc' }           // Com filtros: ordem alfabética
+          : { createdAt: 'desc' },    // Sem filtros: mais recentes primeiro
       }),
       this.prisma.client.count({ where }),
     ]);

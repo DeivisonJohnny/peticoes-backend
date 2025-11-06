@@ -1,0 +1,54 @@
+{
+  "type": "object",
+  "title": "Schema para Autodeclaração Rural",
+  "description": "Campos necessários para gerar autodeclaração de atividade rural",
+  "properties": {
+    "brasaoOficialBase64": {
+      "type": "string",
+      "description": "Brasão oficial em base64"
+    },
+    "name": { "type": "string", "description": "Nome completo" },
+    "nickname": { "type": "string", "description": "Apelido" },
+    "dateOfBirth": { "type": "string", "description": "Data de nascimento" },
+    "birthPlace": { "type": "string", "description": "Local de nascimento" },
+    "address": { "type": "string", "description": "Endereço residencial" },
+    "city": { "type": "string", "description": "Município" },
+    "state": { "type": "string", "description": "UF (estado)" },
+    "cpf": { "type": "string", "description": "CPF formatado" },
+    "rg": { "type": "string", "description": "RG" },
+    "rgIssuer": { "type": "string", "description": "Data/local de expedição do RG" },
+    "ruralActivityPeriods": {
+      "type": "array",
+      "description": "Períodos de atividade rural",
+      "items": {
+        "type": "object",
+        "properties": {
+          "period": { "type": "string", "description": "Período (ex: 1980-1990)" },
+          "propertyCondition": { "type": "string", "description": "Condição da propriedade" },
+          "isIndividual": { "type": "boolean", "description": "Atividade individual" },
+          "isFamilyEconomy": { "type": "boolean", "description": "Regime de economia familiar" }
+        },
+        "required": ["period", "propertyCondition"]
+      }
+    },
+    "familyEconomy": {
+      "type": "object",
+      "description": "Dados da economia familiar",
+      "properties": {
+        "isHolder": { "type": "boolean", "description": "É titular" },
+        "isComponent": { "type": "boolean", "description": "É componente" }
+      }
+    }
+  },
+  "required": [
+    "name", 
+    "dateOfBirth", 
+    "birthPlace", 
+    "address", 
+    "city", 
+    "state", 
+    "cpf", 
+    "rg", 
+    "ruralActivityPeriods"
+  ]
+}

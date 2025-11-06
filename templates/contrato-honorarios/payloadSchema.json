@@ -1,0 +1,36 @@
+{
+  "type": "object",
+  "title": "Schema para Contrato de Honorários",
+  "description": "Campos necessários para gerar contrato de honorários advocatícios",
+  "properties": {
+    "client": {
+      "type": "object",
+      "description": "Dados do cliente/contratante",
+      "properties": {
+        "name": { "type": "string", "description": "Nome completo" },
+        "nationality": { "type": "string", "description": "Nacionalidade (ex: brasileiro, brasileira)" },
+        "cpf": { "type": "string", "description": "CPF formatado" },
+        "address": { "type": "string", "description": "Endereço completo" }
+      },
+      "required": ["name", "nationality", "cpf", "address"]
+    },
+    "document": {
+      "type": "object",
+      "description": "Dados do documento",
+      "properties": {
+        "documentLocation": { 
+          "type": "string", 
+          "description": "Local de assinatura (ex: São Paulo/SP)",
+          "default": "São Paulo/SP"
+        },
+        "documentDate": { 
+          "type": "string", 
+          "format": "date", 
+          "description": "Data de assinatura do contrato" 
+        }
+      },
+      "required": ["documentLocation", "documentDate"]
+    }
+  },
+  "required": ["client", "document"]
+}

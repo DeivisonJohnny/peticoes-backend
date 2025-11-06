@@ -1,0 +1,75 @@
+{
+  "type": "object",
+  "title": "Schema para LOAS - Benefício Assistencial",
+  "description": "Campos necessários para gerar petição de LOAS para deficiente",
+  "properties": {
+    "client": {
+      "type": "object",
+      "description": "Dados do cliente/requerente",
+      "properties": {
+        "name": { "type": "string", "description": "Nome completo" },
+        "nationality": { "type": "string", "description": "Nacionalidade (ex: brasileira)" },
+        "cpf": { "type": "string", "description": "CPF formatado" },
+        "dateOfBirth": { "type": "string", "format": "date", "description": "Data de nascimento" },
+        "address": { "type": "string", "description": "Endereço completo" },
+        "cep": { "type": "string", "description": "CEP" },
+        "phone": { "type": "string", "description": "Telefone de contato" }
+      },
+      "required": ["name", "nationality", "cpf", "dateOfBirth", "address", "cep", "phone"]
+    },
+    "document": {
+      "type": "object",
+      "description": "Dados específicos do documento/processo",
+      "properties": {
+        "juizado": { 
+          "type": "string", 
+          "description": "Nome do juizado (ex: JUIZADO ESPECIAL FEDERAL DE OSASCO /SP)",
+          "default": "JUIZADO ESPECIAL FEDERAL DE OSASCO /SP"
+        },
+        "valorCausa": { 
+          "type": "string", 
+          "description": "Valor da causa formatado (ex: R$ 32.409,96)" 
+        },
+        "valorCausaExtenso": { 
+          "type": "string", 
+          "description": "Valor da causa por extenso" 
+        },
+        "especialidadePericia": { 
+          "type": "string", 
+          "description": "Especialidade médica para perícia (ex: PSIQUIATRIA)",
+          "default": "PSIQUIATRIA"
+        },
+        "condicaoMedica": { 
+          "type": "string", 
+          "description": "Descrição da condição médica/deficiência" 
+        },
+        "composicaoFamiliar": { 
+          "type": "string", 
+          "description": "Descrição da composição e renda familiar" 
+        },
+        "dataIndeferimento": { 
+          "type": "string", 
+          "format": "date", 
+          "description": "Data do indeferimento administrativo" 
+        },
+        "numeroBeneficio": { 
+          "type": "string", 
+          "description": "Número do benefício no INSS" 
+        },
+        "mapaUrl": { 
+          "type": "string", 
+          "description": "URL ou base64 da imagem do mapa (opcional)" 
+        }
+      },
+      "required": [
+        "valorCausa", 
+        "valorCausaExtenso", 
+        "condicaoMedica", 
+        "composicaoFamiliar", 
+        "dataIndeferimento", 
+        "numeroBeneficio"
+      ]
+    }
+  },
+  "required": ["client", "document"]
+}
