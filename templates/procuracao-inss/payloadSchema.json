@@ -1,0 +1,78 @@
+{
+  "type": "object",
+  "title": "Schema para Procuração INSS",
+  "description": "Campos necessários para gerar procuração oficial do INSS (ANEXO XXII - Instrução Normativa PRES/INSS Nº 128/2022)",
+  "properties": {
+    "grantor": {
+      "type": "object",
+      "description": "Dados do outorgante (segurado/dependente)",
+      "properties": {
+        "name": { "type": "string", "description": "Nome completo do outorgante" },
+        "nationality": { "type": "string", "description": "Nacionalidade (ex: brasileira, brasileiro)" },
+        "maritalStatus": { "type": "string", "description": "Estado civil (ex: solteiro, casado, divorciado, viúvo)" },
+        "rg": { "type": "string", "description": "Número da identidade (RG)" },
+        "cpf": { "type": "string", "description": "CPF formatado" },
+        "occupation": { "type": "string", "description": "Profissão" },
+        "street": { "type": "string", "description": "Logradouro (rua, avenida)" },
+        "number": { "type": "string", "description": "Número do endereço" },
+        "complement": { "type": "string", "description": "Complemento do endereço (opcional)" },
+        "neighborhood": { "type": "string", "description": "Bairro" },
+        "cityState": { "type": "string", "description": "Cidade/Estado (ex: São Paulo/SP)" },
+        "zipCode": { "type": "string", "description": "CEP formatado" }
+      },
+      "required": ["name", "nationality", "maritalStatus", "rg", "cpf", "occupation", "street", "number", "neighborhood", "cityState", "zipCode"]
+    },
+    "attorney": {
+      "type": "object",
+      "description": "Dados do outorgado (procurador)",
+      "properties": {
+        "name": { "type": "string", "description": "Nome completo do procurador" },
+        "nationality": { "type": "string", "description": "Nacionalidade (ex: brasileira, brasileiro)" },
+        "maritalStatus": { "type": "string", "description": "Estado civil" },
+        "rg": { "type": "string", "description": "Número da identidade (RG)" },
+        "cpf": { "type": "string", "description": "CPF formatado" },
+        "occupation": { "type": "string", "description": "Profissão" },
+        "street": { "type": "string", "description": "Logradouro" },
+        "number": { "type": "string", "description": "Número do endereço" },
+        "complement": { "type": "string", "description": "Complemento (opcional)" },
+        "neighborhood": { "type": "string", "description": "Bairro" },
+        "cityState": { "type": "string", "description": "Cidade/Estado" },
+        "zipCode": { "type": "string", "description": "CEP formatado" }
+      },
+      "required": ["name", "nationality", "maritalStatus", "rg", "cpf", "occupation", "street", "number", "neighborhood", "cityState", "zipCode"]
+    },
+    "powers": {
+      "type": "object",
+      "description": "Poderes conferidos ao procurador",
+      "properties": {
+        "passwordRegistration": { "type": "boolean", "description": "Cadastro de senha para informações previdenciárias" },
+        "proofOfLife": { "type": "boolean", "description": "Comprovação de vida junto à rede bancária" },
+        "receivePayments": { "type": "boolean", "description": "Receber mensalidades e quantias atrasadas" },
+        "reasonInability": { "type": "boolean", "description": "Motivo: incapacidade de locomoção ou moléstia contagiosa" },
+        "reasonDomesticTravel": { "type": "boolean", "description": "Motivo: viagem dentro do país" },
+        "domesticTravelPeriod": { "type": "string", "description": "Período da viagem doméstica (ex: 30 dias)" },
+        "reasonInternationalTravel": { "type": "boolean", "description": "Motivo: viagem ao exterior" },
+        "internationalTravelPeriod": { "type": "string", "description": "Período da viagem internacional" },
+        "reasonLivingAbroad": { "type": "boolean", "description": "Motivo: residência no exterior" },
+        "countryOfResidence": { "type": "string", "description": "País de residência no exterior" },
+        "requestBenefits": { "type": "boolean", "description": "Requerer benefícios, revisão e interpor recursos" },
+        "otherRequest": { "type": "boolean", "description": "Outro tipo de requerimento" },
+        "otherRequestDescription": { "type": "string", "description": "Descrição do outro requerimento" }
+      },
+      "required": []
+    },
+    "document": {
+      "type": "object",
+      "description": "Dados do documento",
+      "properties": {
+        "location": { "type": "string", "description": "Local de assinatura (ex: São Paulo)" },
+        "day": { "type": "string", "description": "Dia (ex: 11)" },
+        "month": { "type": "string", "description": "Mês (ex: 11)" },
+        "year": { "type": "string", "description": "Ano (ex: 2025)" }
+      },
+      "required": ["location", "day", "month", "year"]
+    }
+  },
+  "required": ["grantor", "attorney", "powers", "document"]
+}
+

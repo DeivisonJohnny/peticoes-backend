@@ -1,0 +1,109 @@
+{
+  "type": "object",
+  "title": "Schema para Declaração de Não Recebimento de Pensão/Aposentadoria",
+  "description": "Campos necessários para gerar declaração de não recebimento de pensão ou aposentadoria em outro regime de previdência",
+  "properties": {
+    "client": {
+      "type": "object",
+      "description": "Dados do cliente/requerente",
+      "properties": {
+        "name": { 
+          "type": "string", 
+          "description": "Nome completo do requerente" 
+        },
+        "cpf": { 
+          "type": "string", 
+          "description": "CPF formatado (ex: 123.456.789-00)" 
+        },
+        "rg": { 
+          "type": "string", 
+          "description": "RG do requerente" 
+        }
+      },
+      "required": ["name", "cpf", "rg"]
+    },
+    "benefit": {
+      "type": "object",
+      "description": "Informações sobre recebimento de benefício em outro regime",
+      "properties": {
+        "receives": { 
+          "type": "boolean", 
+          "description": "Se recebe aposentadoria/pensão de outro regime (true/false)" 
+        },
+        "type": { 
+          "type": "string", 
+          "enum": ["pensao", "aposentadoria"],
+          "description": "Tipo do benefício (obrigatório se receives = true)" 
+        },
+        "isSpouseRelation": { 
+          "type": "boolean", 
+          "description": "Se a relação com instituidor era como cônjuge/companheiro(a) - apenas para tipo 'pensao'" 
+        },
+        "origin": { 
+          "type": "string", 
+          "enum": ["estadual", "municipal", "federal"],
+          "description": "Ente de origem do benefício (obrigatório se receives = true)" 
+        },
+        "serverType": { 
+          "type": "string", 
+          "enum": ["civil", "militar"],
+          "description": "Tipo de servidor (obrigatório se receives = true)" 
+        },
+        "startDay": { 
+          "type": "string", 
+          "description": "Dia de início do benefício (ex: 15)" 
+        },
+        "startMonth": { 
+          "type": "string", 
+          "description": "Mês de início do benefício (ex: 03)" 
+        },
+        "startYear": { 
+          "type": "string", 
+          "description": "Ano de início do benefício (ex: 2020)" 
+        },
+        "organizationName": { 
+          "type": "string", 
+          "description": "Nome do órgão da pensão/aposentadoria" 
+        },
+        "lastGrossSalary": { 
+          "type": "string", 
+          "description": "Última remuneração bruta formatada (ex: 5.000,00)" 
+        },
+        "salaryMonth": { 
+          "type": "string", 
+          "description": "Mês da última remuneração (ex: 10)" 
+        },
+        "salaryYear": { 
+          "type": "string", 
+          "description": "Ano da última remuneração (ex: 2025)" 
+        }
+      },
+      "required": ["receives"]
+    },
+    "document": {
+      "type": "object",
+      "description": "Dados do documento",
+      "properties": {
+        "location": { 
+          "type": "string", 
+          "description": "Local de assinatura (ex: São Paulo)" 
+        },
+        "day": { 
+          "type": "string", 
+          "description": "Dia da assinatura (ex: 11)" 
+        },
+        "month": { 
+          "type": "string", 
+          "description": "Mês da assinatura (ex: 11)" 
+        },
+        "year": { 
+          "type": "string", 
+          "description": "Ano da assinatura (ex: 2025)" 
+        }
+      },
+      "required": ["location", "day", "month", "year"]
+    }
+  },
+  "required": ["client", "benefit", "document"]
+}
+

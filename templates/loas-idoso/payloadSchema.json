@@ -1,0 +1,106 @@
+{
+  "type": "object",
+  "title": "Schema para LOAS - Idoso",
+  "description": "Campos necessários para gerar ação de concessão de benefício assistencial ao idoso",
+  "properties": {
+    "client": {
+      "type": "object",
+      "description": "Dados do cliente/requerente",
+      "properties": {
+        "name": { 
+          "type": "string", 
+          "description": "Nome completo do requerente" 
+        },
+        "nationality": { 
+          "type": "string", 
+          "description": "Nacionalidade (ex: brasileira, brasileiro)" 
+        },
+        "birthDate": { 
+          "type": "string", 
+          "description": "Data de nascimento formatada (ex: 13/03/1959)" 
+        },
+        "age": { 
+          "type": "string", 
+          "description": "Idade atual em anos (ex: 65)" 
+        },
+        "motherName": { 
+          "type": "string", 
+          "description": "Nome da mãe do requerente" 
+        },
+        "rg": { 
+          "type": "string", 
+          "description": "RG do requerente (ex: 34.326.636-2)" 
+        },
+        "cpf": { 
+          "type": "string", 
+          "description": "CPF formatado (ex: 440.345.778-94)" 
+        },
+        "address": { 
+          "type": "string", 
+          "description": "Endereço completo (Rua, número, complemento, bairro, cidade/estado)" 
+        },
+        "cep": { 
+          "type": "string", 
+          "description": "CEP formatado (ex: 13221-371)" 
+        },
+        "phone": { 
+          "type": "string", 
+          "description": "Telefone de contato (ex: (11) 95146-0289)" 
+        }
+      },
+      "required": ["name", "nationality", "birthDate", "age", "motherName", "rg", "cpf", "address", "cep", "phone"]
+    },
+    "document": {
+      "type": "object",
+      "description": "Dados do documento/petição",
+      "properties": {
+        "juizado": { 
+          "type": "string", 
+          "description": "Nome do Juizado (ex: JUIZADO ESPECIAL FEDERAL DE JUNDIAÍ/SP)" 
+        },
+        "valorCausa": { 
+          "type": "string", 
+          "description": "Valor da causa formatado (ex: R$ 20.727,14)" 
+        },
+        "valorCausaExtenso": { 
+          "type": "string", 
+          "description": "Valor da causa por extenso" 
+        },
+        "valorCausaFiscal": { 
+          "type": "string", 
+          "description": "Valor da causa para efeitos fiscais formatado (ex: R$ 15.840,00)" 
+        },
+        "valorCausaFiscalExtenso": { 
+          "type": "string", 
+          "description": "Valor da causa fiscal por extenso" 
+        },
+        "mapaUrl": { 
+          "type": "string", 
+          "description": "URL da imagem do mapa em base64 (opcional - ex: data:image/jpeg;base64,...)" 
+        }
+      },
+      "required": ["juizado", "valorCausa", "valorCausaExtenso", "valorCausaFiscal", "valorCausaFiscalExtenso"]
+    },
+    "benefit": {
+      "type": "object",
+      "description": "Informações sobre o benefício assistencial",
+      "properties": {
+        "number": { 
+          "type": "string", 
+          "description": "Número do benefício (ex: 715.070.346-2)" 
+        },
+        "cessationDate": { 
+          "type": "string", 
+          "description": "Data de cessação/indeferimento formatada (ex: 17/05/2024)" 
+        },
+        "livingArrangement": { 
+          "type": "string", 
+          "description": "Arranjo de moradia (ex: reside sozinha, reside com familiares)" 
+        }
+      },
+      "required": ["number", "cessationDate", "livingArrangement"]
+    }
+  },
+  "required": ["client", "document", "benefit"]
+}
+

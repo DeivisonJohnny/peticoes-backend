@@ -116,6 +116,240 @@
 }
 ```
 
+### 6. **Declaração de Não Recebimento**
+
+**Exemplo A: NÃO recebe benefício**
+```json
+{
+  "clientId": "cliente_123",
+  "templateId": "template_declaracao_nao_recebimento",
+  "extraData": {
+    "client": {
+      "name": "José da Silva Santos",
+      "cpf": "123.456.789-00",
+      "rg": "12.345.678-9"
+    },
+    "benefit": {
+      "receives": false
+    },
+    "document": {
+      "location": "São Paulo",
+      "day": "11",
+      "month": "11",
+      "year": "2025"
+    }
+  }
+}
+```
+
+**Exemplo B: RECEBE pensão**
+```json
+{
+  "clientId": "cliente_123",
+  "templateId": "template_declaracao_nao_recebimento",
+  "extraData": {
+    "client": {
+      "name": "Maria Aparecida dos Santos",
+      "cpf": "987.654.321-00",
+      "rg": "98.765.432-1"
+    },
+    "benefit": {
+      "receives": true,
+      "type": "pensao",
+      "isSpouseRelation": true,
+      "origin": "federal",
+      "serverType": "civil",
+      "startDay": "15",
+      "startMonth": "03",
+      "startYear": "2020",
+      "organizationName": "Ministério da Fazenda",
+      "lastGrossSalary": "8.500,00",
+      "salaryMonth": "10",
+      "salaryYear": "2025"
+    },
+    "document": {
+      "location": "Brasília",
+      "day": "11",
+      "month": "11",
+      "year": "2025"
+    }
+  }
+}
+```
+
+**Exemplo C: RECEBE aposentadoria**
+```json
+{
+  "clientId": "cliente_123",
+  "templateId": "template_declaracao_nao_recebimento",
+  "extraData": {
+    "client": {
+      "name": "João Carlos Pereira",
+      "cpf": "456.789.123-00",
+      "rg": "45.678.912-3"
+    },
+    "benefit": {
+      "receives": true,
+      "type": "aposentadoria",
+      "origin": "estadual",
+      "serverType": "militar",
+      "startDay": "01",
+      "startMonth": "06",
+      "startYear": "2018",
+      "organizationName": "Polícia Militar de São Paulo",
+      "lastGrossSalary": "12.000,00",
+      "salaryMonth": "09",
+      "salaryYear": "2025"
+    },
+    "document": {
+      "location": "São Paulo",
+      "day": "11",
+      "month": "11",
+      "year": "2025"
+    }
+  }
+}
+```
+
+### 7. **LOAS - Auxílio-Doença**
+
+```json
+{
+  "clientId": "cliente_123",
+  "templateId": "template_loas_auxilio_doenca",
+  "extraData": {
+    "client": {
+      "name": "MARIA LUCIENE DOS SANTOS OLIVEIRA",
+      "nationality": "brasileira",
+      "rg": "28.858.220-2",
+      "cpf": "179.536.658-32",
+      "address": "Rua da Olaria Nº 55 Calcário - Caieiras - SP",
+      "cep": "07722-105"
+    },
+    "document": {
+      "juizado": "JUIZADO ESPECIAL FEDERAL DE OSASCO/SP",
+      "valorCausa": "R$ 132.911,99",
+      "valorCausaExtenso": "cento e trinta e dois mil, novecentos e onze reais e noventa e nove centavos",
+      "especialidadePericia": "ORTOPEDIA"
+    },
+    "benefit": {
+      "requested": "Auxílio por incapacidade temporária ou Aposentadoria por incapacidade permanente",
+      "number": "719.474.755-4",
+      "der": "13/02/2025",
+      "denialReason": "Não constatação de incapacidade laborativa em 13/02/2025",
+      "denialDate": "07/05/2025"
+    },
+    "disease": {
+      "name": "TRANSTORNOS DE DISCOS INTERVERTEBRAIS E SACROILEÍTE",
+      "limitations": "Dor constante a movimentos mínimos.",
+      "symptoms": "Dor lombar e sacrococcígea de difícil tratamento.",
+      "inconsistencies": "O perito da Autarquia NÃO RECONHECE A INCAPACIDADE da Segurado, todavia, tal conclusão é divergente dos documentos médicos apresentados que indicavam a existência de incapacidade laborativa."
+    },
+    "occupation": {
+      "title": "Diarista",
+      "description": "Permanecer por longos períodos na posição em pé, realização de movimentos repetitivos.",
+      "conditions": "A jornada é realizada na posição em pé com realização de movimentos repetitivos e excesso de esforço físico."
+    }
+  }
+}
+```
+
+### 8. **LOAS - Idoso**
+
+```json
+{
+  "clientId": "cliente_123",
+  "templateId": "template_loas_idoso",
+  "extraData": {
+    "client": {
+      "name": "JOSEFA DA CONCEIÇÃO SILVA DO NASCIMENTO",
+      "nationality": "brasileira",
+      "birthDate": "13/03/1959",
+      "age": "65",
+      "motherName": "Ana Izabel da Silva",
+      "rg": "34.326.636-2",
+      "cpf": "440.345.778-94",
+      "address": "Rua Orindiuva, n.º 147, Casa 01, Jardim América, Várzea Paulista/SP",
+      "cep": "13221-371",
+      "phone": "(11) 95146-0289"
+    },
+    "document": {
+      "juizado": "JUIZADO ESPECIAL FEDERAL DE JUNDIAÍ/SP",
+      "valorCausa": "R$ 20.727,14",
+      "valorCausaExtenso": "vinte mil, setecentos e vinte e sete reais e quatorze centavos",
+      "valorCausaFiscal": "R$ 15.840,00",
+      "valorCausaFiscalExtenso": "quinze mil, oitocentos e quarenta reais",
+      "mapaUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQ..."
+    },
+    "benefit": {
+      "number": "715.070.346-2",
+      "cessationDate": "17/05/2024",
+      "livingArrangement": "reside sozinha"
+    }
+  }
+}
+```
+
+### 9. **Procuração INSS**
+
+```json
+{
+  "clientId": "cliente_123",
+  "templateId": "template_procuracao_inss",
+  "extraData": {
+    "grantor": {
+      "name": "Maria da Silva Santos",
+      "nationality": "brasileira",
+      "maritalStatus": "casada",
+      "rg": "12.345.678-9",
+      "cpf": "123.456.789-00",
+      "occupation": "Aposentada",
+      "street": "Rua das Flores",
+      "number": "123",
+      "complement": "Apto 45",
+      "neighborhood": "Centro",
+      "cityState": "São Paulo/SP",
+      "zipCode": "01234-567"
+    },
+    "attorney": {
+      "name": "João Carlos Pereira",
+      "nationality": "brasileiro",
+      "maritalStatus": "solteiro",
+      "rg": "98.765.432-1",
+      "cpf": "987.654.321-00",
+      "occupation": "Advogado",
+      "street": "Avenida Paulista",
+      "number": "1000",
+      "complement": "Sala 200",
+      "neighborhood": "Bela Vista",
+      "cityState": "São Paulo/SP",
+      "zipCode": "01310-100"
+    },
+    "powers": {
+      "passwordRegistration": true,
+      "proofOfLife": true,
+      "receivePayments": true,
+      "reasonInability": false,
+      "reasonDomesticTravel": false,
+      "domesticTravelPeriod": "",
+      "reasonInternationalTravel": true,
+      "internationalTravelPeriod": "6 meses",
+      "reasonLivingAbroad": false,
+      "countryOfResidence": "",
+      "requestBenefits": true,
+      "otherRequest": false,
+      "otherRequestDescription": ""
+    },
+    "document": {
+      "location": "São Paulo",
+      "day": "15",
+      "month": "11",
+      "year": "2025"
+    }
+  }
+}
+```
+
 ---
 
 ## 🏗️ **Como a estrutura funciona:**

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Ação Previdenciária</title>
+    <style>
+      
+        body {
+            font-family: Arial, Times, serif;
+            font-size: 13pt;
+            line-height: 1.6;
+            color: #000;
+            background-color: #fff;
+        }
+
+        /* Container principal com margens de página A4 */
+        .container {
+            width: 17cm; /* Largura de conteúdo (A4 = 21cm - margens) */
+            margin: 2cm auto; /* Margens de página */
+        }
+        
+        /* Logo no topo (visto em image_a1dc76) */
+        .logo {
+            text-align: right;
+            font-size: 9pt;
+            color: #aaa; /* Cor esmaecida */
+            margin-bottom: 20px;
+            height: 15px; /* Apenas para espaço */
+        }
+        
+        /* Endereçamento (Exmo. Sr. Dr...) */
+        .enderecamento {
+            text-align: left;
+            text-indent: 0;
+            font-weight: bolder;
+            font-size: 13pt;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+
+        /* Parágrafo padrão com indentação */
+        p {
+            text-align: justify;
+            margin: 16px 0;
+            /* Indentação padrão para petições */
+            /* text-indent: 4em;  */
+        }
+
+        /* Parágrafo de qualificação (com recuo de bloco) */
+        .qualificacao {
+            text-indent: 0;
+       
+             /* Recuo do bloco inteiro */
+            text-align: justify;
+            margin-bottom: 25px;
+        }
+
+        /* Caixa de título (visto em image_a1df45) */
+        .header-box {
+            border: 1px solid #000;
+            padding: 8px 12px;
+            text-align: center;
+            font-weight: bold;
+            margin: 25px auto;
+            width: 100%;
+            font-size: 11pt;
+        }
+
+        /* Cabeçalho de seção (cinza, visto em a1df45, a1dfdb, a1e382) */
+        .section-heading {
+            background-color: #f2f2f2;
+            text-align: center;
+            font-weight: bold;
+            padding: 6px;
+            margin: 30px 0 25px 0;
+            font-size: 15pt;
+            text-transform: uppercase;
+        }
+        
+        /* Tabela de informações (visto em a1dfdb, a1dffe, a1e03b) */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #000;
+            /* Margem para separar as tabelas */
+            margin: 20px 0; 
+            font-size: 11pt; /* Texto de tabela é ligeiramente menor */
+            background-color: #F2F2F2;
+        }
+        
+        .info-table td {
+            border: 1px solid #000;
+            padding: 5px 8px;
+            vertical-align: top;
+            line-height: 1.5;
+        }
+        
+        /* Célula de rótulo da tabela */
+        .info-table td:first-child {
+            width: 30%;
+            font-weight: bold;
+        }
+
+        /* Rodapé com endereço (visto em várias imagens) */
+        .footer-text {
+            text-align: center;
+            font-size: 10pt;
+            color: #777;
+            padding-top: 5px;
+            line-height: 1.4;
+        }
+        
+        /* Linha horizontal acima do rodapé */
+        .footer-line {
+            border: 0;
+            border-top: 1px solid #000;
+            margin-top: 30px;
+        }
+
+        /* --- NOVOS ESTILOS (DA PARTE 3) --- */
+
+        /* Itens de lista (a, b, c) */
+        .list-item-alpha {
+            /* text-indent: 4em; */
+            padding-left: 2em; /* Alinha o 'a.' 'b.' */
+            text-align: justify;
+        }
+        
+        /* Itens de pedido (recuados) */
+        .request-item {
+            text-indent: 0;
+            /* padding-left: 4em; */
+            text-align: justify;
+        }
+        
+        /* Título de seção centrado (QUESITOS) */
+        .section-title-center {
+            text-align: center;
+            font-weight: bold;
+            text-decoration: underline;
+            margin: 30px 0 20px 0;
+            font-size: 11pt;
+            text-transform: uppercase;
+            text-indent: 0;
+        }
+        
+        /* Item de quesito (sem indentação) */
+        .quesito {
+            text-indent: 0;
+            text-align: justify;
+        }
+
+        /* Texto de fechamento centrado */
+        .centered-text {
+            text-align: center;
+            text-indent: 0;
+            margin: 5px 0;
+        }
+        
+        /* Logo do rodapé final */
+        .closing-logo {
+            text-align: right;
+            font-size: 10pt;
+            color: #aaa;
+            margin: 30px 0 30px 0;
+            font-family: Arial, sans-serif;
+            letter-spacing: 0.5px;
+        }
+
+        /* Bloco de assinatura */
+        .signature-block {
+            text-align: right;
+            text-indent: 0;
+            margin-top: 40px;
+            line-height: 1.6;
+            font-size: 11pt; /* Ligeiramente menor */
+        }
+
+        /* Classes utilitárias */
+        .bold { font-weight: bold; }
+        .underline { text-decoration: underline; }
+        .no-indent { text-indent: 0; }
+        .text-left { text-align: left; }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <p class="enderecamento">
+            EXCELENTÍSSIMO SENHOR DOUTOR JUIZ FEDERAL DO {{ document.juizado }}.
+        </p>
+
+        <p class="qualificacao">
+            <span class="bold">{{ client.name }}</span>, {{ client.nationality }}, portadora do RG: <span class="bold">{{ client.rg }}</span> inscrita no CPF nº<span class="bold">{{ client.cpf }}</span>, residente e domiciliada à {{ client.address }} CEP <span class="bold">{{ client.cep }}</span>, por seus advogados, <em>in fine</em> assinados, vem respeitosamente na presença de Vossa Excelência, propor
+        </p>
+
+        <div class="header-box">
+            AÇÃO PREVIDENCIÁRIA DE CONCESSÃO DE BENEFÍCIO<br>
+            POR INCAPACIDADE
+        </div>
+        
+        <p class="qualificacao" style="margin-top: 25px;">
+            em face do <span class="bold underline">INSTITUTO NACIONAL DO SEGURO SOCIAL – INSS</span>, Pessoa Jurídica de Direito Público, pelas razões de fato e de direito que doravante passa a expor e requerer:
+        </p>
+
+        <div class="section-heading">PRELIMINARMENTE</div>
+
+        <div class="section-heading" style="background-color: #f2f2f2;">
+            DO VALOR DA CAUSA E REQUISITOS ART.<br> 129-A NA LEI 8.213/91
+        </div>
+
+        <p>
+            Considerando as inovações introduzidas por meio da Lei nº 14.331/2022, em especial a redação do artigo 3º (alterando a redação dos artigos 129-A da Lei nº 8.213/91), a parte autora, inicialmente, apresenta as considerações a seguir:
+        </p>
+        
+        <table class="info-table">
+            <tbody>
+                <tr>
+                    <td colspan="2" class="bold">a. Informações sobre o benefício</td>
+                </tr>
+                <tr>
+                    <td>Benefício requerido</td>
+                    <td>{{ benefit.requested }}</td>
+                </tr>
+                <tr>
+                    <td>Nº do benefício</td>
+                    <td>{{ benefit.number }}</td>
+                </tr>
+                <tr>
+                    <td>DER</td>
+                    <td>{{ benefit.der }}</td>
+                </tr>
+                <tr>
+                    <td>Razão indeferimento/cessação</td>
+                    <td>{{ benefit.denialReason }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table class="info-table">
+            <tbody>
+                <tr>
+                    <td colspan="2" class="bold">b. Informações sobre a enfermidade</td>
+                </tr>
+                <tr>
+                    <td>Doença/enfermidade</td>
+                    <td>{{ disease.name }}</td>
+                </tr>
+                <tr>
+                    <td>Limitações decorrentes</td>
+                    <td>{{ disease.limitations }}</td>
+                </tr>
+                <tr>
+                    <td>Principais Sintomas experimentados</td>
+                    <td>{{ disease.symptoms }}</td>
+                </tr>
+                <tr>
+                    <td>Inconsistências da avaliação médico pericial</td>
+                    <td>{{ disease.inconsistencies }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table class="info-table">
+             <tbody>
+                <tr>
+                    <td>Declaração de litispendência/coisa julgada</td>
+                    <td>
+                        Em atenção ao art. 129-A, I, d, da Lei nº 8.213/91, com as inovações trazidas pela Lei nº 14.331/2022, a parte autora, por intermédio de seu advogado, segundo procuração ad judicia com poderes especiais colacionada, declara, a inexistência de ação judicial anterior que tenha como objeto os fatos discutidos nesses autos.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table class="info-table">
+            <tbody>
+                <tr>
+                    <td colspan="2" class="bold">c. Dados sobre a ocupação</td>
+                </tr>
+                <tr>
+                    <td>Ocupação</td>
+                    <td>{{ occupation.title }}</td>
+                </tr>
+                <tr>
+                    <td>Descrição Sumária</td>
+                    <td>{{ occupation.description }}</td>
+                </tr>
+                <tr>
+                    <td>Condições gerais do serviço</td>
+                    <td>{{ occupation.conditions }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>
+            Em continuidade, dá-se a causa o valor de <span class="bold">{{ document.valorCausa }} ({{ document.valorCausaExtenso }})</span>, quantia correspondente a soma do valor das 12 (doze) parcelas vincendas do benefício pleiteado com as diferenças resultantes das parcelas vencidas, acrescidas de correção monetária e juros legais, conforme disposição dos arts. 291 e 292, incisos I a VIII, e §§ 1º a 3º, CPC/2015.
+        </p>
+        <p>
+            Nesse passo, <span class="bold underline">a planilha de cálculo anexa, demonstra que referido valor não ultrapassa</span> 60 (sessenta) salários mínimos na data da propositura da ação, o que nos leva ao entendimento seguro de que a competência para julgamento do feito é do Juizado Especial Federal.
+        </p>
+
+        <p>
+            Todavia, em atendimento a tese firmada no Tema 1030 do STJ, informa a Postulante que <span class="bold">renuncia</span> a eventuais valores que excedem a alçada legal de competência do Juizado Especial na data da propositura da ação para fins de competência (procuração anexa).
+        </p>
+
+        <p>
+            Assim, requer-se pelo recebimento e processamento do feito perante esse r. Juízo.
+        </p>
+        <p>
+            Por fim, informa a Postulante que concorda com a tramitação do feito pelo Juízo 100% digital e pretende pela realização de perícia médica judicial na especialidade de <span class="bold">{{ document.especialidadePericia }}</span>.
+        </p>
+
+        <div class="section-heading">DOS FATOS</div>
+
+        <p>
+            A Requerente é portadora de <span class="bold">{{ disease.name }}</span>.
+        </p>
+        <p>
+            Laudo elaborado por médico especialista, expõe que a Autora <span class="bold">"não tem condições de exercer suas atividades laborais"</span>.
+        </p>
+        <p>
+            Todavia, na data {{ benefit.denialDate }}, a Parte Autora pleiteou a concessão de seu benefício Auxílio-Doença perante a Autarquia ré, o qual foi indeferido administrativamente ao absurdo argumento de que NÃO FORA COMPROVADO A INCAPACIDADE LABORATIVA
+        </p>
+        <p>
+            Diante da lamentável situação, não restou alternativa a não ser socorrer-se do Poder Judiciário, a fim de requerer a concessão de Aposentadoria por Invalidez ou, alternativamente, a concessão do benefício Auxílio-doença.
+        </p>
+        
+        <p>
+            Diante da lamentável situação, não restou alternativa a não ser socorrer-se do Poder Judiciário, a fim de requerer a concessão de Auxilio acidente, Aposentadoria por Invalidez ou, alternativamente, a concessão do benefício Auxílio-doença.
+        </p>
+        <div class="section-heading">
+            DOS REQUISITOS PARA CONCESSÃO DO BENEFÍCIO<br>
+            PLEITEADO
+        </div>
+        
+        <p>
+            A Requerente possui os três requisitos necessários para a concessão do benefício pleiteado, quais sejam:
+        </p>
+        
+        <p class="list-item-alpha">
+            <span class="bold underline">a. INCAPACIDADE LABORATIVA:</span> A parte exerce a função de <span class="bold">{{ occupation.title }}</span> a qual necessita {{ occupation.description }}. Ante as patologias da Requerente as quais são de natureza grave, resta claro que o reingresso ao mercado de trabalho <span class="underline">evidentemente ocasionaria danos irreparáveis a sua vida.</span>
+        </p>
+        
+        <p class="list-item-alpha">
+            <span class="bold underline">b. QUALIDADE DE SEGURADO:</span> É possível observar que a Requerente mantém sua qualidade de segurado visto que realiza contribuições ao INSS desde a data do início da sua incapacidade.
+        </p>
+        
+        <p class="list-item-alpha">
+            <span class="bold underline">c. CARÊNCIA:</span> Em CNIS anexo se verifica que cumpre a Autora a carência mínima exigida para a concessão do benefício previdenciário requerido.
+        </p>
+        
+        <p>
+            Desta maneira, comprovado o direito ao benefício pleiteado com o preenchimento dos requisitos exigidos, deve a Autarquia ré implementá-lo a partir do indeferimento administrativo, qual seja: <span class="bold">{{ benefit.der }}</span>.
+        </p>
+
+        <div class="section-heading">DO PEDIDO</div>
+
+        <p>
+            Em face de todo o exposto, requer:
+        </p>
+
+        <p class="request-item">
+            A Citação, do <span class="bold">INSTITUTO NACIONAL DO SEGURO SOCIAL-INSS</span> na pessoa de seus REPRESENTANTES LEGAIS, para que, caso queira, "CONTESTE", no prazo legal a presente ação, ora proposta sob pena de "CONFISSÃO" e "REVELIA" e todos os seus efeitos, e caso o mesmo conteste a presente ação que seja julgada "TOTALMENTE PROCEDENTE", conforme a exposição de fatos e fundamentos, anteriormente elencados;
+        </p>
+
+        <p class="request-item">
+            Seja julgada <span class="bold">TOTALMENTE PROCEDENTE</span> os pedidos da Requerente, condenando a Autarquia conceder a <span class="bold">APOSENTADORIA POR INCAPACIDADE PERMANENTE</span>, ou, ainda, <span class="bold">AUXÍLIO POR INCAPACIDADE TEMPORÁRIA NB {{ benefit.number }}</span> desde o dia do indeferimento administrativo ocorrido em {{ benefit.der }};
+        </p>
+        
+        <p class="request-item">
+            Após a procedência da ação, a concessão de tutela de urgência, determinando que seja pago de imediato, o benefício por incapacidade em favor da Requerente;
+        </p>
+        
+        <p class="request-item">
+            A condenação do INSS ao pagamento das parcelas vencidas e vincendas, todas corrigidas monetariamente, bem como seja condenado ao pagamento das custas judiciais e honorários advocatícios a serem arbitrados no percentual de 15% (quinze por cento);
+        </p>
+        
+        <p class="request-item">
+            Provar o alegado por todos os meios de prova em direito admitidos, sem exceção de nenhum, dentre os quais, os meios documentais e periciais, com designação de perícia médica na especialidade de <span class="bold">{{ document.especialidadePericia }}</span>;
+        </p>
+        
+        <p class="request-item">
+            Por fim, requer que todas as publicações sejam enviadas ao <span class="bold">DR. CELSO DE SOUSA BRITO</span>, inscrito na <span class="bold">OAB/SP Nº 240.574</span>, sob pena de nulidade.
+        </p>
+        
+        <p style="padding-left: 40px;" >
+            Dá-se a causa, o valor de <span class="bold">{{ document.valorCausa }} ({{ document.valorCausaExtenso }})</span>.
+        </p>
+
+        <p class="section-title-center">QUESITOS</p>
+        
+        <p class="quesito">
+            1- Informe o senhor perito se existe incapacidade para a função habitual do periciando? Em caso negativo favor explicar de qual forma poderá exercer a atividade habitual sem piorar o quadro <span class="underline">clinico</span>.
+        </p>
+        
+        <p class="quesito">
+            2 - Informe o senhor perito se as patologias descritas na inicial e as patologias constatadas em perícia médica necessitam de tratamento. Se sim por quanto tempo? É possível exercer atividade laborativa nesse período?
+        </p>
+        
+        <p class="quesito">
+            3- Informe o senhor perito se pela análise dos exames antigos trazidos pelo periciando é possível fixar o início (mês/ano) da incapacidade?
+        </p>
+        
+        <p class="quesito">
+            4 - Informe o senhor perito se é necessária a realização de perícia em outra especialidade?
+        </p>
+        
+        <p class="centered-text" style="margin-top: 40px;">Termos em que,</p>
+        <p class="centered-text">Pede e espera o deferimento.</p>
+        
+        <div class="signature-block">
+            CELSO DE SOUSA BRITO<br>
+            OAB/SP 240574
+            <br><br><br>
+            RENATO DE OLIVEIRA RIBEIRO<br>
+            OAB/SP 279387
+            <br><br><br>
+            FLÁVIA DA SILVA BRITO<br>
+            OAB/SP 394.826
+        </div>
+
+    </div>
+</body>
+</html>
+

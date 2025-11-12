@@ -25,7 +25,22 @@ const templatesToSeed = [
     title: 'LOAS - Benefício para Deficiente',
     folderName: 'loas-deficiencia',
   },
-  // ... ADICIONAR MAIS TEMPLATES AQUI CONFORME NECESSÁRIO
+  {
+    title: 'Declaração de Não Recebimento',
+    folderName: 'declaracao-nao-recebimento',
+  },
+  {
+    title: 'LOAS - Auxílio-Doença',
+    folderName: 'loas-auxilio-doenca',
+  },
+  {
+    title: 'LOAS - Idoso',
+    folderName: 'loas-idoso',
+  },
+  {
+    title: 'Procuração INSS',
+    folderName: 'procuracao-inss',
+  },
 ];
 
 async function main() {

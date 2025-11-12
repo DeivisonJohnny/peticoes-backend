@@ -9,6 +9,10 @@ import { generateContratoHonorarios } from './generators/contrato-honorarios.gen
 import { generateAutodeclaracaoRural } from './generators/autodeclaracao-rural.generator';
 import { generateProcuracaoPp } from './generators/procuracao-pp.generator';
 import { generateLoasDeficiencia } from './generators/loas-deficiencia.generator';
+import { generateDeclaracaoNaoRecebimento } from './generators/declaracao-nao-recebimento.generator';
+import { generateLoasAuxilioDoenca } from './generators/loas-auxilio-doenca.generator';
+import { generateLoasIdoso } from './generators/loas-idoso.generator';
+import { generateProcuracaoInss } from './generators/procuracao-inss.generator';
 import { Client, DocumentTemplate } from '@prisma/client';
 
 // Mapa de geradores - deve corresponder exatamente aos títulos no banco
@@ -18,6 +22,10 @@ const documentGenerators = {
   'Autodeclaração Rural': generateAutodeclaracaoRural,
   'Procuração Pessoa Física': generateProcuracaoPp,
   'LOAS - Benefício para Deficiente': generateLoasDeficiencia,
+  'Declaração de Não Recebimento': generateDeclaracaoNaoRecebimento,
+  'LOAS - Auxílio-Doença': generateLoasAuxilioDoenca,
+  'LOAS - Idoso': generateLoasIdoso,
+  'Procuração INSS': generateProcuracaoInss,
 };
 
 @Injectable()

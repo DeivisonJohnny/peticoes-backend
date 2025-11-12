@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Ação de Concessão de Benefício Assistencial</title>
+    <style>
+        /* Estilos base para simular um documento legal (impressão) */
+        body {
+            font-family: Arial, Times, serif;
+            font-size: 13pt;
+            line-height: 1.6;
+            color: #000;
+            background-color: #fff;
+        }
+
+        /* Container principal com margens de página A4 */
+        .container {
+            width: 17cm; /* Largura de conteúdo (A4 = 21cm - margens) */
+            margin: 2cm auto; /* Margens de página */
+        }
+        
+        /* Endereçamento (Exmo. Sr. Dr...) */
+        .enderecamento {
+            text-align: left;
+            text-indent: 0;
+            font-weight: bold;
+            font-size: 12pt;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+
+        /* Parágrafo padrão com indentação */
+        p {
+            text-align: justify;
+            margin: 16px 0;
+            /* Indentação padrão para petições */
+            text-indent: 4em; 
+        }
+
+        /* Parágrafo de qualificação (com recuo de bloco) */
+        .qualificacao {
+            text-indent: 0;
+            padding-left: 4em; /* Recuo do bloco inteiro */
+            text-align: justify;
+            margin-bottom: 25px;
+        }
+
+        /* Caixa de título (visto em image_52a0a9) */
+        .header-box {
+            border: 1px solid #000;
+            padding: 8px 12px;
+            text-align: center;
+            font-weight: bold;
+            margin: 25px auto;
+            width: 100%;
+            font-size: 16pt;
+            text-transform: uppercase;
+            background-color: #f5f5f5;
+        }
+
+        /* Título de seção centrado (visto em 52a449) */
+        .section-title-center {
+            text-align: center;
+            font-weight: bold;
+            margin: 30px 0 20px 0;
+            font-size: 12pt;
+            text-transform: uppercase;
+            text-indent: 0;
+        }
+        
+        /* Título de seção centrado e sublinhado (visto em 52a0a9) */
+        .section-title-center-underline {
+            text-align: center;
+            font-weight: bold;
+            text-decoration: underline;
+            margin: 30px 0 20px 0;
+            font-size: 12pt;
+            text-transform: uppercase;
+            text-indent: 0;
+        }
+
+        /* Container para a imagem do mapa */
+        .map-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .map-container img {
+            max-width: 90%;
+            border: 1px solid #000; /* Borda simples para a imagem */
+        }
+
+        /* Estilo para trechos de lei */
+        .legal-quote {
+            margin-left: 4em; /* Recuo como em citações */
+            text-indent: 0; /* Citação não tem indentação de parágrafo */
+            padding-left: 1.5em;
+            text-align: justify;
+            font-style: italic;
+        }
+        
+        /* Estilo para citação de jurisprudência (sem itálico) */
+        .juris-quote {
+            margin-left: 4em; /* Recuo como em citações */
+            text-indent: 0;
+            padding-left: 1.5em;
+            text-align: justify;
+        }
+
+        /* Lista numerada */
+        ol.custom-list {
+            list-style-type: none; /* Remove o marcador padrão */
+            margin-left: 4em; /* Recuo da lista inteira */
+            padding-left: 0;
+            counter-reset: my-counter; /* Inicia um contador */
+            text-indent: 0;
+        }
+
+        ol.custom-list li {
+            counter-increment: my-counter; /* Incrementa o contador para cada item */
+            text-align: justify;
+            margin-bottom: 10px;
+            text-indent: 0; /* Garante que o texto dentro do item não seja indentado */
+            padding-left: 2em;
+        }
+
+        ol.custom-list li::before {
+            content: counter(my-counter) ") "; /* Adiciona o número e o parêntese */
+            font-weight: bold;
+            margin-left: -2em; /* Puxa o marcador para a esquerda */
+            display: inline-block;
+            width: 2em; /* Garante espaço suficiente para o número */
+        }
+
+        /* Estilo para itens de pedido (letras a, b, c...) */
+        ul.request-list {
+            list-style-type: none; /* Remove o marcador padrão */
+            margin-left: 4em; /* Recuo da lista inteira */
+            padding-left: 0;
+            counter-reset: alpha-counter; /* Inicia um contador alfabético */
+            text-indent: 0;
+        }
+
+        ul.request-list li {
+            counter-increment: alpha-counter; /* Incrementa o contador para cada item */
+            text-align: justify;
+            margin-bottom: 10px;
+            text-indent: 0;
+            padding-left: 2em;
+        }
+
+        ul.request-list li::before {
+            content: counter(alpha-counter, lower-alpha) ") "; /* Adiciona a letra e o parêntese */
+            font-weight: bold;
+            margin-left: -2em; /* Puxa o marcador para a esquerda */
+            display: inline-block;
+            width: 2em;
+        }
+
+        /* Bloco de assinatura */
+        .signature-block {
+            text-align: right;
+            text-indent: 0;
+            margin-top: 40px;
+            line-height: 1.6;
+            font-size: 11pt; /* Ligeiramente menor */
+        }
+
+        /* Classes utilitárias */
+        .bold { font-weight: bold; }
+        .underline { text-decoration: underline; }
+        .no-indent { text-indent: 0; }
+        .text-left { text-align: left; }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <p class="enderecamento">
+            EXCELENTÍSSIMO(A) SENHOR(A) DOUTOR(A) JUIZ(A) FEDERAL DO {{ document.juizado }}.
+        </p>
+
+        <p class="qualificacao">
+            <span class="bold">{{ client.name }}</span>, {{ client.nationality }}, nascida em {{ client.birthDate }}, filha de {{ client.motherName }}, portadora da cédula de identidade n.º <span class="bold">{{ client.rg }}</span>, inscrita no CPF/MF sob n.º <span class="bold">{{ client.cpf }}</span>, residente e domiciliada à {{ client.address }}, CEP: <span class="bold">{{ client.cep }}</span>, por seus bastantes procuradores que esta subscreve, vem mui respeitosamente, a presença de Vossa Excelência propor:
+        </p>
+        <div class="header-box">
+            AÇÃO DE CONCESSÃO DE BENEFÍCIO<br>
+            ASSISTENCIAL
+        </div>
+        
+        <p class="qualificacao" style="margin-top: 25px;">
+            em face do <span class="bold underline">INSTITUTO NACIONAL DO SEGURO SOCIAL – INSS</span>, Pessoa Jurídica de direito público, pelas razões de fato e de direito que doravante passa a expor e requerer:
+        </p>
+
+        <p class="section-title-center-underline">PRELIMINARMENTE</p>
+        <p>
+            Preliminarmente, dá-se a causa o valor de <span class="bold">{{ document.valorCausa }} ({{ document.valorCausaExtenso }})</span>, quantia correspondente a soma do valor das 12 (doze) parcelas vincendas do benefício pleiteado com as diferenças resultantes das parcelas vencidas, acrescidas de correção monetária e juros legais, conforme disposição dos arts. 291 e 292, incisos I a VIII, e §§ 1º a 3º, CPC/2015.
+        </p>
+        <p>
+            Nesse passo, a planilha de cálculo anexa, demonstra que referido valor não ultrapassa 60 (sessenta) salários mínimos na data da propositura da ação, o que nos leva ao entendimento seguro de que a competência para julgamento do feito é do Juizado Especial Federal.
+        </p>
+        <p>
+            <span class="underline">Todavia, em atendimento a tese firmada no Tema 1030 do STJ, informa a Postulante que <span class="bold">renuncia</span> a eventuais valores que excedem a alçada legal de competência do Juizado Especial na data da propositura da ação para fins de competência.</span>
+        </p>
+        <p>
+            Assim, requer-se pelo recebimento e processamento do feito perante esse r. Juízo.
+        </p>
+        <p>
+            Em continuidade, informa também que não existe qualquer ação ajuizada anteriormente com o mesmo objeto o que afasta qualquer alegação de litispendência ou coisa julgada.
+        </p>
+
+        <p>
+            Por fim, para a realização de perícia social, a Requerente apresenta mapa de sua residência para fácil acesso por parte do Peito Assistente Social e telefone <span class="bold">{{ client.phone }}</span>:
+        </p>
+        
+        {{#if document.mapaUrl}}
+        <div class="map-container">
+            <img src="{{ document.mapaUrl }}" alt="Mapa de residência da Requerente" style="width: 500px;">
+        </div>
+        {{/if}}
+
+        <p class="section-title-center">DOS FATOS</p>
+
+        <p>
+            A Requerente é pessoa idosa, nascida em <span class="bold">{{ client.birthDate }} (ATUALMENTE COM {{ client.age }} ANOS DE IDADE)</span>, sem condições para o trabalho e consequentemente incapaz de prover seu próprio sustento.
+        </p>
+        <p>
+            A Requerente <span class="bold">{{ benefit.livingArrangement }}</span>, como bem se depreende em análise à composição familiar disposta no Cadastro Único para Programas Sociais (CadÚnico), com situação atualizada, que ora se carreia. <span class="bold">FRISE-SE QUE TRATA-SE DE PESSOA IDOSA QUE NECESSITA DE INÚMEROS MEDICAMENTOS PARA MANUTENÇÃO O DE SUA SAÚDE!</span>
+        </p>
+        <p>
+            Nesse contexto, na data de <span class="bold">{{ benefit.cessationDate }}</span> a Autora teve cessado seu pedido de <span class="bold">AMPARO SOCIAL PARA IDOSO, BENEFÍCIO</span> sob o <span class="bold">NÚMERO {{ benefit.number }}</span> saltando aos olhos a fundamentação de que não se enquadra no artigo 20, par. 3º da Lei 8742/93, pois a renda do grupo familiar é igual ou superior a ¼ (um quarto) do salário-mínimo.
+        </p>
+        <p>
+            Ora, o Instituto-Requerido, não observou o artigo 203, V da nossa MAGNA CARTA, e muito menos o artigo 2º da Lei 8.742/93, que garante benefício de 01 (um) salário-mínimo ao IDOSO.
+        </p>
+        <p>
+            No caso em tela, a parte é comprovadamente idosa, dependente apenas de eventual ajuda de parentes. Observe-se que nada impede a concessão do Benefício Assistencial, e nem fere as exigências da Lei Orgânica da Assistência Social – LOAS.
+        </p>
+        <p>
+            Desta forma, resta evidente que a parte Autora faz jus ao benefício aqui pleiteado.
+        </p>
+
+        <p class="section-title-center">DO DIREITO</p>
+
+        <p>
+            A pretensão da REQUERENTE em receber o benefício assistencial encontra-se devidamente amparada pela LEI MAIOR, especificamente no artigo 203 da Constituição Federal, "<em>in verbis</em>":
+        </p>
+        <p class="legal-quote">
+            Artigo 203 – A assistência social será prestada a quem dela necessitar, e tem por objetivos: independentemente de contribuição à seguridade social. <br>... "omissis" ... <br>V – a garantia de um salário mínimo de beneficio mensal à pessoa portadora de deficiência, e ao idoso que comprovem não possuir meios de prover a própria manutenção ou tê-la provido por sua família, conforme dispuser a lei.
+        </p>
+        <p>
+            Com efeito, a Lei número 8.742/93, a qual dispõe sobre a organização da Assistência Social, aduz que:
+        </p>
+        <p class="legal-quote">
+            Artigo 2.º a assistência social, tem por objetivo... <br>... omissis... <br>V - a garantia de 1 (um) salário mínimo de beneficio mensal à pessoa portadora de deficiência, e ao idoso que comprovem não possuir meios de prover a própria manutenção ou tê-la provido por sua família. <br>...omissis...
+        </p>
+        <p>
+            Cumpre trazer a baila o posicionamento de nossos tribunais, onde fazendo a análise de cada caso, sob o prisma do princípio da razoabilidade entende que:
+        </p>
+        <p class="juris-quote">
+            "CONSTITUCIONAL.PREVIDENCIÁRIO.ASSISTENCIA SOCIAL. BENEFICIO DE PRESTAÇÃO CONTINUADA À PESSOA PORTADORA DE DEFICIÊNCIA ART.2 V, DA CONSTITUIÇÃO FEDERAL. PREEN-CHIMENTO DOS REQUISITOS. CONCESSÃO. O artigo 20 par. 3º da lei nº 8743/93 ao prever o limite de ¼ do salário mínimo, estabeleceu uma condição da miserabilidade, não sendo vedado a comprovação da insuficiência de recursos por outros meios de prova. Tendo em vista sua ratio legis, o disposto no art. 34 da lei nº 10.741/03, segundo o qual. "O beneficio já concedido a qualquer membro da família nos termos do caput não será computado para fins do cálculo da renda familiar 'per capita' a que se refere a loas..." AC – APELAÇÃO CÍVEL – 1356883, DESEMBARGADOR FEDERAL NELSON BERNADES NONA TURMA.TRF3.
+        </p>
+        <p>
+            Pois bem, a lei supracitada menciona e garante a concessão do benefício assistencial, mediante a comprovação de dois requisitos, ou seja:
+        </p>
+
+        <ol class="custom-list">
+            <li>idade acima de 60 anos.</li>
+            <li>impossibilidade de prover seus próprios meios de subsistência ou tê-la provido pela família.</li>
+        </ol>
+
+        <p>
+            Portanto, a pretensão da REQUERENTE está perfeitamente amparada pela lei, ou seja, preenchem todos os requisitos legais, quais sejam – idade superior a 60 anos e a impossibilidade de prover sua subsistência, ou contar com a renda de seus familiares.
+        </p>
+        <p>
+            Assim, deverá ser-lhe concedido o Benefício Assistencial.
+        </p>
+        
+        <p class="section-title-center">DO PEDIDO</p>
+
+        <p>
+            Em conformidade com tudo que foi exposto, requer:
+        </p>
+
+        <ul class="request-list">
+            <li><span class="bold">TOTAL PROCEDÊNCIA</span> do pedido constante nesta exordial e como consequência a concessão do BENEFÍCIO ASSISTENCIAL, conforme fundamentos aduzidos nesta inicial;</li>
+            <li>Após a procedência da ação, a concessão de tutela de urgência, determinando que seja pago de imediato, o benefício assistencial ao idoso em favor do Requerente;</li>
+            <li>a citação do Instituto-Requerido (INSS), por meio de seu representante legal, para que querendo, possa contestar a presente ação, sob pena de sofrer os efeitos da revelia;</li>
+            <li>a realização de todos os meios de provas, inclusive e de forma antecipada, especialmente a perícia social, para averiguação da situação socioeconômica da REQUERENTE;</li>
+            <li>a condenação do Instituto-Requerido ao pagamento de custas processuais e dos honorários advocatícios a serem arbitrados por Vossa Excelência, por medida mais Lídima Justiça!</li>
+            <li>a implantação do benefício LOAS <span class="bold">NÚMERO {{ benefit.number }}</span>, desde a DER, ou, alternativamente, desde a citação concordando desde já com a reafirmação da DER;</li>
+            <li>Requer ainda os benefícios da <span class="bold">GRATUIDADE DA JUSTIÇA</span>, uma vez que o REQUERENTE é pessoa pobre e, atualmente, não tem condições de estipendiar custas processuais ou extraprocessuais.</li>
+            <li>Por fim, requer que todas as publicações sejam enviadas ao <span class="bold">DR. CELSO DE SOUSA BRITO</span>, inscrito na <span class="bold">OAB/SP Nº 240.574</span>, sob pena de nulidade.</li>
+        </ul>
+        
+        <p>
+            À causa, para efeitos fiscais, o valor de <span class="bold">{{ document.valorCausaFiscal }} ({{ document.valorCausaFiscalExtenso }})</span>.
+        </p>
+        
+        <p class="no-indent" style="text-align: center; margin-top: 40px;">
+            Nestes Termos,<br>
+            Pede e espera o deferimento,
+        </p>
+        
+        <div class="signature-block">
+            CELSO DE SOUSA BRITO<br>
+            OAB/SP 240.574
+            <br><br>
+            RENATO DE OLIVEIRA RIBEIRO<br>
+            OAB/SP 279.387
+            <br><br>
+            FLÁVIA DA SILVA BRITO<br>
+            OAB/SP 394.826
+            <br><br>
+            ÁGATA CUNHA S. FAGUNDES<br>
+            OAB/SP 394.664
+        </div>
+
+    </div>
+</body>
+</html>
+

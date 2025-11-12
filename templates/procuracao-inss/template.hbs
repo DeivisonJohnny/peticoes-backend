@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procuração INSS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12pt;
+            line-height: 1.5;
+            color: #000;
+            background-color: #fff; 
+            
+            width: 17cm; 
+            margin: 2cm auto;
+            
+            padding: 0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            font-size: 14pt;
+            margin: 0;
+            padding: 0;
+            font-weight: bold;
+        }
+        .header p {
+            font-size: 11pt;
+            margin: 5px 0 0 0;
+            padding: 0;
+        }
+        .section-title {
+            font-size: 13pt;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 25px;
+            text-decoration: underline;
+            text-transform: uppercase;
+        }
+        .subsection-title {
+            font-size: 12pt;
+            font-weight: bold;
+            margin-top: 25px;
+            margin-bottom: 15px;
+
+            padding: 5px 0px;
+
+        }
+        .form-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            margin-bottom: 10px;
+        }
+        .form-group label {
+            white-space: nowrap;
+            margin-right: 5px;
+        }
+        .form-field {
+            flex-grow: 1;
+            border-bottom: 1px solid #000;
+            padding: 0 2px;
+            height: 1.2em; /* Altura da linha para o sublinhado */
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .form-field.short {
+            flex-grow: 0;
+            width: 80px; /* Campos menores como nº */
+        }
+        .form-field.medium {
+            flex-grow: 0;
+            width: 150px;
+        }
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .form-row .item {
+            display: flex;
+            align-items: baseline;
+            flex: 1;
+        }
+        .form-row .item label {
+            margin-right: 5px;
+        }
+        .form-row .item .form-field {
+            flex-grow: 1;
+        }
+        .statement {
+            text-align: justify;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 8px;
+            margin-left: 20px; /* Indentação para checkboxes */
+        }
+        .checkbox-item .checkbox {
+            margin-top: 4px; /* Alinhar com a primeira linha do texto */
+            margin-right: 10px;
+            flex-shrink: 0; /* Impede que o checkbox encolha */
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 1px solid #000;
+            text-align: center;
+            font-size: 12px;
+            line-height: 14px;
+            font-weight: bold;
+        }
+        .date-location {
+            display: flex;
+            justify-content: flex-start;
+            align-items: baseline;
+            margin-top: 30px;
+            margin-bottom: 50px;
+            gap: 10px; /* Espaçamento entre os campos */
+        }
+        .date-location .field-label {
+            white-space: nowrap;
+            margin-right: 5px;
+        }
+        .date-location .form-field {
+            flex-grow: 0; /* Não crescer */
+        }
+        .date-location .date-part {
+            border-bottom: 1px solid #000;
+            padding: 0 2px;
+            height: 1.2em;
+            display: inline-block;
+            width: 30px; /* Para dia, mês */
+            text-align: center;
+        }
+        .date-location .year-part {
+            border-bottom: 1px solid #000;
+            padding: 0 2px;
+            height: 1.2em;
+            display: inline-block;
+            width: 50px; /* Para ano */
+            text-align: center;
+        }
+        .signature-line {
+            border-bottom: 1px solid #000;
+            width: 70%;
+            margin: 70px auto 10px auto; /* Espaço para a assinatura */
+        }
+        .signature-label {
+            text-align: center;
+            font-size: 10pt;
+            font-style: italic;
+            margin-bottom: 30px;
+        }
+        .termos-responsabilidade-title {
+            font-size: 13pt;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 50px;
+            margin-bottom: 25px;
+            text-decoration: underline;
+            text-transform: uppercase;
+        }
+        .paragraph {
+            text-align: justify;
+            margin-bottom: 15px;
+            text-indent: 0;
+        }
+        .indent-paragraph {
+            text-align: justify;
+            margin-bottom: 15px;
+            margin-left: 20px; /* Indentação */
+        }
+        .inline-field {
+            display: inline-block;
+            border-bottom: 1px solid #000;
+            padding: 0 2px;
+            min-width: 100px;
+            height: 1.2em;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <img src="{{ document.brasaoImage }}" alt="brasão" style="margin: auto; width: 200px;" >
+        <h1>INSTITUTO NACIONAL DO SEGURO SOCIAL</h1>
+        <p>ANEXO XXII</p>
+        <p>INSTRUÇÃO NORMATIVA PRES/INSS Nº 128, DE 28 DE MARÇO DE 2022</p>
+    </div>
+
+    <p class="section-title">PROCURAÇÃO</p>
+
+    <p class="subsection-title">Dados do outorgante (segurado/dependente)</p>
+    <div class="form-group">
+        <label>Nome:</label>
+        <span class="form-field">{{ grantor.name }}</span>
+    </div>
+    <div class="form-row">
+        <div class="item">
+            <label>Nacionalidade:</label>
+            <span class="form-field">{{ grantor.nationality }}</span>
+        </div>
+        <div class="item">
+            <label>Estado Civil:</label>
+            <span class="form-field">{{ grantor.maritalStatus }}</span>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="item">
+            <label>Identidade:</label>
+            <span class="form-field">{{ grantor.rg }}</span>
+        </div>
+        <div class="item">
+            <label>CPF:</label>
+            <span class="form-field">{{ grantor.cpf }}</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Profissão:</label>
+        <span class="form-field">{{ grantor.occupation }}</span>
+    </div>
+    <div class="form-group">
+        <label>Endereço:</label>
+        <span class="form-field">{{ grantor.street }}</span>
+    </div>
+    <div class="form-row">
+        <div class="item">
+            <label>nº:</label>
+            <span class="form-field short">{{ grantor.number }}</span>
+        </div>
+        <div class="item">
+            <label>complemento:</label>
+            <span class="form-field medium">{{ grantor.complement }}</span>
+        </div>
+        <div class="item">
+            <label>bairro:</label>
+            <span class="form-field">{{ grantor.neighborhood }}</span>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="item">
+            <label>cidade/estado:</label>
+            <span class="form-field">{{ grantor.cityState }}</span>
+        </div>
+        <div class="item">
+            <label>CEP:</label>
+            <span class="form-field medium">{{ grantor.zipCode }}</span>
+        </div>
+    </div>
+
+    <p class="subsection-title">Dados do outorgado (procurador)</p>
+    <div class="form-group">
+        <label>Nome:</label>
+        <span class="form-field">{{ attorney.name }}</span>
+    </div>
+    <div class="form-row">
+        <div class="item">
+            <label>Nacionalidade:</label>
+            <span class="form-field">{{ attorney.nationality }}</span>
+        </div>
+        <div class="item">
+            <label>Estado Civil:</label>
+            <span class="form-field">{{ attorney.maritalStatus }}</span>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="item">
+            <label>Identidade:</label>
+            <span class="form-field">{{ attorney.rg }}</span>
+        </div>
+        <div class="item">
+            <label>CPF:</label>
+            <span class="form-field">{{ attorney.cpf }}</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Profissão:</label>
+        <span class="form-field">{{ attorney.occupation }}</span>
+    </div>
+    <div class="form-group">
+        <label>Endereço:</label>
+        <span class="form-field">{{ attorney.street }}</span>
+    </div>
+    <div class="form-row">
+        <div class="item">
+            <label>nº:</label>
+            <span class="form-field short">{{ attorney.number }}</span>
+        </div>
+        <div class="item">
+            <label>complemento:</label>
+            <span class="form-field medium">{{ attorney.complement }}</span>
+        </div>
+        <div class="item">
+            <label>bairro:</label>
+            <span class="form-field">{{ attorney.neighborhood }}</span>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="item">
+            <label>cidade/estado:</label>
+            <span class="form-field">{{ attorney.cityState }}</span>
+        </div>
+        <div class="item">
+            <label>CEP:</label>
+            <span class="form-field medium">{{ attorney.zipCode }}</span>
+        </div>
+    </div>
+
+    <p class="statement">
+        O(A) outorgante nomeia e constitui o(a) outorgado(a) seu bastante procurador a quem confere
+        poderes especiais para representá-lo perante o INSS, bem como usar de todos os meios legais
+        para o fiel cumprimento do presente mandato com os fins específicos de:
+    </p>
+
+    <div class="checkbox-item">
+        <span class="checkbox">{{#if powers.passwordRegistration}}✓{{/if}}</span> cadastro de senha para informações previdenciárias pela internet.
+    </div>
+    <div class="checkbox-item">
+        <span class="checkbox">{{#if powers.proofOfLife}}✓{{/if}}</span> comprovação de vida junto à rede bancária.
+    </div>
+    <div class="checkbox-item">
+        <span class="checkbox">{{#if powers.receivePayments}}✓{{/if}}</span> receber mensalidades de benefícios, receber quantias atrasadas e firmar os respectivos
+        recibos, devido à:
+    </div>
+    <div class="checkbox-item" style="margin-left: 40px;">
+        <span class="checkbox">{{#if powers.reasonInability}}✓{{/if}}</span> incapacidade do outorgante em se locomover ou ser portador de moléstia contagiosa.
+    </div>
+    <div class="checkbox-item" style="margin-left: 40px;">
+        <span class="checkbox">{{#if powers.reasonDomesticTravel}}✓{{/if}}</span> ausência devido à viagem dentro do país pelo período de: <span class="inline-field">{{ powers.domesticTravelPeriod }}</span>.
+    </div>
+    <div class="checkbox-item" style="margin-left: 40px;">
+        <span class="checkbox">{{#if powers.reasonInternationalTravel}}✓{{/if}}</span> ausência devido à viagem ao exterior pelo período de: <span class="inline-field">{{ powers.internationalTravelPeriod }}</span>.
+    </div>
+    <div class="checkbox-item" style="margin-left: 40px;">
+        <span class="checkbox">{{#if powers.reasonLivingAbroad}}✓{{/if}}</span> residência no exterior (qual país? <span class="inline-field">{{ powers.countryOfResidence }}</span>).
+    </div>
+    
+    <div class="header" style="margin-top: 30px;">
+        <h1>INSTITUTO NACIONAL DO SEGURO SOCIAL</h1>
+    </div>
+
+    <div class="checkbox-item" style="margin-top: 20px;">
+        <span class="checkbox">{{#if powers.requestBenefits}}✓{{/if}}</span> requerer benefícios, revisão e interpor recursos.
+    </div>
+    <div class="checkbox-item">
+        <span class="checkbox">{{#if powers.otherRequest}}✓{{/if}}</span> requerer: <span class="inline-field" style="min-width: 400px; flex-grow: 1;">{{ powers.otherRequestDescription }}</span>.
+    </div>
+
+    <div class="date-location">
+        <span class="field-label">Local:</span>
+        <span class="form-field" style="width: 300px;">{{ document.location }}</span>
+        <span style="margin-left: 30px;" class="field-label">Data:</span>
+        <span class="date-part">{{ document.day }}</span> / <span class="date-part">{{ document.month }}</span> / <span class="year-part">{{ document.year }}</span>
+    </div>
+
+    <div class="signature-line"></div>
+    <p class="signature-label">(Assinatura do outorgante)</p>
+
+    <p class="termos-responsabilidade-title">TERMO DE RESPONSABILIDADE</p>
+
+    <p class="paragraph">
+        Pelo presente Termo de Responsabilidade, comprometo-me a comunicar ao INSS qualquer
+        evento que possa anular a presente procuração, no prazo de 30 (trinta) dias, a contar da data em
+        que o evento ocorra. Os eventos a comunicar são: óbito do titular/dependente do benefício ou
+        cessação da representação legal.
+    </p>
+    <p class="paragraph">
+        Estou ciente de que o descumprimento do compromisso ora assumido, além da obrigação à
+        devolução de importâncias recebidas indevidamente, quando for o caso, estarei sujeito às
+        penalidades previstas nos artigos 171 e 299 do Código Penal.
+    </p>
+
+    <p class="indent-paragraph">
+        <span style="font-weight: bold;">Art. 171</span> - Obter, para si ou para outrem, vantagem ilícita, em prejuízo alheio, induzindo ou
+        mantendo alguém em erro, mediante artifício, ardil, ou qualquer outro meio fraudulento.
+    </p>
+    <p class="indent-paragraph">
+        <span style="font-weight: bold;">Art. 299</span> - Omitir, em documento público ou particular, declaração que devia constar, ou
+        nele inserir ou fazer inserir declaração falsa ou diversa da que devia ser escrita, com o fim de
+        prejudicar direito, criar, obrigação ou alterar a verdade sobre fato juridicamente
+        relevante.<br>
+        Pena - reclusão, de um a cinco anos, e multa, se o documento é público, e reclusão de um
+        a três anos, e multa, se o documento é particular.
+    </p>
+
+    <div class="date-location">
+        <span class="field-label">Local:</span>
+        <span class="form-field" style="width: 300px;">{{ document.location }}</span>
+        <span style="margin-left: 30px;" class="field-label">Data:</span>
+        <span class="date-part">{{ document.day }}</span> / <span class="date-part">{{ document.month }}</span> / <span class="year-part">{{ document.year }}</span>
+    </div>
+
+    <div class="signature-line"></div>
+    <p class="signature-label">(Assinatura do procurador)</p>
+
+</body>
+</html>
+

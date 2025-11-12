@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Declaração de Recebimento de Pensão</title>
+    <style>
+        /*
+         * Estilos para simular um documento A4 para geração de PDF.
+         * O Puppeteer (Chromium) interpreta bem 'pt' (pontos) para fontes,
+         * que é um padrão de impressão. 12pt é um tamanho de fonte padrão.
+         */
+        body {
+            font-family: Arial, Times, serif;
+            font-size: 12pt; /* Tamanho padrão para documentos */
+            line-height: 1.5;
+            color: #000;
+            background-color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        /* Container principal que simula a página */
+        .container {
+            width: 17cm; /* Largura do conteúdo em A4 (21cm - 2cm margem esq/dir) */
+            margin: 2cm auto; /* Margens superior/inferior de 2cm, centralizado */
+            padding: 0;
+        }
+        /* Cabeçalhos do documento */
+        .header {
+            text-align: center;
+            font-weight: bold;
+            font-size: 11pt; /* Um pouco menor que o texto base */
+            margin: 0;
+            padding: 0;
+        }
+        /* Título principal */
+        .title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 13pt; /* Um pouco maior que o texto base */
+            margin-top: 15px;
+            margin-bottom: 30px;
+        }
+        /* Parágrafo de declaração principal */
+        .declaration-paragraph {
+            text-align: justify;
+            margin-bottom: 20px;
+        }
+        /* Estilo para as linhas de preenchimento (____) */
+        .input-line {
+            display: inline-block;
+            border-bottom: 1px solid #000;
+            /* Ajuste vertical para alinhar com o texto */
+            transform: translateY(2px);
+            padding: 0 5px;
+        }
+        /* Rótulo pequeno ao lado da linha */
+        .input-label {
+            font-size: 10pt;
+            color: #333;
+        }
+        /* Grupo de escolha (caixa de seleção + rótulo) */
+        .choice-group {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        /* Estilo da caixa de seleção personalizada (para ser idêntico) */
+        .checkbox {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 1px solid #000;
+            margin-right: 8px;
+            /* Centraliza o 'check' */
+            text-align: center;
+            font-size: 14px;
+            line-height: 14px; /* Garante alinhamento vertical */
+            font-weight: bold;
+            vertical-align: middle; /* Alinha a caixa com o texto */
+        }
+        
+        .choice-group label {
+             vertical-align: middle;
+        }
+        /* Seção para os campos condicionais */
+        .conditional-section {
+            margin-top: 15px;
+            border-top: 1px solid transparent; /* Apenas para espaçamento */
+        }
+        
+        .conditional-section p {
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        /* Linha de formulário com múltiplas opções */
+        .form-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        /* Uma opção individual dentro de uma linha de formulário */
+        .form-option {
+            display: flex;
+            align-items: center;
+            margin-left: 15px; /* Espaçamento entre o título e a primeira opção */
+        }
+        
+        .form-row span:first-child {
+             white-space: nowrap; /* Impede que o rótulo quebre linha */
+        }
+        
+        /* Ajuste para a segunda opção e seguintes */
+        .form-option + .form-option {
+            margin-left: 25px; /* Espaçamento entre opções (ex: Estadual e Municipal) */
+        }
+        
+        /* Texto de nota de rodapé (para o asterisco) */
+        .footnote {
+            font-size: 10pt;
+            margin-top: 5px;
+            margin-left: 20px; /* Alinha com o início das opções */
+        }
+        /* Texto legal justificado */
+        .legal-text {
+            text-align: justify;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        
+        /* Itens de lista (I, II) */
+        .list-item {
+            text-align: justify;
+            margin-left: 30px; /* Indentação para os itens I e II */
+            margin-bottom: 15px;
+        }
+        /* --- ESTILOS DA PARTE FINAL --- */
+        .signature-section {
+            margin-top: 40px; /* Espaço antes da linha de local/data */
+        }
+        .date-local-line {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start; /* Alinha à esquerda */
+            font-size: 12pt;
+            margin-bottom: 50px; /* Espaço até a linha de assinatura */
+        }
+        .date-local-line .input-line {
+             transform: translateY(0); /* Reseta o alinhamento vertical */
+        }
+        
+        .date-local-line span {
+            white-space: nowrap;
+        }
+        .signature-line-container {
+            text-align: center;
+        }
+        .signature-line {
+            border-bottom: 1px solid #000;
+            width: 100%; /* Linha completa */
+            max-width: 500px; /* Largura da assinatura */
+            margin: 0 auto; /* Centraliza a linha */
+        }
+        .signature-label {
+            margin-top: 8px;
+            font-size: 11pt;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <p class="header">ANEXO I</p>
+        <p class="header">PORTARIA Nº 450/PRES/INSS, DE 3 DE ABRIL DE 2020</p>
+        <h1 class="title">
+            DECLARAÇÃO DE RECEBIMENTO DE PENSÃO OU APOSENTADORIA EM OUTRO REGIME DE PREVIDÊNCIA
+        </h1>
+        <p class="declaration-paragraph">
+            Eu, <span class="input-line" style="width: 320px;">{{ client.name }}</span> <span class="input-label">(nome do requerente)</span>,
+            portador do CPF nº <span class="input-line" style="width: 120px;">{{ client.cpf }}</span> e RG nº <span class="input-line" style="width: 115px;">{{ client.rg }}</span>,
+            declaro, sob as penas do art. 299 do Código Penal, que:
+        </p>
+        
+        <div class="choice-group">
+            <span class="checkbox">{{#unless benefit.receives}}✓{{/unless}}</span>
+            <label>não recebo aposentadoria/pensão de outro regime de previdência.</label>
+        </div>
+        <div class="choice-group">
+            <span class="checkbox">{{#if benefit.receives}}✓{{/if}}</span>
+            <label>recebo aposentadoria/pensão de outro regime de previdência.</label>
+        </div>
+        
+        {{#if benefit.receives}}
+        <div class="conditional-section">
+            <p>Caso receba aposentadoria ou pensão de outro regime de previdência, deverá declarar:</p>
+            
+            <div class="form-row">
+                <span>- Tipo do benefício:</span>
+                <div class="form-option">
+                    <span class="checkbox">{{#if (eq benefit.type "pensao")}}✓{{/if}}</span>
+                    <label>Pensão*</label>
+                </div>
+                <div class="form-option">
+                    <span class="checkbox">{{#if (eq benefit.type "aposentadoria")}}✓{{/if}}</span>
+                    <label>Aposentadoria</label>
+                </div>
+            </div>
+            
+            {{#if (eq benefit.type "pensao")}}
+            <p class="footnote">
+                * Caso opção seja Pensão, informar se a relação com o instituidor era como cônjuge ou companheiro (a) - S/N 
+                <span class="checkbox" style="margin-left: 5px;">{{#if benefit.isSpouseRelation}}✓{{/if}}</span>
+            </p>
+            {{/if}}
+            
+            <div class="form-row">
+                <span>- Ente de origem:</span>
+                <div class="form-option">
+                    <span class="checkbox">{{#if (eq benefit.origin "estadual")}}✓{{/if}}</span>
+                    <label>Estadual</label>
+                </div>
+                <div class="form-option">
+                    <span class="checkbox">{{#if (eq benefit.origin "municipal")}}✓{{/if}}</span>
+                    <label>Municipal</label>
+                </div>
+                <div class="form-option">
+                    <span class="checkbox">{{#if (eq benefit.origin "federal")}}✓{{/if}}</span>
+                    <label>Federal</label>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                 <span>- Tipo de servidor:</span>
+                <div class="form-option">
+                    <span class="checkbox">{{#if (eq benefit.serverType "civil")}}✓{{/if}}</span>
+                    <label>Civil</label>
+                </div>
+                <div class="form-option">
+                    <span class="checkbox">{{#if (eq benefit.serverType "militar")}}✓{{/if}}</span>
+                    <label>Militar</label>
+                </div>
+            </div>
+            
+            <div class="form-row" style="margin-top: 15px;">
+                <span>- Data de início do benefício no outro regime:</span>
+                <span class="input-line" style="width: 40px; margin-left: 10px;">{{ benefit.startDay }}</span> /
+                <span class="input-line" style="width: 40px; margin-left: 5px;">{{ benefit.startMonth }}</span> /
+                <span class="input-line" style="width: 60px; margin-left: 5px;">{{ benefit.startYear }}</span>.
+            </div>
+            
+            <div class="form-row">
+                <span>- Nome do órgão da pensão/aposentadoria:</span>
+                <span class="input-line" style="width: 380px; margin-left: 10px;">{{ benefit.organizationName }}</span>
+            </div>
+            
+            <div class="form-row">
+                <span>- Última remuneração bruta*: R$</span>
+                <span class="input-line" style="width: 150px; margin-left: 10px;">{{ benefit.lastGrossSalary }}</span>
+                <span style="margin-left: 15px;">- Mês/ano:</span>
+                <span class="input-line" style="width: 40px; margin-left: 10px;">{{ benefit.salaryMonth }}</span> /
+                <span class="input-line" style="width: 60px; margin-left: 5px;">{{ benefit.salaryYear }}</span>
+            </div>
+            
+            <p class="footnote" style="margin-left: 0; margin-top: 5px;">
+                *Última remuneração bruta sem considerar valores de 13º salário (abono anual).
+            </p>
+            
+            <p class="legal-text">
+                Na Emenda Constitucional nº 103, de 12 de novembro de 2019, art. 24, § 1º, a acumulação de pensão por morte com outro benefício, sujeita à redução do valor daquele menos vantajoso, é admitida nas seguintes situações:
+            </p>
+            
+            <p class="list-item">
+                I - pensão por morte deixada por cônjuge ou companheiro (a) do RGPS com pensão por morte concedida por outro regime de previdência social, inclusive as decorrentes das atividades militares, exceto regime de previdência complementar; e
+            </p>
+            
+            <p class="list-item">
+                II - pensão por morte deixada por cônjuge ou companheiro (a) de qualquer regime de previdência social, inclusive as decorrentes das atividades militares, com aposentadoria concedida por qualquer regime de previdência social ou com proventos de inatividade decorrentes das atividades militares, exceto regime de previdência complementar.
+            </p>
+        </div>
+        {{/if}}
+        
+        <p class="legal-text" style="text-align: justify; margin-top: 25px;">
+            A declaração falsa ou diversa de fato ou situação real ocorrida, além de obrigar à devolução de eventuais importâncias recebidas indevidamente, quando for o caso, sujeitar-me-á às penalidades previstas nos arts. 171 e 299 do Código Penal.
+        </p>
+        
+        <div class="signature-section">
+            <div class="date-local-line">
+                <span>Local:</span>
+                <span class="input-line" style="width: 300px; margin-left: 10px;">{{ document.location }}</span>
+                <span style="margin-left: 30px;">Data:</span>
+                <span class="input-line" style="width: 40px; margin-left: 10px;">{{ document.day }}</span> /
+                <span class="input-line" style="width: 40px; margin-left: 5px;">{{ document.month }}</span> /
+                <span class="input-line" style="width: 60px; margin-left: 5px;">{{ document.year }}</span>
+            </div>
+            
+            <div class="signature-line-container">
+                <div class="signature-line"></div>
+                <p class="signature-label">Assinatura e identificação do (a) requerente ou representante legal</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
