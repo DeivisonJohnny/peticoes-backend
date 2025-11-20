@@ -99,11 +99,19 @@ docker-compose up -d
 pnpm prisma migrate dev
 ```
 
-6. **Popule o banco (opcional)**
+6. **Execute o seed (opcional)**
+
+Popula o banco com templates de documentos e cria um usuário admin padrão:
 
 ```bash
 pnpm prisma db seed
 ```
+
+**Credenciais do admin padrão:**
+- Email: `admin@example.com`
+- Senha: `12345678`
+
+> ⚠️ **Importante:** Altere essas credenciais em produção!
 
 7. **Inicie o servidor**
 
@@ -125,7 +133,55 @@ A API estará disponível em `http://localhost:3000` 🎉
 | **Users** | `/users` | Gerenciamento de usuários |
 | **Clients** | `/clients` | Gerenciamento de clientes |
 | **Document Templates** | `/document-templates` | Templates de documentos |
-| **Generated Documents** | `/generated-documents` | Documentos gerados |
+| **Documents** | `/documents` | Geração de documentos |
+| **Generated Documents** | `/generated-documents` | Documentos gerados e download |
+
+### Templates de Documentos Disponíveis
+
+O sistema possui **10 templates** de documentos jurídicos prontos para geração:
+
+1. **Procuração e Declaração Judicial**
+2. **Contrato de Honorários**
+3. **Autodeclaração Rural**
+4. **Procuração Pessoa Física**
+5. **LOAS - Benefício para Deficiente**
+6. **Declaração de Não Recebimento**
+7. **LOAS - Auxílio-Doença**
+8. **LOAS - Idoso**
+9. **Procuração INSS**
+10. **Termo de Representação INSS**
+
+Cada template possui:
+- Arquivo `.hbs` (Handlebars) com o layout do documento
+- Arquivo `payloadSchema.json` com a estrutura de dados esperada
+- Gerador dedicado que converte dados em PDF
+
+### Estrutura do Código
+
+```
+src/
+├── auth/                      # Autenticação JWT
+├── users/                     # Gerenciamento de usuários
+├── clients/                   # CRUD de clientes
+├── documents/
+│   ├── adapters/             # Adaptação de payloads
+│   │   └── payload.adapter.ts
+│   ├── generators/           # Geradores de PDF
+│   │   ├── procuracao-declaracao-judiciais.generator.ts
+│   │   ├── contrato-honorarios.generator.ts
+│   │   └── ...
+│   ├── dto/                  # DTOs de requisição
+│   ├── documents.service.ts  # Lógica de negócio
+│   └── documents.controller.ts
+├── generated-documents/       # Histórico e download
+└── prisma/                   # Database e ORM
+
+templates/
+├── assets/                   # Imagens e fontes
+└── [template-name]/
+    ├── template.hbs         # Layout do documento
+    └── payloadSchema.json   # Estrutura de dados
+```
 
 ---
 
@@ -160,7 +216,22 @@ O token JWT é retornado automaticamente em um cookie `access_token` com as segu
 - `sameSite: 'strict'` - Proteção CSRF
 - Duração: 8 horas
 
-2. **Usando o token**
+2. **Logout**
+
+```http
+POST /auth/logout
+```
+
+**Resposta:**
+```json
+{
+  "message": "Logout realizado com sucesso"
+}
+```
+
+O cookie `access_token` é removido automaticamente do navegador.
+
+3. **Usando o token**
 
 O navegador enviará automaticamente o cookie em requisições subsequentes. Para requisições via axios/fetch, configure:
 
@@ -176,7 +247,7 @@ fetch('http://localhost:3000/users', {
 
 ### Rotas Protegidas
 
-Todas as rotas exceto `/auth/login` requerem autenticação. Se o token for inválido ou estiver expirado, você receberá:
+Todas as rotas exceto `/auth/login` e `/auth/logout` requerem autenticação. Se o token for inválido ou estiver expirado, você receberá:
 
 ```json
 {
@@ -215,7 +286,7 @@ GET /clients?page=1&limit=10&name=João&cpfCnpj=123&email=exemplo@email.com
       "email": "joao@email.com",
       "phone": "(11) 98765-4321",
       "isActive": true,
-      "createdAt": "2025-10-20T10:00:00.000Z"
+      "createdAt": "2025-11-12T10:00:00.000Z"
     }
   ],
   "meta": {
@@ -391,6 +462,16 @@ GET /generated-documents?clientId=xxx
 
 #### Gerar novo documento
 
+O sistema utiliza o **PayloadAdapter** para processar automaticamente os dados e adaptá-los ao formato dos templates.
+
+**Fluxo de Geração:**
+1. Requisição → Controller recebe dados
+2. Adaptação → PayloadAdapter transforma dados
+3. Mesclagem → Dados do cliente + extras adaptados
+4. Geração → PDF criado com Handlebars + Puppeteer
+5. Salvamento → Arquivo salvo e registro criado
+6. Resposta → Caminho e ID do documento
+
 ```http
 POST /generated-documents
 Content-Type: application/json
@@ -445,10 +526,46 @@ Retorna um arquivo ZIP contendo todos os PDFs solicitados.
 
 ### 👥 Usuários (`/users`)
 
-#### Listar usuários
+#### Listar todos os usuários
 
 ```http
-GET /users
+GET /users?page=1&limit=10&name=João&email=exemplo@email.com&role=LAWYER
+```
+
+**Query params opcionais:**
+- `page` - Número da página (padrão: 1)
+- `limit` - Itens por página (padrão: 10)
+- `name` - Filtrar por nome (busca parcial, case-insensitive)
+- `email` - Filtrar por email (busca parcial, case-insensitive)
+- `role` - Filtrar por role (`ADMIN`, `LAWYER`, `INTERN`)
+
+**Resposta paginada:**
+```json
+{
+  "data": [
+    {
+      "id": "usr_123",
+      "email": "joao@email.com",
+      "name": "João Silva",
+      "role": "LAWYER",
+      "isActive": true,
+      "createdAt": "2025-11-12T10:00:00.000Z",
+      "updatedAt": "2025-11-12T10:00:00.000Z"
+    }
+  ],
+  "meta": {
+    "totalItems": 25,
+    "currentPage": 1,
+    "itemsPerPage": 10,
+    "totalPages": 3
+  }
+}
+```
+
+#### Buscar usuário por ID
+
+```http
+GET /users/:id
 ```
 
 #### Criar usuário
@@ -535,12 +652,14 @@ Content-Type: application/json
   id: string;
   title: string;
   filePath: string; // Caminho do PDF
-  dataSnapshot: object; // Dados usados na geração
+  dataSnapshot: object; // Dados usados na geração (já adaptados)
   clientId: string;
   generatorId: string; // ID do usuário que gerou
   createdAt: Date;
 }
 ```
+
+> **Nota:** O campo `dataSnapshot` contém os dados após processamento pelo `PayloadAdapter`, já no formato esperado pelos templates.
 
 ---
 
@@ -621,6 +740,37 @@ JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
 
 ## 📝 Notas para o Frontend
 
+### PayloadAdapter
+
+O backend possui um **PayloadAdapter** que processa automaticamente os dados enviados pelo frontend. Transformações incluem:
+
+- Conversão de datas ISO para dia/mês/ano separados
+- Concatenação de endereços fragmentados
+- Mapeamento de campos entre estruturas flat e aninhadas
+- Normalização de valores booleanos
+
+**Exemplo de transformação:**
+```javascript
+// Frontend envia:
+{
+  documentDate: "2025-11-12T13:38:48.555Z",
+  addressStreet: "Rua Exemplo",
+  addressNumber: "123"
+}
+
+// Template recebe (após adaptação):
+{
+  document: {
+    day: "12",
+    month: "11", 
+    year: "2025"
+  },
+  address: "Rua Exemplo, 123"
+}
+```
+
+Para ver a estrutura esperada de cada documento, consulte os arquivos `payloadSchema.json` em `templates/[nome-do-template]/`.
+
 ### CORS
 
 O CORS está habilitado para todas as origens em desenvolvimento. Configure `withCredentials: true` para enviar cookies.
@@ -633,7 +783,7 @@ A API usa `class-validator`. Todos os erros de validação retornam um array de 
 
 Todas as datas são retornadas no formato ISO 8601:
 ```
-2025-10-20T15:30:00.000Z
+2025-11-12T15:30:00.000Z
 ```
 
 ### Paginação
@@ -697,4 +847,17 @@ Para dúvidas ou problemas:
 
 ---
 
-**Última atualização:** 23 de outubro de 2025
+## 👨‍💻 Desenvolvido por
+
+**Marco Pezzote**  
+Software Engineer
+
+Este projeto foi desenvolvido com foco em qualidade, escalabilidade e boas práticas de desenvolvimento.
+
+- 🛠️ **Stack:** NestJS, Prisma, PostgreSQL, TypeScript, Handlebars, Puppeteer
+- 📦 **Versão:** 1.1.0
+- 🗓️ **Data:** Novembro de 2025
+
+---
+
+**© 2025 - Sistema de Petições Jurídicas**

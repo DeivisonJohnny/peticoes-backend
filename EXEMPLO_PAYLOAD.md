@@ -1,5 +1,18 @@
 # Exemplos de Payload para Geração de Documentos
 
+## 📝 Sobre o PayloadAdapter
+
+O backend utiliza o **PayloadAdapter** (`src/documents/adapters/payload.adapter.ts`) que processa automaticamente os dados enviados pelo frontend, realizando transformações necessárias:
+
+- Conversão de datas ISO para dia/mês/ano separados
+- Concatenação de endereços fragmentados
+- Mapeamento de campos entre estruturas flat e aninhadas
+- Normalização de valores booleanos
+
+> **Nota:** Os payloads abaixo representam exemplos do formato que o frontend pode enviar. O adapter se encarrega de transformá-los para o formato esperado pelos templates.
+
+---
+
 ## 📋 Templates Disponíveis
 
 ### 1. **Procuração e Declaração Judicial**
@@ -343,6 +356,53 @@
     "document": {
       "location": "São Paulo",
       "day": "15",
+      "month": "11",
+      "year": "2025"
+    }
+  }
+}
+```
+
+### 10. **Termo de Representação INSS**
+
+```json
+{
+  "clientId": "cliente_123",
+  "templateId": "template_termo_representacao_inss",
+  "extraData": {
+    "client": {
+      "name": "João Silva Santos",
+      "cpf": "123.456.789-00",
+      "rg": "12.345.678-9",
+      "city": "Barueri",
+      "cep": "06400-000"
+    },
+    "lawyer": {
+      "name": "Maria Oliveira Pereira",
+      "cpf": "987.654.321-00",
+      "oab": "123456",
+      "nit": "12345678901"
+    },
+    "benefits": {
+      "aposentadoria_idade": true,
+      "aposentadoria_idade_urbana": true,
+      "aposentadoria_idade_rural": false,
+      "aposentadoria_contribuicao": false,
+      "aposentadoria_especial": false,
+      "pensao_morte": false,
+      "pensao_morte_urbana": false,
+      "pensao_morte_rural": false,
+      "auxilio_reclusao": false,
+      "auxilio_reclusao_urbano": false,
+      "auxilio_reclusao_rural": false,
+      "salario_maternidade": false,
+      "salario_maternidade_urbano": false,
+      "salario_maternidade_rural": false,
+      "atualizacao_cadastral": false
+    },
+    "document": {
+      "location": "Barueri",
+      "day": "12",
       "month": "11",
       "year": "2025"
     }

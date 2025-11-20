@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Termo de Representação INSS</title>
+    <style>
+        body {
+            font-size: 12pt;
+            line-height: 1.5;
+            color: #000;
+            background-color: #fff;
+            width: 18cm;
+            margin: 0.5cm auto 2cm auto;
+            padding: 0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            font-size: 14pt;
+            margin: 0;
+            padding: 0;
+            font-weight: bold;
+        }
+        .header p {
+            font-size: 11pt;
+            margin: 5px 0 0 0;
+            padding: 0;
+        }
+        .section-title {
+            font-size: 13pt;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 25px;
+            text-decoration: underline;
+            text-transform: uppercase;
+        }
+        
+        .form-field {
+            border-bottom: 1px solid #000;
+            padding: 0 2px;
+            height: 1.2em;
+            display: inline-block;
+            vertical-align: middle;
+            min-width: 50px;
+        }
+        
+        .paragraph {
+            text-align: justify;
+            margin-bottom: 0px;
+            text-indent: 0;
+        }
+        
+        .checkbox-list {
+            list-style-type: none;
+            padding-left: 0;
+            margin-top: 10px;
+            margin-bottom: 0px;
+            padding: 10px 10px;
+            border: 1.5px solid rgb(165, 165, 165);
+        }
+        .checkbox-list li {
+            position: relative;
+            margin-bottom: 8px;
+        }
+        
+        .checkbox-list input[type="checkbox"] {
+            margin-right: 6px;
+            vertical-align: middle;
+            position: relative;
+            top: -1px;
+            transform: scale(1.1);
+        }
+        
+        .checkbox-option-group {
+            display: inline-block;
+            margin-left: 15px;
+        }
+        
+        .checkbox-option-group label {
+            margin-right: 15px;
+            font-weight: normal;
+        }
+
+        .checkbox-list label {
+            cursor: pointer;
+        }
+        
+        .signature-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 40px;
+            margin-bottom: 10px;
+        }
+        .date-location-field {
+            white-space: nowrap;
+            font-size: 11pt;
+        }
+        .date-part {
+            border-bottom: 1px solid #000;
+            width: 30px;
+            display: inline-block;
+            height: 1.2em;
+        }
+        .signature-container {
+            width: 60%;
+            text-align: center;
+            margin-bottom: -17px;
+        }
+        .signature-line {
+            border-bottom: 1px solid #000;
+            width: 100%;
+            height: 1.2em;
+            display: block;
+        }
+        .signature-label {
+            font-size: 9pt;
+            font-style: italic;
+            margin-top: 5px;
+        }
+
+        .small-text {
+            font-size: 9pt;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <img src="brasaooficialcolorido.png" alt="brasao" style="width: 200px;" >
+        <p style="font-size: 13px; font-family: Arial, Helvetica, sans-serif; font-weight: bolder; margin-top: -14px; " >INSTITUTO NACIONAL DO SEGURO SOCIAL</p>
+        <p>ANEXO VI</p>
+        <h1>INSTITUTO NACIONAL DO SEGURO SOCIAL</h1>
+        <p>TERMO DE REPRESENTAÇÃO E AUTORIZAÇÃO DE ACESSO A INFORMAÇÕES PREVIDENCIÁRIAS</p>
+    </div>
+
+    <div class="paragraph">
+        Eu, <span class="form-field" style="width: 300px;">{{client.name}}</span>, inscrito (a) no
+        CPF nº <span class="form-field" style="width: 150px;">{{client.cpf}}</span>, RG nº <span class="form-field" style="width: 150px;">{{client.rg}}</span>, residente e domiciliado (a) em,
+        no Município de <span class="form-field" style="width: 200px;">{{client.city}}</span>, CEP <span class="form-field" style="width: 100px;">{{client.cep}}</span>, representado pelo
+        advogado <span class="form-field" style="width: 200px;">{{lawyer.name}}</span>
+        CPF nº <span class="form-field" style="width: 100px;">{{lawyer.cpf}}</span>, OAB Nº <span class="form-field" style="width: 80px;">{{lawyer.oab}}</span>, NIT nº <span class="form-field" style="width: 120px;">{{lawyer.nit}}</span>, CONFIRMO PODERES
+        ESPECÍFICOS para me representar perante o INSS na solicitação do serviço ou benefício abaixo
+        indicado e AUTORIZO o (a) referido (a) profissional a ter acesso apenas às informações pessoais
+        necessárias a subsidiar o requerimento eletrônico do serviço ou benefício abaixo elencado:
+    </div>
+
+    <ul class="checkbox-list">
+        <li>
+            <label>
+                <input type="checkbox" {{#if benefits.aposentadoria_idade}}checked{{/if}} disabled>
+                I. Aposentadoria por Idade
+            </label>
+            {{#if benefits.aposentadoria_idade}}
+            <div class="checkbox-option-group">
+                <label>
+                    <input type="checkbox" {{#if benefits.aposentadoria_idade_urbana}}checked{{/if}} disabled>
+                    urbana
+                </label>
+                <label>
+                    <input type="checkbox" {{#if benefits.aposentadoria_idade_rural}}checked{{/if}} disabled>
+                    rural
+                </label>
+            </div>
+            {{/if}}
+        </li>
+        <li>
+            <label>
+                <input type="checkbox" {{#if benefits.aposentadoria_contribuicao}}checked{{/if}} disabled>
+                II. Aposentadoria por Tempo de Contribuição
+            </label>
+        </li>
+        <li>
+            <label>
+                <input type="checkbox" {{#if benefits.aposentadoria_especial}}checked{{/if}} disabled>
+                III. Aposentadoria Especial
+            </label>
+        </li>
+        <li>
+            <label>
+                <input type="checkbox" {{#if benefits.pensao_morte}}checked{{/if}} disabled>
+                IV. Pensão por Morte Previdenciária
+            </label>
+            {{#if benefits.pensao_morte}}
+            <div class="checkbox-option-group">
+                <label>
+                    <input type="checkbox" {{#if benefits.pensao_morte_urbana}}checked{{/if}} disabled>
+                    urbana
+                </label>
+                <label>
+                    <input type="checkbox" {{#if benefits.pensao_morte_rural}}checked{{/if}} disabled>
+                    rural
+                </label>
+            </div>
+            {{/if}}
+        </li>
+        <li>
+            <label>
+                <input type="checkbox" {{#if benefits.auxilio_reclusao}}checked{{/if}} disabled>
+                V. Auxílio-Reclusão
+            </label>
+            {{#if benefits.auxilio_reclusao}}
+            <div class="checkbox-option-group">
+                <label>
+                    <input type="checkbox" {{#if benefits.auxilio_reclusao_urbano}}checked{{/if}} disabled>
+                    urbano
+                </label>
+                <label>
+                    <input type="checkbox" {{#if benefits.auxilio_reclusao_rural}}checked{{/if}} disabled>
+                    rural
+                </label>
+            </div>
+            {{/if}}
+        </li>
+        <li>
+            <label>
+                <input type="checkbox" {{#if benefits.salario_maternidade}}checked{{/if}} disabled>
+                VI. Salário Maternidade
+            </label>
+            {{#if benefits.salario_maternidade}}
+            <div class="checkbox-option-group">
+                <label>
+                    <input type="checkbox" {{#if benefits.salario_maternidade_urbano}}checked{{/if}} disabled>
+                    urbano
+                </label>
+                <label>
+                    <input type="checkbox" {{#if benefits.salario_maternidade_rural}}checked{{/if}} disabled>
+                    rural
+                </label>
+            </div>
+            {{/if}}
+        </li>
+        <li>
+            <label>
+                <input type="checkbox" {{#if benefits.atualizacao_cadastral}}checked{{/if}} disabled>
+                VII. Atualização cadastral
+            </label>
+        </li>
+    </ul>
+    <p class="paragraph">
+        Podendo, para tanto, praticar os atos necessários ao cumprimento deste mandato, em especial, prestar
+        informações, acompanhar requerimentos, cumprir exigências, ter vistas e tomar ciência de decisões
+        sobre processos de requerimento de benefícios operacionalizados pelo Instituto.
+    </p>
+
+    <div class="signature-area">
+        <div class="date-location-field">
+            {{document.location}} <span class="date-part">{{document.day}}</span> / <span class="date-part">{{document.month}}</span> / <span class="date-part" style="width: 40px;">{{document.year}}</span>
+        </div>
+        <div class="signature-container">
+            <span class="signature-line"></span>
+            <div class="signature-label">Assinatura do (a) Representado (a)</div>
+        </div>
+    </div>
+
+    <p class="section-title">TERMO DE RESPONSABILIDADE</p>
+
+    <p class="paragraph">
+        Por este Termo de Responsabilidade, comprometo-me a comunicar ao INSS qualquer evento que
+        possa anular esta Procuração, no prazo de trinta dias, a contar da data que o mesmo ocorra,
+        principalmente o óbito do segurado / pensionista, mediante apresentação da respectiva certidão.
+    </p>
+    <p class="paragraph">
+        Estou ciente de que o descumprimento do compromisso ora assumido, além de obrigar a devolução
+        de importâncias recebidas indevidamente, quando for o caso, sujeitar-me-á às penalidades previstas
+        nos arts. 171 e 299, ambos do Código Penal.
+    </p>
+
+    <div class="signature-area">
+        <div class="date-location-field">
+            {{document.location}} <span class="date-part">{{document.day}}</span> / <span class="date-part">{{document.month}}</span> / <span class="date-part" style="width: 40px;">{{document.year}}</span>
+        </div>
+        <div class="signature-container">
+            <span class="signature-line"></span>
+            <div class="signature-label">Assinatura do (a) Procurador (a)</div>
+        </div>
+    </div>
+
+    <p class="section-title" style="text-align: left; text-decoration: none; margin-top: 40px; font-size: 12pt;">CÓDIGO PENAL</p>
+
+    <p class="paragraph">
+        <span style="font-weight: bold;">Art. 171.</span> Obter, para si ou para outrem, vantagem ilícita, em prejuízo alheio, induzindo ou
+        mantendo alguém em erro, mediante artifício, ardil ou qualquer outro meio fraudulento.
+    </p>
+    <p class="paragraph">
+        <span style="font-weight: bold;">Art. 299.</span> Omitir, em documento público ou particular, declaração que devia constar, ou
+        nele inserir ou fazer inserir declaração falsa ou diversa da que devia ser escrita, com o fim de
+        prejudicar direito, criar, obrigação ou alterar a verdade sobre fato juridicamente
+        relevante.
+    </p>
+
+</body>
+</html>
+

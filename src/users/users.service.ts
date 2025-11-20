@@ -8,6 +8,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma, Role, User } from '@prisma/client';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { FindAllUsersDto } from './dto/find-all-users.dto';
 import * as bcrypt from 'bcrypt';
 import type { AuthUser } from '../auth/types/auth-user.type';
 
@@ -50,19 +51,60 @@ export class UsersService {
     return removePassword(user);
   }
 
-  async findAll() {
-    const users = await this.prisma.user.findMany({
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true,
-        isActive: true,
-        createdAt: true,
-        updatedAt: true,
+  async findAll(query: FindAllUsersDto) {
+    const { page = 1, limit = 10, name, email, role } = query;
+
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.UserWhereInput = {};
+
+    if (name) {
+      where.name = { contains: name, mode: 'insensitive' };
+    }
+
+    if (email) {
+      where.email = { contains: email, mode: 'insensitive' };
+    }
+
+    if (role) {
+      where.role = role;
+    }
+
+    where.isActive = true;
+
+    // Define ordenação: se há filtros, ordena por nome; senão, por data de criação (mais recentes primeiro)
+    const hasFilters = name || email || role;
+    
+    const [users, total] = await Promise.all([
+      this.prisma.user.findMany({
+        where,
+        skip,
+        take: limit,
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          role: true,
+          isActive: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+        orderBy: hasFilters 
+          ? { name: 'asc' }           // Com filtros: ordem alfabética
+          : { createdAt: 'desc' },    // Sem filtros: mais recentes primeiro
+      }),
+      this.prisma.user.count({ where }),
+    ]);
+
+    return {
+      data: users,
+      meta: {
+        totalItems: total,
+        currentPage: page,
+        itemsPerPage: limit,
+        totalPages: Math.ceil(total / limit),
       },
-    });
-    return users;
+    };
   }
 
   async findOne(id: string) {

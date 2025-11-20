@@ -13,6 +13,8 @@ import { generateDeclaracaoNaoRecebimento } from './generators/declaracao-nao-re
 import { generateLoasAuxilioDoenca } from './generators/loas-auxilio-doenca.generator';
 import { generateLoasIdoso } from './generators/loas-idoso.generator';
 import { generateProcuracaoInss } from './generators/procuracao-inss.generator';
+import { generateTermoRepresentacaoInss } from './generators/termo-representacao-inss.generator';
+import { PayloadAdapter } from './adapters/payload.adapter';
 import { Client, DocumentTemplate } from '@prisma/client';
 
 // Mapa de geradores - deve corresponder exatamente aos títulos no banco
@@ -26,6 +28,7 @@ const documentGenerators = {
   'LOAS - Auxílio-Doença': generateLoasAuxilioDoenca,
   'LOAS - Idoso': generateLoasIdoso,
   'Procuração INSS': generateProcuracaoInss,
+  'Termo de Representação INSS': generateTermoRepresentacaoInss,
 };
 
 @Injectable()
@@ -110,7 +113,7 @@ export class DocumentsService {
   }
 
   /**
-   * NOVO MÉTODO PRIVADO: Centraliza a lógica de geração e salvamento.
+   * Centraliza a lógica de geração e salvamento de documentos.
    */
   private async _generateAndSaveDocument(
     client: Client,
@@ -118,24 +121,27 @@ export class DocumentsService {
     extraData: Record<string, any>,
     generatorId: string,
   ) {
+    // Adapta os dados do frontend usando o PayloadAdapter
+    const adaptedExtraData = PayloadAdapter.adapt(extraData, template.title);
+    
     // 1. LÓGICA CENTRAL: Organizar os dados na estrutura esperada pelos templates
     // Os templates esperam: client.* e document.*
     const finalPayload = {
       client: {
         ...client,
         // Sobrescreve campos do cliente com dados extras se fornecidos
-        ...(extraData.client || {}),
+        ...(adaptedExtraData.client || {}),
       },
       document: {
         // Dados padrão do documento
         documentLocation: 'São Paulo/SP',
         documentDate: new Date(),
         // Sobrescreve com dados extras se fornecidos
-        ...(extraData.document || {}),
+        ...(adaptedExtraData.document || {}),
       },
       // Inclui outros dados extras no nível raiz
       ...Object.fromEntries(
-        Object.entries(extraData).filter(([key]) => !['client', 'document'].includes(key))
+        Object.entries(adaptedExtraData).filter(([key]) => !['client', 'document'].includes(key))
       ),
     };
 

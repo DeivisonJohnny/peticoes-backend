@@ -7,12 +7,14 @@ import {
   Patch,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { FindAllUsersDto } from './dto/find-all-users.dto';
+import { ApiOperation, ApiResponse, ApiTags, ApiQuery } from '@nestjs/swagger';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import type { AuthUser } from '../auth/types/auth-user.type';
 
@@ -37,13 +39,18 @@ export class UsersController {
 
   @Get()
   @UseGuards(AuthGuard('jwt'))
-  @ApiOperation({ summary: 'Lista todos os usuários' })
+  @ApiOperation({ summary: 'Lista e filtra todos os usuários' })
+  @ApiQuery({ name: 'name', required: false, description: 'Filtrar por nome (busca parcial, case-insensitive)' })
+  @ApiQuery({ name: 'email', required: false, description: 'Filtrar por email (busca parcial, case-insensitive)' })
+  @ApiQuery({ name: 'role', required: false, enum: ['ADMIN', 'LAWYER', 'INTERN'], description: 'Filtrar por role' })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Número da página (padrão: 1)' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Itens por página (padrão: 10)' })
   @ApiResponse({
     status: 200,
     description: 'Lista de usuários retornada com sucesso.',
   })
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Query() query: FindAllUsersDto) {
+    return this.usersService.findAll(query);
   }
 
   @Get(':id')

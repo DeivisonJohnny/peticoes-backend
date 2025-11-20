@@ -1,6 +1,8 @@
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient, Prisma, Role } from '@prisma/client';
 import { promises as fs } from 'fs';
 import * as path from 'path';
+import bcrypt from "bcrypt";
+
 
 const prisma = new PrismaClient();
 
@@ -41,9 +43,32 @@ const templatesToSeed = [
     title: 'Procuração INSS',
     folderName: 'procuracao-inss',
   },
+  {
+    title: 'Termo de Representação INSS',
+    folderName: 'termo-representacao-inss',
+  },
 ];
 
 async function main() {
+
+  console.log('Iniciando o seeding do usuário admin...');
+  const hashedPassword = await bcrypt.hash('12345678', 10);
+
+  await prisma.user.upsert({
+    where: { email: 'admin@example.com' },
+    update: {
+      password: hashedPassword,
+      role: Role.ADMIN,
+    },
+    create: {
+      email: 'admin@example.com',
+      name: 'Admin',
+      password: hashedPassword,
+      role: Role.ADMIN,
+    },
+  });
+
+  console.log(`- Usuário 'admin@example.com' criado/atualizado.`);
   console.log('Iniciando o seeding dos templates de documento...');
 
   for (const template of templatesToSeed) {

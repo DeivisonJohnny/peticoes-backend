@@ -1,0 +1,148 @@
+{
+  "type": "object",
+  "title": "Schema para Termo de Representação INSS",
+  "description": "Campos necessários para gerar o Termo de Representação e Autorização de Acesso a Informações Previdenciárias do INSS",
+  "properties": {
+    "client": {
+      "type": "object",
+      "description": "Dados do cliente/representado",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Nome completo do cliente"
+        },
+        "cpf": {
+          "type": "string",
+          "description": "CPF formatado (ex: 123.456.789-00)"
+        },
+        "rg": {
+          "type": "string",
+          "description": "RG do cliente"
+        },
+        "city": {
+          "type": "string",
+          "description": "Município de residência"
+        },
+        "cep": {
+          "type": "string",
+          "description": "CEP formatado (ex: 12345-678)"
+        }
+      },
+      "required": ["name", "cpf", "rg", "city", "cep"]
+    },
+    "lawyer": {
+      "type": "object",
+      "description": "Dados do advogado/procurador",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Nome completo do advogado"
+        },
+        "cpf": {
+          "type": "string",
+          "description": "CPF do advogado formatado (ex: 123.456.789-00)"
+        },
+        "oab": {
+          "type": "string",
+          "description": "Número da OAB"
+        },
+        "nit": {
+          "type": "string",
+          "description": "NIT (Número de Identificação do Trabalhador) do advogado"
+        }
+      },
+      "required": ["name", "cpf", "oab", "nit"]
+    },
+    "benefits": {
+      "type": "object",
+      "description": "Tipos de benefícios/serviços selecionados",
+      "properties": {
+        "aposentadoria_idade": {
+          "type": "boolean",
+          "description": "Aposentadoria por Idade"
+        },
+        "aposentadoria_idade_urbana": {
+          "type": "boolean",
+          "description": "Aposentadoria por Idade - urbana"
+        },
+        "aposentadoria_idade_rural": {
+          "type": "boolean",
+          "description": "Aposentadoria por Idade - rural"
+        },
+        "aposentadoria_contribuicao": {
+          "type": "boolean",
+          "description": "Aposentadoria por Tempo de Contribuição"
+        },
+        "aposentadoria_especial": {
+          "type": "boolean",
+          "description": "Aposentadoria Especial"
+        },
+        "pensao_morte": {
+          "type": "boolean",
+          "description": "Pensão por Morte Previdenciária"
+        },
+        "pensao_morte_urbana": {
+          "type": "boolean",
+          "description": "Pensão por Morte - urbana"
+        },
+        "pensao_morte_rural": {
+          "type": "boolean",
+          "description": "Pensão por Morte - rural"
+        },
+        "auxilio_reclusao": {
+          "type": "boolean",
+          "description": "Auxílio-Reclusão"
+        },
+        "auxilio_reclusao_urbano": {
+          "type": "boolean",
+          "description": "Auxílio-Reclusão - urbano"
+        },
+        "auxilio_reclusao_rural": {
+          "type": "boolean",
+          "description": "Auxílio-Reclusão - rural"
+        },
+        "salario_maternidade": {
+          "type": "boolean",
+          "description": "Salário Maternidade"
+        },
+        "salario_maternidade_urbano": {
+          "type": "boolean",
+          "description": "Salário Maternidade - urbano"
+        },
+        "salario_maternidade_rural": {
+          "type": "boolean",
+          "description": "Salário Maternidade - rural"
+        },
+        "atualizacao_cadastral": {
+          "type": "boolean",
+          "description": "Atualização cadastral"
+        }
+      }
+    },
+    "document": {
+      "type": "object",
+      "description": "Dados do documento",
+      "properties": {
+        "location": {
+          "type": "string",
+          "description": "Local de assinatura (ex: Barueri)"
+        },
+        "day": {
+          "type": "string",
+          "description": "Dia da assinatura (ex: 12)"
+        },
+        "month": {
+          "type": "string",
+          "description": "Mês da assinatura (ex: 11)"
+        },
+        "year": {
+          "type": "string",
+          "description": "Ano da assinatura (ex: 2025)"
+        }
+      },
+      "required": ["location", "day", "month", "year"]
+    }
+  },
+  "required": ["client", "lawyer", "benefits", "document"]
+}
+
