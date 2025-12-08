@@ -93,7 +93,7 @@ export class ClientsService {
 
   async findOne(id: string) {
     try {
-      return await this.prisma.client.findUniqueOrThrow({
+      const client = await this.prisma.client.findUniqueOrThrow({
         where: { id },
         select: {
           id: true,
@@ -114,8 +114,39 @@ export class ClientsService {
           occupation: true,
           createdAt: true,
           updatedAt: true,
+          documents: {
+            select: {
+              id: true,
+              title: true,
+              dataSnapshot: true,
+              createdAt: true,
+            },
+            orderBy: {
+              createdAt: 'desc',
+            },
+          },
         },
       });
+      
+      const documentsByType = new Map<string, any>();
+
+      for (const doc of client.documents) {
+        if (!documentsByType.has(doc.title)) {
+          documentsByType.set(doc.title, {
+            id: doc.id,
+            title: doc.title,
+            dataSnapshot: doc.dataSnapshot,
+            createdAt: doc.createdAt,
+          });
+        }
+      }
+
+      const { documents, ...clientData } = client;
+
+      return {
+        ...clientData,
+        lastDocuments: Array.from(documentsByType.values()),
+      };
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {
