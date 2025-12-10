@@ -8,18 +8,18 @@ export class FindAllClientsDto {
 
     @IsOptional()
     @IsString()
-    cpfCnpj?: string;
+    phone?: string;
 
     @IsOptional()
     @IsString()
-    email?: string;
+    cpfCnpj?: string;
 
     @IsOptional()
     @Type(() => Number)
     @IsInt()
     @Min(1)
     page?: number = 1;
-    
+
     @IsOptional()
     @Type(() => Number)
     @IsInt()
