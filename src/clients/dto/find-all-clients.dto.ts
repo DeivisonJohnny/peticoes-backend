@@ -15,6 +15,10 @@ export class FindAllClientsDto {
     cpfCnpj?: string;
 
     @IsOptional()
+    @IsString()
+    email?: string;
+
+    @IsOptional()
     @Type(() => Number)
     @IsInt()
     @Min(1)
