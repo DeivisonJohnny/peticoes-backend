@@ -74,7 +74,7 @@ export class ClientsService {
     }
 
     if (phone) {
-      where.phone = { contains: phone };
+      where.phone = { not: null };
     }
 
     // Define ordenação: se há filtros, ordena por nome; senão, por data de criação (mais recentes primeiro)
@@ -83,19 +83,20 @@ export class ClientsService {
     let clients: any[];
     let total: number;
 
-    if (cpfCnpj) {
+    // Se houver filtro de CPF/CNPJ ou telefone, usa query raw para remover formatação
+    if (cpfCnpj || phone) {
       const orderBy = hasFilters ? 'name ASC' : '"createdAt" DESC';
 
       clients = await this.prisma.$queryRaw`
         SELECT * FROM "Client"
         WHERE "isActive" = true
-        AND (
+        ${cpfCnpj ? Prisma.sql`AND (
           REPLACE(REPLACE(REPLACE(COALESCE(cpf, ''), '.', ''), '-', ''), '/', '') LIKE ${`%${cpfCnpj}%`}
           OR REPLACE(REPLACE(REPLACE(COALESCE(cnpj, ''), '.', ''), '-', ''), '/', '') LIKE ${`%${cpfCnpj}%`}
-        )
+        )` : Prisma.empty}
+        ${phone ? Prisma.sql`AND REPLACE(REPLACE(REPLACE(REPLACE(COALESCE(phone, ''), '(', ''), ')', ''), '-', ''), ' ', '') LIKE ${`%${phone}%`}` : Prisma.empty}
         ${name ? Prisma.sql`AND LOWER(name) LIKE LOWER(${`%${name}%`})` : Prisma.empty}
         ${email ? Prisma.sql`AND LOWER(email) LIKE LOWER(${`%${email}%`})` : Prisma.empty}
-        ${phone ? Prisma.sql`AND phone LIKE ${`%${phone}%`}` : Prisma.empty}
         ORDER BY ${Prisma.raw(orderBy)}
         LIMIT ${limit} OFFSET ${skip}
       `;
@@ -103,13 +104,13 @@ export class ClientsService {
       const countResult = await this.prisma.$queryRaw<[{ count: bigint }]>`
         SELECT COUNT(*) as count FROM "Client"
         WHERE "isActive" = true
-        AND (
+        ${cpfCnpj ? Prisma.sql`AND (
           REPLACE(REPLACE(REPLACE(COALESCE(cpf, ''), '.', ''), '-', ''), '/', '') LIKE ${`%${cpfCnpj}%`}
           OR REPLACE(REPLACE(REPLACE(COALESCE(cnpj, ''), '.', ''), '-', ''), '/', '') LIKE ${`%${cpfCnpj}%`}
-        )
+        )` : Prisma.empty}
+        ${phone ? Prisma.sql`AND REPLACE(REPLACE(REPLACE(REPLACE(COALESCE(phone, ''), '(', ''), ')', ''), '-', ''), ' ', '') LIKE ${`%${phone}%`}` : Prisma.empty}
         ${name ? Prisma.sql`AND LOWER(name) LIKE LOWER(${`%${name}%`})` : Prisma.empty}
         ${email ? Prisma.sql`AND LOWER(email) LIKE LOWER(${`%${email}%`})` : Prisma.empty}
-        ${phone ? Prisma.sql`AND phone LIKE ${`%${phone}%`}` : Prisma.empty}
       `;
 
       total = Number(countResult[0].count);
