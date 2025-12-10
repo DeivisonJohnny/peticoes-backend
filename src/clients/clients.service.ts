@@ -55,12 +55,16 @@ export class ClientsService {
     }
 
     if (cpfCnpj) {
-      where.AND = [
+      where.OR = [
         {
-          OR: [
-            { cpf: { contains: cpfCnpj } },
-            { cnpj: { contains: cpfCnpj } },
-          ],
+          cpf: {
+            not: null,
+          },
+        },
+        {
+          cnpj: {
+            not: null,
+          },
         },
       ];
     }
@@ -75,18 +79,53 @@ export class ClientsService {
 
     // Define ordenação: se há filtros, ordena por nome; senão, por data de criação (mais recentes primeiro)
     const hasFilters = name || cpfCnpj || email || phone;
-    
-    const [clients, total] = await Promise.all([
-      this.prisma.client.findMany({
-        where,
-        skip,
-        take: limit,
-        orderBy: hasFilters 
-          ? { name: 'asc' }           // Com filtros: ordem alfabética
-          : { createdAt: 'desc' },    // Sem filtros: mais recentes primeiro
-      }),
-      this.prisma.client.count({ where }),
-    ]);
+
+    let clients: any[];
+    let total: number;
+
+    if (cpfCnpj) {
+      const orderBy = hasFilters ? 'name ASC' : '"createdAt" DESC';
+
+      clients = await this.prisma.$queryRaw`
+        SELECT * FROM "Client"
+        WHERE "isActive" = true
+        AND (
+          REPLACE(REPLACE(REPLACE(COALESCE(cpf, ''), '.', ''), '-', ''), '/', '') LIKE ${`%${cpfCnpj}%`}
+          OR REPLACE(REPLACE(REPLACE(COALESCE(cnpj, ''), '.', ''), '-', ''), '/', '') LIKE ${`%${cpfCnpj}%`}
+        )
+        ${name ? Prisma.sql`AND LOWER(name) LIKE LOWER(${`%${name}%`})` : Prisma.empty}
+        ${email ? Prisma.sql`AND LOWER(email) LIKE LOWER(${`%${email}%`})` : Prisma.empty}
+        ${phone ? Prisma.sql`AND phone LIKE ${`%${phone}%`}` : Prisma.empty}
+        ORDER BY ${Prisma.raw(orderBy)}
+        LIMIT ${limit} OFFSET ${skip}
+      `;
+
+      const countResult = await this.prisma.$queryRaw<[{ count: bigint }]>`
+        SELECT COUNT(*) as count FROM "Client"
+        WHERE "isActive" = true
+        AND (
+          REPLACE(REPLACE(REPLACE(COALESCE(cpf, ''), '.', ''), '-', ''), '/', '') LIKE ${`%${cpfCnpj}%`}
+          OR REPLACE(REPLACE(REPLACE(COALESCE(cnpj, ''), '.', ''), '-', ''), '/', '') LIKE ${`%${cpfCnpj}%`}
+        )
+        ${name ? Prisma.sql`AND LOWER(name) LIKE LOWER(${`%${name}%`})` : Prisma.empty}
+        ${email ? Prisma.sql`AND LOWER(email) LIKE LOWER(${`%${email}%`})` : Prisma.empty}
+        ${phone ? Prisma.sql`AND phone LIKE ${`%${phone}%`}` : Prisma.empty}
+      `;
+
+      total = Number(countResult[0].count);
+    } else {
+      [clients, total] = await Promise.all([
+        this.prisma.client.findMany({
+          where,
+          skip,
+          take: limit,
+          orderBy: hasFilters
+            ? { name: 'asc' }           // Com filtros: ordem alfabética
+            : { createdAt: 'desc' },    // Sem filtros: mais recentes primeiro
+        }),
+        this.prisma.client.count({ where }),
+      ]);
+    }
 
      return {
       data: clients,
