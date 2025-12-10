@@ -42,20 +42,26 @@ export class ClientsService {
 
   async findAll(query: FindAllClientsDto) {
 
-    const { page = 1, limit = 10, name, cpfCnpj, email} = query;
+    const { page = 1, limit = 10, name, cpfCnpj, email, phone} = query;
 
     const skip = (page - 1) * limit;
 
-    const where: Prisma.ClientWhereInput = {};
+    const where: Prisma.ClientWhereInput = {
+      isActive: true,
+    };
 
     if (name) {
       where.name = { contains: name, mode: 'insensitive' };
     }
 
     if (cpfCnpj) {
-      where.OR = [
-        { cpf: { contains: cpfCnpj } },
-        { cnpj: { contains: cpfCnpj } },
+      where.AND = [
+        {
+          OR: [
+            { cpf: { contains: cpfCnpj } },
+            { cnpj: { contains: cpfCnpj } },
+          ],
+        },
       ];
     }
 
@@ -63,10 +69,12 @@ export class ClientsService {
       where.email = { contains: email, mode: 'insensitive' };
     }
 
-    where.isActive = true;
+    if (phone) {
+      where.phone = { contains: phone };
+    }
 
     // Define ordenação: se há filtros, ordena por nome; senão, por data de criação (mais recentes primeiro)
-    const hasFilters = name || cpfCnpj || email;
+    const hasFilters = name || cpfCnpj || email || phone;
     
     const [clients, total] = await Promise.all([
       this.prisma.client.findMany({
