@@ -32,6 +32,7 @@ model Client {
   cpf           String?   @unique
   cnpj          String?   @unique
   address       String?
+  cep           String?
   phone         String?
   dateOfBirth   DateTime?
   rg            String?
@@ -42,7 +43,6 @@ model Client {
   nationality   String?
   motherName    String?
   occupation    String?
-  email         String?   @unique
   isActive      Boolean   @default(true)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt

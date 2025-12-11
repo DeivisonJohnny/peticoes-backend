@@ -143,6 +143,7 @@ export class ClientsService {
           cpf: true,
           cnpj: true,
           address: true,
+          cep: true,
           phone: true,
           dateOfBirth: true,
           rg: true,

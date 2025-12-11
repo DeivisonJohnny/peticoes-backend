@@ -26,6 +26,10 @@ export class CreateClientDto {
   @IsOptional()
   address?: string;
 
+  @IsString()
+  @IsOptional()
+  cep?: string;
+
   @IsPhoneNumber('BR', { message: 'O número de telefone é inválido.' })
   @IsOptional()
   phone?: string;
