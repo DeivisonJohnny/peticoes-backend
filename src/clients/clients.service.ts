@@ -42,7 +42,7 @@ export class ClientsService {
 
   async findAll(query: FindAllClientsDto) {
 
-    const { page = 1, limit = 10, name, cpfCnpj, email, phone} = query;
+    const { page = 1, limit = 10, name, cpfCnpj, phone} = query;
 
     const skip = (page - 1) * limit;
 
@@ -69,16 +69,12 @@ export class ClientsService {
       ];
     }
 
-    if (email) {
-      where.email = { contains: email, mode: 'insensitive' };
-    }
-
     if (phone) {
       where.phone = { not: null };
     }
 
     // Define ordenação: se há filtros, ordena por nome; senão, por data de criação (mais recentes primeiro)
-    const hasFilters = name || cpfCnpj || email || phone;
+    const hasFilters = name || cpfCnpj || phone;
 
     let clients: any[];
     let total: number;
@@ -96,7 +92,6 @@ export class ClientsService {
         )` : Prisma.empty}
         ${phone ? Prisma.sql`AND REPLACE(REPLACE(REPLACE(REPLACE(COALESCE(phone, ''), '(', ''), ')', ''), '-', ''), ' ', '') LIKE ${`%${phone}%`}` : Prisma.empty}
         ${name ? Prisma.sql`AND LOWER(name) LIKE LOWER(${`%${name}%`})` : Prisma.empty}
-        ${email ? Prisma.sql`AND LOWER(email) LIKE LOWER(${`%${email}%`})` : Prisma.empty}
         ORDER BY ${Prisma.raw(orderBy)}
         LIMIT ${limit} OFFSET ${skip}
       `;
@@ -110,7 +105,6 @@ export class ClientsService {
         )` : Prisma.empty}
         ${phone ? Prisma.sql`AND REPLACE(REPLACE(REPLACE(REPLACE(COALESCE(phone, ''), '(', ''), ')', ''), '-', ''), ' ', '') LIKE ${`%${phone}%`}` : Prisma.empty}
         ${name ? Prisma.sql`AND LOWER(name) LIKE LOWER(${`%${name}%`})` : Prisma.empty}
-        ${email ? Prisma.sql`AND LOWER(email) LIKE LOWER(${`%${email}%`})` : Prisma.empty}
       `;
 
       total = Number(countResult[0].count);
@@ -146,7 +140,6 @@ export class ClientsService {
         select: {
           id: true,
           name: true,
-          email: true,
           cpf: true,
           cnpj: true,
           address: true,

@@ -32,7 +32,7 @@ export class ClientsController {
   @ApiResponse({ status: 400, description: 'Dados inválidos.' })
   @ApiResponse({
     status: 409,
-    description: 'Conflito. CPF, CNPJ ou E-mail já está em uso.',
+    description: 'Conflito. CPF ou CNPJ já está em uso.',
   })
   create(@Body() createClientDto: CreateClientDto) {
     return this.clientsService.create(createClientDto);
@@ -65,7 +65,7 @@ export class ClientsController {
   @ApiResponse({ status: 404, description: 'Cliente não encontrado.' })
   @ApiResponse({
     status: 409,
-    description: 'Conflito de dados (CPF, CNPJ ou E-mail já existem).',
+    description: 'Conflito de dados (CPF ou CNPJ já existem).',
   })
   update(@Param('id') id: string, @Body() updateClientDto: UpdateClientDto) {
     return this.clientsService.update(id, updateClientDto);

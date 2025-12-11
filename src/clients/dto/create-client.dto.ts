@@ -3,7 +3,6 @@ import {
   IsNotEmpty,
   IsOptional,
   IsPhoneNumber,
-  IsEmail,
   IsDate,
 } from 'class-validator';
 import { IsCPF } from 'src/common/decorators/is-cpf.validator';
@@ -14,10 +13,6 @@ export class CreateClientDto {
   @IsString()
   @IsNotEmpty({ message: 'O nome não pode ser vazio.' })
   name: string;
-
-  @IsEmail({}, { message: 'O e-mail informado é inválido.' })
-  @IsOptional()
-  email?: string;
 
   @IsCPF({ message: 'O CPF informado é inválido.' })
   @IsOptional()
