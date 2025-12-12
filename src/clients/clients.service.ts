@@ -42,7 +42,7 @@ export class ClientsService {
 
   async findAll(query: FindAllClientsDto) {
 
-    const { page = 1, limit = 10, name, cpfCnpj, phone} = query;
+    const { page = 1, limit = 10, name, cpfCnpj, phone, sortBy = 'createdAt', order = 'desc' } = query;
 
     const skip = (page - 1) * limit;
 
@@ -73,15 +73,15 @@ export class ClientsService {
       where.phone = { not: null };
     }
 
-    // Define ordenação: se há filtros, ordena por nome; senão, por data de criação (mais recentes primeiro)
-    const hasFilters = name || cpfCnpj || phone;
-
     let clients: any[];
     let total: number;
 
     // Se houver filtro de CPF/CNPJ ou telefone, usa query raw para remover formatação
     if (cpfCnpj || phone) {
-      const orderBy = hasFilters ? 'name ASC' : '"createdAt" DESC';
+      // Define ordenação baseada nos parâmetros sortBy e order
+      const orderByColumn = sortBy === 'name' ? 'name' : '"createdAt"';
+      const orderDirection = order.toUpperCase();
+      const orderBy = `${orderByColumn} ${orderDirection}`;
 
       clients = await this.prisma.$queryRaw`
         SELECT * FROM "Client"
@@ -109,14 +109,17 @@ export class ClientsService {
 
       total = Number(countResult[0].count);
     } else {
+      // Define ordenação para queries normais
+      const orderByConfig = sortBy === 'name'
+        ? { name: order as 'asc' | 'desc' }
+        : { createdAt: order as 'asc' | 'desc' };
+
       [clients, total] = await Promise.all([
         this.prisma.client.findMany({
           where,
           skip,
           take: limit,
-          orderBy: hasFilters
-            ? { name: 'asc' }           // Com filtros: ordem alfabética
-            : { createdAt: 'desc' },    // Sem filtros: mais recentes primeiro
+          orderBy: orderByConfig,
         }),
         this.prisma.client.count({ where }),
       ]);
