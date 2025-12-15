@@ -266,15 +266,20 @@ export class PayloadAdapter {
     const fieldMappings: Record<string, string> = {
       'jurisdiction': 'document.juizado',
       'caseValue': 'document.valorCausa',
+      'caseValueInWords': 'document.valorCausaExtenso',
       'expertSpecialty': 'document.especialidadePericia',
       'deniedBenefitNumber': 'benefit.number',
+      'requestedBenefit': 'benefit.requested',
+      'denialDate': 'benefit.denialDate',
       'der': 'benefit.der',
       'denialReason': 'benefit.denialReason',
       'illness': 'disease.name',
       'medicalDiagnosis': 'disease.name',
       'mainSymptoms': 'disease.symptoms',
       'resultingLimitations': 'disease.limitations',
+      'medicalInconsistencies': 'disease.inconsistencies',
       'occupation': 'occupation.title',
+      'occupationDescription': 'occupation.description',
       'generalWorkConditions': 'occupation.conditions',
     };
 
