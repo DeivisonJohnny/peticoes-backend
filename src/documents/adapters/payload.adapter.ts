@@ -262,6 +262,14 @@ export class PayloadAdapter {
       delete data.zipCode;
     }
 
+    // Primeiro, tratar occupation se vier como string
+    if ('occupation' in data && typeof data.occupation === 'string') {
+      const occupationValue = data.occupation;
+      data.occupation = {
+        title: occupationValue,
+      };
+    }
+
     // Mapear campos para estrutura esperada
     const fieldMappings: Record<string, string> = {
       'jurisdiction': 'document.juizado',
@@ -278,7 +286,6 @@ export class PayloadAdapter {
       'mainSymptoms': 'disease.symptoms',
       'resultingLimitations': 'disease.limitations',
       'medicalInconsistencies': 'disease.inconsistencies',
-      'occupation': 'occupation.title',
       'occupationDescription': 'occupation.description',
       'generalWorkConditions': 'occupation.conditions',
     };
