@@ -40,9 +40,36 @@ export class AuthController {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',
+      path: '/',
       expires: expiryDate,
     });
 
+    console.log(
+      `✅ [Login] Cookie configurado para ${user.email} - Produção: ${isProduction}`,
+    );
+
     return { message: 'Login bem-sucedido' };
+  }
+
+  @Post('logout')
+  @ApiOperation({ summary: 'Realiza o logout do usuário' })
+  @ApiResponse({
+    status: 200,
+    description: 'Logout bem-sucedido, cookie removido.',
+  })
+  logout(@Res({ passthrough: true }) response: Response) {
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    response.cookie('access_token', '', {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
+      path: '/',
+      expires: new Date(0),
+    });
+
+    console.log('✅ [Logout] Cookie removido com sucesso');
+
+    return { message: 'Logout bem-sucedido' };
   }
 }

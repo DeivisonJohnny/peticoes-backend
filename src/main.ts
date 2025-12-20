@@ -10,8 +10,30 @@ async function bootstrap() {
 
   app.use(cookieParser());
 
+  // Configuração CORS correta para httpOnly cookies
+  const allowedOrigins = process.env.FRONTEND_URL
+    ? process.env.FRONTEND_URL.split(',')
+    : [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'https://peticoes-worxbase.vercel.app',
+      ];
+
   app.enableCors({
-    origin: true,
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean) => void,
+    ) => {
+      // Permitir requisições sem origin (como Postman, curl, etc)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.warn(`⚠️ [CORS] Origem bloqueada: ${origin}`);
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
