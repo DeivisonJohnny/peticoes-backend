@@ -24,7 +24,23 @@ export class CreateClientDto {
 
   @IsString()
   @IsOptional()
-  address?: string;
+  logradouro?: string;
+
+  @IsString()
+  @IsOptional()
+  numero?: string;
+
+  @IsString()
+  @IsOptional()
+  complemento?: string;
+
+  @IsString()
+  @IsOptional()
+  bairro?: string;
+
+  @IsString()
+  @IsOptional()
+  cidadeEstado?: string;
 
   @IsString()
   @IsOptional()

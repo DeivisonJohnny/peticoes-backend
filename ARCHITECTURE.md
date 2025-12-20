@@ -275,7 +275,11 @@ model Client {
   cnpj             String?   @unique
   email            String?
   phone            String?
-  address          String?
+  logradouro       String?
+  numero           String?
+  complemento      String?
+  bairro           String?
+  cidadeEstado     String?
   isActive         Boolean   @default(true)
   generatedDocuments GeneratedDocument[]
   // ... outros campos

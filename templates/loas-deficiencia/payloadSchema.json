@@ -11,11 +11,16 @@
         "nationality": { "type": "string", "description": "Nacionalidade (ex: brasileira)" },
         "cpf": { "type": "string", "description": "CPF formatado" },
         "dateOfBirth": { "type": "string", "format": "date", "description": "Data de nascimento" },
-        "address": { "type": "string", "description": "Endereço completo" },
+        "address": { "type": "string", "description": "Endereço completo (obsoleto - use campos separados)" },
+        "logradouro": { "type": "string", "description": "Logradouro (ex: Rua Exemplo)" },
+        "numero": { "type": "string", "description": "Número (ex: 123)" },
+        "complemento": { "type": "string", "description": "Complemento (opcional)" },
+        "bairro": { "type": "string", "description": "Bairro" },
+        "cidadeEstado": { "type": "string", "description": "Cidade/Estado (ex: São Paulo/SP)" },
         "cep": { "type": "string", "description": "CEP" },
         "phone": { "type": "string", "description": "Telefone de contato" }
       },
-      "required": ["name", "nationality", "cpf", "dateOfBirth", "address", "cep", "phone"]
+      "required": ["name", "nationality", "cpf", "dateOfBirth", "cep", "phone"]
     },
     "document": {
       "type": "object",

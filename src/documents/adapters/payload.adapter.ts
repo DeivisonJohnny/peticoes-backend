@@ -4,6 +4,29 @@
  */
 export class PayloadAdapter {
   /**
+   * Monta o endereço completo a partir dos campos separados
+   * @param client Objeto com campos de endereço (logradouro, numero, complemento, bairro, cidadeEstado)
+   * @returns String com endereço completo formatado
+   */
+  static buildFullAddress(client: any): string {
+    if (!client) return '';
+    
+    // Se já existe address montado, retorna ele
+    if (client.address) return client.address;
+    
+    // Monta a partir dos campos separados
+    const parts = [
+      client.logradouro,
+      client.numero,
+      client.complemento,
+      client.bairro,
+      client.cidadeEstado,
+    ].filter(Boolean);
+    
+    return parts.join(', ');
+  }
+
+  /**
    * Adapta o payload do frontend para o formato esperado pelos templates
    */
   static adapt(
@@ -39,6 +62,29 @@ export class PayloadAdapter {
     if (adapted.document?.documentLocation) {
       adapted.document.location = adapted.document.documentLocation;
       delete adapted.document.documentLocation;
+    }
+
+    // Normalizar endereço: se vier campos separados, montar address completo
+    if (adapted.client) {
+      // Se vier campos separados do frontend, montar address
+      if (adapted.client.logradouro && !adapted.client.address) {
+        adapted.client.address = this.buildFullAddress(adapted.client);
+      }
+      // Se vier address antigo (string), manter compatibilidade
+      // Se vier campos separados (logradouro, numero, etc), montar address
+      else if (!adapted.client.address && (adapted.client.logradouro || adapted.client.street)) {
+        // Tenta montar de campos separados
+        const addressParts = [
+          adapted.client.logradouro || adapted.client.street,
+          adapted.client.numero || adapted.client.number,
+          adapted.client.complemento || adapted.client.complement,
+          adapted.client.bairro || adapted.client.neighborhood,
+          adapted.client.cidadeEstado || (adapted.client.city && adapted.client.state ? `${adapted.client.city}/${adapted.client.state}` : ''),
+        ].filter(Boolean);
+        if (addressParts.length > 0) {
+          adapted.client.address = addressParts.join(', ');
+        }
+      }
     }
 
     // ========== ADAPTAÇÕES ESPECÍFICAS POR DOCUMENTO ==========
@@ -262,7 +308,6 @@ export class PayloadAdapter {
       delete data.zipCode;
     }
 
-    // Primeiro, tratar occupation se vier como string
     if ('occupation' in data && typeof data.occupation === 'string') {
       const occupationValue = data.occupation;
       data.occupation = {

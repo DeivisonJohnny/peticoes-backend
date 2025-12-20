@@ -265,7 +265,7 @@ Todas as rotas exceto `/auth/login` e `/auth/logout` requerem autenticação. Se
 #### Listar todos os clientes
 
 ```http
-GET /clients?page=1&limit=10&name=João&cpfCnpj=123&email=exemplo@email.com
+GET /clients?page=1&limit=10&name=João&cpfCnpj=123&email=exemplo@email.com&phone=1234&orderBy=alfabetica
 ```
 
 **Query params opcionais:**
@@ -274,6 +274,8 @@ GET /clients?page=1&limit=10&name=João&cpfCnpj=123&email=exemplo@email.com
 - `name` - Filtrar por nome (busca parcial, case-insensitive)
 - `cpfCnpj` - Filtrar por CPF ou CNPJ (busca parcial)
 - `email` - Filtrar por email (busca parcial, case-insensitive)
+- `phone` - Filtrar por telefone (busca parcial, case-insensitive)
+- `orderBy` - Ordenação dos resultados: `alfabetica` (ordem alfabética por nome) ou `recente` (mais recentes primeiro, padrão)
 
 **Resposta paginada:**
 ```json
@@ -805,9 +807,19 @@ A resposta inclui metadados de paginação:
 }
 ```
 
-### Filtros
+### Filtros e Ordenação
 
 Os endpoints de listagem suportam filtros via query params. As buscas textuais são case-insensitive e parciais (LIKE).
+
+**Filtros disponíveis para clientes:**
+- `name` - Busca parcial por nome
+- `cpfCnpj` - Busca parcial por CPF ou CNPJ
+- `email` - Busca parcial por email
+- `phone` - Busca parcial por telefone
+
+**Ordenação disponível para clientes:**
+- `orderBy=alfabetica` - Ordena por nome em ordem alfabética (A-Z)
+- `orderBy=recente` - Ordena por data de criação, mais recentes primeiro (padrão)
 
 ### Upload de Arquivos
 

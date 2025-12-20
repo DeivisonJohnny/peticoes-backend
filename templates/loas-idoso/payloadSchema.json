@@ -37,8 +37,13 @@
         },
         "address": { 
           "type": "string", 
-          "description": "Endereço completo (Rua, número, complemento, bairro, cidade/estado)" 
+          "description": "Endereço completo (obsoleto - use campos separados)" 
         },
+        "logradouro": { "type": "string", "description": "Logradouro (ex: Rua Exemplo)" },
+        "numero": { "type": "string", "description": "Número (ex: 123)" },
+        "complemento": { "type": "string", "description": "Complemento (opcional)" },
+        "bairro": { "type": "string", "description": "Bairro" },
+        "cidadeEstado": { "type": "string", "description": "Cidade/Estado (ex: São Paulo/SP)" },
         "cep": { 
           "type": "string", 
           "description": "CEP formatado (ex: 13221-371)" 
@@ -48,7 +53,7 @@
           "description": "Telefone de contato (ex: (11) 95146-0289)" 
         }
       },
-      "required": ["name", "nationality", "birthDate", "age", "motherName", "rg", "cpf", "address", "cep", "phone"]
+      "required": ["name", "nationality", "birthDate", "age", "motherName", "rg", "cpf", "cep", "phone"]
     },
     "document": {
       "type": "object",

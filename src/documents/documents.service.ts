@@ -126,11 +126,20 @@ export class DocumentsService {
     
     // 1. LÓGICA CENTRAL: Organizar os dados na estrutura esperada pelos templates
     // Os templates esperam: client.* e document.*
+    
+    // Montar address completo se o cliente vier do banco com campos separados
+    const clientWithAddress = {
+      ...client,
+      address: PayloadAdapter.buildFullAddress(client),
+    };
+    
     const finalPayload = {
       client: {
-        ...client,
+        ...clientWithAddress,
         // Sobrescreve campos do cliente com dados extras se fornecidos
         ...(adaptedExtraData.client || {}),
+        // Garantir que address esteja sempre montado após mesclagem
+        address: adaptedExtraData.client?.address || clientWithAddress.address || PayloadAdapter.buildFullAddress({ ...clientWithAddress, ...(adaptedExtraData.client || {}) }),
       },
       document: {
         // Dados padrão do documento

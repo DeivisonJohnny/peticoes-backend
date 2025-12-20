@@ -422,7 +422,12 @@ O backend utiliza o **PayloadAdapter** (`src/documents/adapters/payload.adapter.
     "id": "cliente_123",
     "name": "João Silva",           // ← Do banco de dados
     "cpf": "123.456.789-00",        // ← Do banco de dados  
-    "address": "Rua Exemplo, 123",  // ← Do banco de dados
+    "logradouro": "Rua Exemplo",     // ← Do banco de dados
+    "numero": "123",                 // ← Do banco de dados
+    "complemento": "Apto 45",        // ← Do banco de dados
+    "bairro": "Centro",              // ← Do banco de dados
+    "cidadeEstado": "São Paulo/SP",  // ← Do banco de dados
+    "address": "Rua Exemplo, 123, Apto 45, Centro, São Paulo/SP",  // ← Montado automaticamente
     "nationality": "brasileiro"     // ← Do extraData.client
   },
   "document": {

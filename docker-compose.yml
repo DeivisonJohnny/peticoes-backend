@@ -8,6 +8,30 @@ services:
       - '5434:5432'
     volumes:
       - peticoes_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./uploads:/app/uploads
+      - ./templates:/app/templates
+    depends_on:
+      peticoes-postgres:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@peticoes-postgres:5432/${POSTGRES_DB:-peticoes}
+      - NODE_ENV=production
 
 volumes:
   peticoes_postgres_data:

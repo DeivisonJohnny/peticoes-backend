@@ -76,9 +76,8 @@ export class ClientsService {
     let clients: any[];
     let total: number;
 
-    // Se houver filtro de CPF/CNPJ ou telefone, usa query raw para remover formatação
     if (cpfCnpj || phone) {
-      // Define ordenação baseada nos parâmetros sortBy e order
+
       const orderByColumn = sortBy === 'name' ? 'name' : '"createdAt"';
       const orderDirection = order.toUpperCase();
       const orderBy = `${orderByColumn} ${orderDirection}`;
@@ -109,7 +108,7 @@ export class ClientsService {
 
       total = Number(countResult[0].count);
     } else {
-      // Define ordenação para queries normais
+
       const orderByConfig = sortBy === 'name'
         ? { name: order as 'asc' | 'desc' }
         : { createdAt: order as 'asc' | 'desc' };
