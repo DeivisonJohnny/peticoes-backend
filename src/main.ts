@@ -27,10 +27,17 @@ async function bootstrap() {
       // Permitir requisições sem origin (como Postman, curl, etc)
       if (!origin) return callback(null, true);
 
-      if (allowedOrigins.includes(origin)) {
+      // Remover barra final da origin para comparação
+      const normalizedOrigin = origin.endsWith('/') ? origin.slice(0, -1) : origin;
+      const normalizedAllowedOrigins = allowedOrigins.map(o =>
+        o.endsWith('/') ? o.slice(0, -1) : o
+      );
+
+      if (normalizedAllowedOrigins.includes(normalizedOrigin)) {
         callback(null, true);
       } else {
         console.warn(`⚠️ [CORS] Origem bloqueada: ${origin}`);
+        console.warn(`⚠️ [CORS] Origens permitidas: ${normalizedAllowedOrigins.join(', ')}`);
         callback(new Error('Not allowed by CORS'));
       }
     },
