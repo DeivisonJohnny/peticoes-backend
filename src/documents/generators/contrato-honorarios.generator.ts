@@ -3,6 +3,41 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { launchBrowser } from './puppeteer.config';
 
+
+handlebars.registerHelper('monthName', (monthNumber: string) => {
+  const months = [
+    'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
+    'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'
+  ];
+  const index = parseInt(monthNumber, 10) - 1;
+  return months[index] || monthNumber;
+});
+
+handlebars.registerHelper('numberToWords', (number: string | number) => {
+  const num = typeof number === 'string' ? parseInt(number, 10) : number;
+  const unidades = ['', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove'];
+  const especiais = ['dez', 'onze', 'doze', 'treze', 'catorze', 'quinze', 'dezesseis', 'dezessete', 'dezoito', 'dezenove'];
+  const dezenas = ['', '', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa'];
+  const centenas = ['', 'cento', 'duzentos', 'trezentos', 'quatrocentos', 'quinhentos', 'seiscentos', 'setecentos', 'oitocentos', 'novecentos'];
+
+  if (num === 0) return 'zero';
+  if (num < 10) return unidades[num];
+  if (num >= 10 && num < 20) return especiais[num - 10];
+  if (num >= 20 && num < 100) {
+    const dezena = Math.floor(num / 10);
+    const unidade = num % 10;
+    return dezenas[dezena] + (unidade > 0 ? ' e ' + unidades[unidade] : '');
+  }
+  if (num === 100) return 'cem';
+  if (num > 100 && num < 1000) {
+    const centena = Math.floor(num / 100);
+    const resto = num % 100;
+    return centenas[centena] + (resto > 0 ? ' e ' + handlebars.helpers.numberToWords(resto) : '');
+  }
+
+  return number.toString();
+});
+
 export async function generateContratoHonorarios(dataSnapshot: any): Promise<Buffer> {
   const templatePath = path.resolve(process.cwd(), 'templates', 'contrato-honorarios', 'template.hbs');
   const templateContent = await fs.readFile(templatePath, 'utf-8');

@@ -611,7 +611,48 @@ export class PayloadAdapter {
       }
     }
 
+    // Adicionar campos por extenso
+    if (data.contract) {
+      if (data.contract.administrativeSalaries) {
+        data.contract.administrativeSalariesInWords = this.numberToWords(data.contract.administrativeSalaries);
+      }
+      if (data.contract.administrativeInstallments) {
+        data.contract.administrativeInstallmentsInWords = this.numberToWords(data.contract.administrativeInstallments);
+      }
+      if (data.contract.judicialInstallments) {
+        data.contract.judicialInstallmentsInWords = this.numberToWords(data.contract.judicialInstallments);
+      }
+    }
+
     return data;
+  }
+
+  /**
+   * Converte números em texto por extenso
+   */
+  private static numberToWords(number: string | number): string {
+    const num = typeof number === 'string' ? parseInt(number, 10) : number;
+    const unidades = ['', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove'];
+    const especiais = ['dez', 'onze', 'doze', 'treze', 'catorze', 'quinze', 'dezesseis', 'dezessete', 'dezoito', 'dezenove'];
+    const dezenas = ['', '', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa'];
+    const centenas = ['', 'cento', 'duzentos', 'trezentos', 'quatrocentos', 'quinhentos', 'seiscentos', 'setecentos', 'oitocentos', 'novecentos'];
+
+    if (num === 0) return 'zero';
+    if (num < 10) return unidades[num];
+    if (num >= 10 && num < 20) return especiais[num - 10];
+    if (num >= 20 && num < 100) {
+      const dezena = Math.floor(num / 10);
+      const unidade = num % 10;
+      return dezenas[dezena] + (unidade > 0 ? ' e ' + unidades[unidade] : '');
+    }
+    if (num === 100) return 'cem';
+    if (num > 100 && num < 1000) {
+      const centena = Math.floor(num / 100);
+      const resto = num % 100;
+      return centenas[centena] + (resto > 0 ? ' e ' + this.numberToWords(resto) : '');
+    }
+
+    return number.toString();
   }
 }
 

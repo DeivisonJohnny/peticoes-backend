@@ -1,14 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        @font-face {
-            font-family: 'Cambria';
-            src: url('../assets/Cambria-Font-For-Windows.ttf') format('truetype');
-        }
-        body { font-family: 'Cambria', serif; }
-        strong { font-weight: 600; }
-    </style>
     <title>Contrato de Honorários</title>
 </head>
 <body>
@@ -35,12 +27,183 @@
                 <strong>CONTRATO DE HONORÁRIOS ADVOCATÍCIOS,</strong> ficando desde já
                 aceito, pelas cláusulas abaixo descritas:
             </p>
-            <p style='font-size: 14px; text-align: justify; ...'>
-                {{ document.documentLocation }}, {{ formatDate document.documentDate }}.
+        </section>
+
+        <section style='width: 87%'>
+            <h1 style='text-align: center; font-size: 14.5px'>
+                CLÁUSULA 1ª - OBJETO DO CONTRATO
+            </h1>
+            <p style='font-size: 15px; text-align: justify; line-height: 25px; letter-spacing: 0.4px; margin-top: 18px;'>
+                O presente instrumento tem como objeto a prestação de serviços
+                advocatícios a serem realizados na fase administrativa junto ao INSS –
+                Instituto Nacional do Seguro Social e em 1ª e 2ª instâncias.
             </p>
-            <p style='font-size: 15px; font-weight: bold;'>
+            <p style='font-size: 15px; text-align: justify; line-height: 25px; letter-spacing: 0.4px; margin-top: 18px;'>
+                <strong>Parágrafo único:</strong> ATIVIDADES: As atividades inclusas
+                na prestação de serviço objeto deste instrumento, são todas aquelas
+                inerentes à profissão, quais sejam:
+            </p>
+
+            <p style='font-size: 15px; text-align: justify; line-height: 25px; letter-spacing: 0.4px; margin-top: 18px;'>
+                a) Praticar quaisquer atos e medidas necessárias e inerentes à causa,
+                junto a todas as repartições públicas da União, dos Estados ou dos
+                Municípios, bem como órgãos a estes ligados direta ou indiretamente,
+                seja por delegação, concessão ou outros meios, bem como de
+                estabelecimentos particulares e especialmente no Poder Judiciário;
+            </p>
+
+            <p style='font-size: 15px; text-align: justify; line-height: 25px; letter-spacing: 0.4px; margin-top: 18px;'>
+                b) Praticar todos os atos inerentes ao exercício da advocacia e
+                aqueles constantes no Estatuto da Ordem dos Advogados do Brasil, bem
+                como os especificados no INSTRUMENTO PROCURATÓRIO;
+            </p>
+        </section>
+
+        <section style='width: 87%'>
+            <h1 style='text-align: center; font-size: 14.5px'>
+                CLÁUSULA 2ª - DOS ATOS ADMINISTRATIVOS E PROCESSUAIS
+            </h1>
+            <p style='font-size: 15px; text-align: justify; line-height: 25px; letter-spacing: 0.4px; margin-top: 18px;'>
+                Havendo necessidade de contratação de outros profissionais, no decurso
+                do processo, o CONTRATADO elaborará substabelecimento, indicando
+                escritório de seu conhecimento, restando facultado ao CONTRATANTE
+                aceitá-lo ou não. Aceitando, ficará sob a responsabilidade, única e
+                exclusivamente do CONTRATADO, que deve arcar com as despesas de
+                cópias, alimentação e demais despesas durante o processo.
+            </p>
+            <p style='font-size: 15px; text-align: justify; line-height: 25px; letter-spacing: 0.4px; margin-top: 18px;'>
+                <strong>Parágrafo único:</strong> DOLO OU CULPA DO CONTRATANTE. Agindo
+                o CONTRATANTE de forma dolosa ou culposa em face do CONTRATADO,
+                restará facultado a este, substabelecer sem reserva de iguais e se
+                exonerar de todas as obrigações.
+            </p>
+        </section>
+
+        <section style='width: 87%'>
+            <h1 style='text-align: center; font-size: 14.5px'>
+                CLÁUSULA 3ª - REMUNERAÇÃO
+            </h1>
+            <p style='font-size: 15px; text-align: justify; line-height: 25px; letter-spacing: 0.4px; margin-top: 18px;'>
+                <strong>Parágrafo primeiro:</strong> Fica acordado entre as partes,
+                que os honorários a título de prestação de serviços, a serem pagos
+                <strong style='text-decoration: underline'>MEDIANTE ÊXITO NA CAUSA,</strong>
+                ocorrerão da seguinte forma:
+            </p>
+
+            <ul style='padding-left: 15px'>
+                <li style='font-weight: bold; font-size: 15.5px; text-align: justify; line-height: 25px; letter-spacing: 0.4px; margin-top: 18px; text-indent: 30px;'>
+                    Em caso de
+                    <strong style='text-decoration: underline'>concessão administrativa</strong> o equivalente a
+                    {{ contract.administrativePercentage }}% dos atrasados mais {{ contract.administrativeSalaries }}
+                    ({{ contract.administrativeSalariesInWords }}) salários de benefício, devendo o pagamento ser
+                    realizado através de {{ contract.administrativeInstallments }}
+                    ({{ contract.administrativeInstallmentsInWords }}) parcelas.
+                </li>
+                <li style='font-weight: bold; font-size: 15.5px; text-align: justify; line-height: 25px; letter-spacing: 0.4px; text-indent: 30px;'>
+                    Em caso de
+                    <strong style='text-decoration: underline'>concessão judicial</strong>
+                    o equivalente a {{ contract.judicialPercentage }}% do proveito econômico incidente sobre todas as
+                    parcelas vencidas e {{ contract.judicialInstallments }}
+                    ({{ contract.judicialInstallmentsInWords }}) vincendas, nos termos da tabela OAB-SP.
+                    Cabendo ressaltar que os honorários referentes às parcelas vincendas
+                    serão pagos através de quatro parcelas. Já o pagamento das parcelas
+                    vencidas (atrasados) será realizado em parcela única no momento da
+                    liberação do RPV ou precatório.
+                </li>
+            </ul>
+            <p style='font-size: 14.5px; text-align: justify; line-height: 25px; letter-spacing: 0.4px; margin-top: 18px;'>
+                <strong>Parágrafo segundo:</strong> Fica acordado entre as partes que
+                os honorários a título de prestação de serviços somente serão pagos
+                mediante êxito na causa, incluindo-se nessa hipótese eventuais acordos
+                extra ou judiciais realizados com aval do contratante.
+            </p>
+
+            <p style='font-size: 14.5px; text-align: justify; line-height: 25px; letter-spacing: 0.4px; margin-top: 18px;'>
+                <strong>Parágrafo terceiro:</strong> Deixando motivadamente, de ter o
+                patrocínio deste causídico, ora contratado, os valores já pagos no
+                curso do contrato, reverter-se-á em favor do mesmo, sem prejuízo de
+                posteriores cobranças judiciais, em face do CONTRATANTE.
+            </p>
+
+            <p style='font-size: 14.5px; text-align: justify; line-height: 25px; letter-spacing: 0.4px; margin-top: 18px;'>
+                <strong>Parágrafo quarto:</strong> Os honorários de sucumbência
+                pertencem ao advogado, ora contratado. Caso haja morte ou incapacidade
+                civil do mesmo, seus sucessores ou representante legal receberão os
+                honorários na proporção do trabalho realizado
+            </p>
+
+            <p style='font-size: 14.5px; text-align: justify; line-height: 25px; letter-spacing: 0.4px; margin-top: 18px;'>
+                <strong>Parágrafo quinto:</strong> Havendo acordo entre o CONTRATANTE
+                e a parte contrária, não prejudicará o recebimento dos honorários
+                contratados e da sucumbência, caso em que os honorários iniciais e
+                finais serão pagos ao CONTRATADO.
+            </p>
+            <p style='font-size: 14.5px; text-align: justify; line-height: 25px; letter-spacing: 0.4px; margin-top: 18px;'>
+                <strong>Parágrafo sexto:</strong> DO ATRASO. As partes estabelecem que
+                os valores serão pagos pelo contratante em até três dias úteis do
+                recebimento dos créditos e, havendo atraso no pagamento dos
+                honorários, serão cobrados juros de mora na proporção de 1% ao mês.
+            </p>
+        </section>
+
+        <section style='width: 87%'>
+            <h1 style='text-align: center; font-size: 15px;'>
+                CLÁUSULA 4ª - DESPESAS
+            </h1>
+            <p style='font-size: 15px; text-align: justify; line-height: 25px; letter-spacing: 0.4px; margin-top: 18px;'>
+                Todas as despesas efetuadas pelo CONTRATADO, ligadas direta ou indiretamente com o
+                processo, incluindo fotocópias, emolumentos, viagens, custas, entre outros, ficarão a cargo
+                do CONTRATADO.
+            </p>
+        </section>
+
+        <section style='width: 87%'>
+            <h1 style='text-align: center; font-size: 15px;'>
+                CLÁUSULA 5ª - DOCUMENTOS
+            </h1>
+            <p style='font-size: 15px; text-align: justify; line-height: 25px; letter-spacing: 0.4px; margin-top: 18px;'>
+                O CONTRATANTE se compromete a entregar no escritório do CONTRATADO todos e
+                quaisquer documentos solicitados, para o bom andamento dos atos processuais a seu cargo,
+                não respondendo pela negligência do cliente no cumprimento de suas obrigações.
+            </p>
+        </section>
+
+        <section style='width: 87%'>
+            <h1 style='text-align: center; font-size: 15px;'>
+                CLÁUSULA 6ª - COBRANÇA
+            </h1>
+            <p style='font-size: 15px; text-align: justify; line-height: 25px; letter-spacing: 0.4px; margin-top: 18px;'>
+                As partes acordam que facultará ao advogado contratado, o direito de realizar a cobrança
+                de honorários por todos os meios admitidos em direito, elegendo o foro da Comarca Distrital
+                de Cajamar, para dirimir quaisquer dúvidas concernentes ao presente instrumento.
+            </p>
+        </section>
+
+        <section style='width: 85%; display: flex; flex-direction: column; align-items: center; margin-top: 20px;'>
+            <p style='font-size: 14px; text-align: justify; line-height: 25px; letter-spacing: 0.4px; margin-top: 18px;'>
+                {{ document.location }}, {{ document.day }} de {{ monthName document.month }} de {{ document.year }}.
+            </p>
+
+            <div style='border-bottom: 1px solid black; width: 400px; margin-top: 20px;'></div>
+
+            <p style='font-size: 15px; text-align: justify; line-height: 25px; letter-spacing: 0.4px; margin-top: 10px; font-weight: bold;'>
                 {{ client.name }}
             </p>
+
+            <div style='display: flex; flex-direction: row; align-items: center; justify-content: space-between; width: 100%;'>
+                <p style='font-size: 15px; text-align: justify; line-height: 25px; letter-spacing: 0.4px; margin-top: 18px; font-weight: bold;'>
+                    CELSO DE SOUSA BRITO
+                </p>
+                <p style='font-size: 15px; text-align: justify; line-height: 25px; letter-spacing: 0.4px; margin-top: 18px; font-weight: bold;'>
+                    RENATO DE OLIVEIRA RIBEIRO
+                </p>
+            </div>
+
+            <div style='display: flex; flex-direction: row; align-items: center; gap: 10px; width: 100%;'>
+                <p style='font-size: 15px; text-align: justify; line-height: 25px; letter-spacing: 0.4px; margin-top: 18px;'>
+                    Testemunhas:
+                </p>
+            </div>
         </section>
     </main>
 </body>
