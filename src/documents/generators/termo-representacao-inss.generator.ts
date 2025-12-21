@@ -1,7 +1,7 @@
-import * as puppeteer from 'puppeteer';
 import * as handlebars from 'handlebars';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { launchBrowser } from './puppeteer.config';
 
 // Registrar helper 'eq' para comparações no Handlebars
 handlebars.registerHelper('eq', (a, b) => a === b);
@@ -20,7 +20,7 @@ export async function generateTermoRepresentacaoInss(
   const compiledTemplate = handlebars.compile(templateContent);
   const finalHtml = compiledTemplate(dataSnapshot);
 
-  const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
+  const browser = await launchBrowser();
   const page = await browser.newPage();
   await page.setContent(finalHtml, { waitUntil: 'networkidle0' });
 

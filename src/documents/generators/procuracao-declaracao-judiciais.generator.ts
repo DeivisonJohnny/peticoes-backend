@@ -1,7 +1,7 @@
-import * as puppeteer from 'puppeteer';
 import * as handlebars from 'handlebars';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { launchBrowser } from './puppeteer.config';
 
 const FOLDER_NAME = 'procuracao-declaracao-judiciais'; 
 
@@ -17,7 +17,7 @@ export async function generateProcuracaoDeclaracaoJudiciais(dataSnapshot: any): 
   const logoBuffer = await fs.readFile(logoPath);
   const imgHeader = `data:image/png;base64,${logoBuffer.toString('base64')}`;
 
-  const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
+  const browser = await launchBrowser();
   const page = await browser.newPage();
 
   await page.setContent(finalHtml, { waitUntil: 'networkidle0' });

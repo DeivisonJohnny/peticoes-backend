@@ -1,7 +1,7 @@
-import * as puppeteer from 'puppeteer';
 import * as handlebars from 'handlebars';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { launchBrowser } from './puppeteer.config';
 
 const FOLDER_NAME = 'loas-deficiencia';
 
@@ -22,7 +22,7 @@ export async function generateLoasDeficiencia(dataSnapshot: any): Promise<Buffer
     `src="${imgHeader}"`
   );
 
-  const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
+  const browser = await launchBrowser();
   const page = await browser.newPage();
 
   await page.setContent(htmlWithLogo, { waitUntil: 'networkidle0' });
