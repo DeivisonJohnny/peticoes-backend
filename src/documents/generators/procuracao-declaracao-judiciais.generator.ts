@@ -3,7 +3,17 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { launchBrowser } from './puppeteer.config';
 
-const FOLDER_NAME = 'procuracao-declaracao-judiciais'; 
+const FOLDER_NAME = 'procuracao-declaracao-judiciais';
+
+// Registrar helper para converter número do mês em nome
+handlebars.registerHelper('monthName', (monthNumber: string) => {
+  const months = [
+    'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
+    'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'
+  ];
+  const index = parseInt(monthNumber, 10) - 1;
+  return months[index] || monthNumber;
+});
 
 export async function generateProcuracaoDeclaracaoJudiciais(dataSnapshot: any): Promise<Buffer> {
 
