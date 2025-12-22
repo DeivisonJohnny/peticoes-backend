@@ -346,6 +346,16 @@ export class PayloadAdapter {
       }
     }
 
+    // Adicionar valor padrão para benefício requerido se não fornecido
+    if (data.benefit && !data.benefit.requested) {
+      data.benefit.requested = 'Auxílio por incapacidade temporária ou Aposentadoria por incapacidade permanente';
+    }
+
+    // Adicionar inconsistências padrão se não fornecida
+    if (data.disease && !data.disease.inconsistencies) {
+      data.disease.inconsistencies = 'O perito da Autarquia <span class="bold">NÃO RECONHECE A INCAPACIDADE</span> da Segurado, todavia, tal conclusão é divergente dos documentos médicos apresentados que indicavam a existência de incapacidade laborativa.';
+    }
+
     // Remover campos não mapeados
     const fieldsToRemove = [
       'waiverClause', 'legalFoundation', 'legalRequirements',
