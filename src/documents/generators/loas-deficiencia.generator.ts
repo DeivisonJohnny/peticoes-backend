@@ -5,6 +5,16 @@ import { launchBrowser } from './puppeteer.config';
 
 const FOLDER_NAME = 'loas-deficiencia';
 
+// Registrar helper para formatar datas
+handlebars.registerHelper('formatDate', (dateString: string) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+});
+
 export async function generateLoasDeficiencia(dataSnapshot: any): Promise<Buffer> {
   const templatePath = path.resolve(process.cwd(), 'templates', FOLDER_NAME, 'template.hbs');
   const templateContent = await fs.readFile(templatePath, 'utf-8');

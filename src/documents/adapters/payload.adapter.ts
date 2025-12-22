@@ -374,6 +374,15 @@ export class PayloadAdapter {
       data.client.name = data.fullName;
       data.client.nationality = data.nationality || data.client.nationality;
       data.client.dateOfBirth = data.birthDate;
+      // cpf já pode ter sido movido pelo adaptador geral
+      if (!data.client.cpf && data.cpf) {
+        data.client.cpf = data.cpf;
+        delete data.cpf;
+      }
+      if (data.phone) {
+        data.client.phone = data.phone;
+        delete data.phone;
+      }
       delete data.fullName;
       delete data.nationality;
       delete data.birthDate;
@@ -388,7 +397,7 @@ export class PayloadAdapter {
         data.city,
         data.state,
       ].filter(Boolean);
-      
+
       if (data.client) {
         data.client.address = addressParts.join(', ');
         data.client.cep = data.zipCode;
