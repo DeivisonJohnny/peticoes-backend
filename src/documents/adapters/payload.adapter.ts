@@ -519,6 +519,53 @@ export class PayloadAdapter {
       delete data.location;
     }
 
+    // Processar dados do grantor (outorgante)
+    if (data.grantor) {
+      // Adicionar cityState ao grantor
+      if (data.grantor.city && data.grantor.state) {
+        data.grantor.cityState = `${data.grantor.city}/${data.grantor.state}`;
+      }
+      // Mapear identity para rg e profession para occupation
+      if (data.grantor.identity) {
+        data.grantor.rg = data.grantor.identity;
+        delete data.grantor.identity;
+      }
+      if (data.grantor.profession) {
+        data.grantor.occupation = data.grantor.profession;
+        delete data.grantor.profession;
+      }
+      // Mapear address para street
+      if (data.grantor.address && !data.grantor.street) {
+        data.grantor.street = data.grantor.address;
+        delete data.grantor.address;
+      }
+    }
+
+    // Renomear grantee para attorney (procurador) e processar dados
+    if (data.grantee) {
+      data.attorney = data.grantee;
+      delete data.grantee;
+
+      // Adicionar cityState ao attorney
+      if (data.attorney.city && data.attorney.state) {
+        data.attorney.cityState = `${data.attorney.city}/${data.attorney.state}`;
+      }
+      // Mapear identity para rg e profession para occupation
+      if (data.attorney.identity) {
+        data.attorney.rg = data.attorney.identity;
+        delete data.attorney.identity;
+      }
+      if (data.attorney.profession) {
+        data.attorney.occupation = data.attorney.profession;
+        delete data.attorney.profession;
+      }
+      // Mapear address para street
+      if (data.attorney.address && !data.attorney.street) {
+        data.attorney.street = data.attorney.address;
+        delete data.attorney.address;
+      }
+    }
+
     // Mapear poderes (powers)
     if (!data.powers && (
       'registerPasswordInternet' in data ||
@@ -528,7 +575,7 @@ export class PayloadAdapter {
       data.powers = {
         passwordRegistration: data.registerPasswordInternet,
         proofOfLife: data.proofOfLifeBanking,
-        receivePayments: false, // não está no payload
+        receivePayments: data.receivePaymentsInability || data.receivePaymentsTravelWithinCountry || data.receivePaymentsTravelAbroad || data.receivePaymentsResidenceAbroad,
         reasonInability: data.receivePaymentsInability,
         reasonDomesticTravel: data.receivePaymentsTravelWithinCountry,
         domesticTravelPeriod: data.travelWithinCountryPeriod || '',
