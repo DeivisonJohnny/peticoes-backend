@@ -24,8 +24,9 @@ export async function generateLoasDeficiencia(dataSnapshot: any): Promise<Buffer
     const address = encodeURIComponent(dataSnapshot.client.address);
 
     // Vamos capturar o mapa usando Puppeteer visitando o Google Maps
+    // t=k = satellite (satélite), t=h = hybrid (híbrido com ruas), t=m = roadmap (padrão)
     dataSnapshot.document = dataSnapshot.document || {};
-    dataSnapshot.document.mapaUrl = `https://maps.google.com/maps?q=${address}&t=&z=17&ie=UTF8&iwloc=&output=embed`;
+    dataSnapshot.document.mapaUrl = `https://maps.google.com/maps?q=${address}&t=k&z=18&ie=UTF8&iwloc=&output=embed`;
   }
 
   const compiledTemplate = handlebars.compile(templateContent);
