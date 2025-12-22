@@ -10,10 +10,10 @@ export class PayloadAdapter {
    */
   static buildFullAddress(client: any): string {
     if (!client) return '';
-    
+
     // Se já existe address montado, retorna ele
     if (client.address) return client.address;
-    
+
     // Monta a partir dos campos separados
     const parts = [
       client.logradouro,
@@ -22,7 +22,7 @@ export class PayloadAdapter {
       client.bairro,
       client.cidadeEstado,
     ].filter(Boolean);
-    
+
     return parts.join(', ');
   }
 
@@ -36,7 +36,7 @@ export class PayloadAdapter {
     const adapted = { ...extraData };
 
     // ========== ADAPTAÇÕES GERAIS (para todos os documentos) ==========
-    
+
     // Mover campos de cliente do nível raiz para dentro de client
     if ('rg' in extraData && !adapted.client?.rg) {
       adapted.client = adapted.client || {};
@@ -53,7 +53,9 @@ export class PayloadAdapter {
     if (adapted.document?.documentDate) {
       const date = new Date(adapted.document.documentDate);
       adapted.document.day = date.getDate().toString().padStart(2, '0');
-      adapted.document.month = (date.getMonth() + 1).toString().padStart(2, '0');
+      adapted.document.month = (date.getMonth() + 1)
+        .toString()
+        .padStart(2, '0');
       adapted.document.year = date.getFullYear().toString();
       delete adapted.document.documentDate;
     }
@@ -72,14 +74,20 @@ export class PayloadAdapter {
       }
       // Se vier address antigo (string), manter compatibilidade
       // Se vier campos separados (logradouro, numero, etc), montar address
-      else if (!adapted.client.address && (adapted.client.logradouro || adapted.client.street)) {
+      else if (
+        !adapted.client.address &&
+        (adapted.client.logradouro || adapted.client.street)
+      ) {
         // Tenta montar de campos separados
         const addressParts = [
           adapted.client.logradouro || adapted.client.street,
           adapted.client.numero || adapted.client.number,
           adapted.client.complemento || adapted.client.complement,
           adapted.client.bairro || adapted.client.neighborhood,
-          adapted.client.cidadeEstado || (adapted.client.city && adapted.client.state ? `${adapted.client.city}/${adapted.client.state}` : ''),
+          adapted.client.cidadeEstado ||
+            (adapted.client.city && adapted.client.state
+              ? `${adapted.client.city}/${adapted.client.state}`
+              : ''),
         ].filter(Boolean);
         if (addressParts.length > 0) {
           adapted.client.address = addressParts.join(', ');
@@ -92,31 +100,31 @@ export class PayloadAdapter {
     switch (templateTitle) {
       case 'Declaração de Não Recebimento':
         return this.adaptDeclaracaoNaoRecebimento(adapted);
-      
+
       case 'Autodeclaração Rural':
         return this.adaptAutodeclaracaoRural(adapted);
-      
+
       case 'Procuração e Declaração Judicial':
         return this.adaptProcuracaoDeclaracaoJudicial(adapted);
-      
+
       case 'Procuração Pessoa Física':
         return this.adaptProcuracaoPessoaFisica(adapted);
-      
+
       case 'LOAS - Auxílio-Doença':
         return this.adaptLoasAuxilioDoenca(adapted);
-      
+
       case 'LOAS - Benefício para Deficiente':
         return this.adaptLoasBeneficioDeficiente(adapted);
-      
+
       case 'LOAS - Idoso':
         return this.adaptLoasIdoso(adapted);
-      
+
       case 'Procuração INSS':
         return this.adaptProcuracaoInss(adapted);
-      
+
       case 'Contrato de Honorários':
         return this.adaptContratoHonorarios(adapted);
-      
+
       default:
         return adapted;
     }
@@ -124,7 +132,9 @@ export class PayloadAdapter {
 
   // ========== MÉTODOS DE ADAPTAÇÃO ESPECÍFICOS ==========
 
-  private static adaptDeclaracaoNaoRecebimento(data: Record<string, any>): Record<string, any> {
+  private static adaptDeclaracaoNaoRecebimento(
+    data: Record<string, any>,
+  ): Record<string, any> {
     // Converter receivesRetirementPension para benefit.receives
     if ('receivesRetirementPension' in data) {
       data.benefit = data.benefit || {};
@@ -156,20 +166,18 @@ export class PayloadAdapter {
     return data;
   }
 
-  private static adaptAutodeclaracaoRural(data: Record<string, any>): Record<string, any> {
-    // Converter fullName para name
+  private static adaptAutodeclaracaoRural(
+    data: Record<string, any>,
+  ): Record<string, any> {
+    // 1. Mapeamento de campos simples (Top Level)
     if ('fullName' in data && !data.name) {
       data.name = data.fullName;
       delete data.fullName;
     }
-
-    // Converter birthDate para dateOfBirth
     if ('birthDate' in data && !data.dateOfBirth) {
       data.dateOfBirth = data.birthDate;
       delete data.birthDate;
     }
-
-    // Juntar endereço fragmentado
     if ('address' in data && 'addressNumber' in data) {
       const addressParts = [
         data.address,
@@ -178,8 +186,6 @@ export class PayloadAdapter {
       ].filter(Boolean);
       data.address = addressParts.join(', ');
     }
-
-    // Converter addressCity -> city e addressState -> state
     if ('addressCity' in data && !data.city) {
       data.city = data.addressCity;
       delete data.addressCity;
@@ -188,42 +194,193 @@ export class PayloadAdapter {
       data.state = data.addressState;
       delete data.addressState;
     }
-
-    // Converter properties para ruralActivityPeriods
-    if ('properties' in data && Array.isArray(data.properties)) {
-      if (!data.ruralActivityPeriods) {
-        data.ruralActivityPeriods = data.properties;
-      }
-      delete data.properties;
+    if ('expirationDate' in data && !data.rgIssuer) {
+      data.rgIssuer = data.expirationDate;
+      delete data.expirationDate;
     }
 
-    // Converter familyEconomyCondition para familyEconomy
+    // 2. Section 2 - Rural Activity Periods (Matriz ruralPeriod)
+    if (data.ruralPeriod && Array.isArray(data.ruralPeriod)) {
+      data.ruralActivityPeriods = data.ruralPeriod.map((row: any[]) => {
+        // row[0]: Periodo
+        // row[1]: Condição
+        // row[2]: Situação
+        const situation = row[2] || '';
+        return {
+          period: row[0],
+          propertyCondition: row[1],
+          isIndividual: situation.toLowerCase().includes('individual'),
+          isFamilyEconomy: situation
+            .toLowerCase()
+            .includes('economia familiar'),
+        };
+      });
+      delete data.ruralPeriod;
+    }
+
+    // 2.1 Family Economy Condition
     if ('familyEconomyCondition' in data) {
       data.familyEconomy = {
-        isHolder: data.familyEconomyCondition === 'titular',
-        isComponent: data.familyEconomyCondition === 'componente',
+        isHolder: data.familyEconomyCondition?.toLowerCase() === 'titular',
+        isComponent:
+          data.familyEconomyCondition?.toLowerCase() === 'componente',
       };
       delete data.familyEconomyCondition;
     }
 
-    // Remover campos não usados
+    // 2.2 Family Members
+    if (data.familyMembers && Array.isArray(data.familyMembers)) {
+      data.familyMembers = data.familyMembers.map((member: any) => ({
+        ...member,
+        dateOfBirth: member.birthDate || member.dateOfBirth,
+      }));
+    }
+
+    // 3. Section 3 - Land Leases (Matriz landCession)
+    if (data.landCession && Array.isArray(data.landCession)) {
+      data.landLeases = data.landCession.map((row: any[]) => ({
+        leaseType: row[0],
+        period: row[1],
+        leasedAreaInHa: row[2],
+      }));
+      delete data.landCession;
+    }
+
+    // 3.1 Properties (Array de objetos)
+    if (data.properties && Array.isArray(data.properties)) {
+      data.properties = data.properties.map((prop: any) => ({
+        itrRegistration: prop.itrRegistration,
+        propertyName: prop.name || prop.propertyName,
+        municipalityUf: prop.cityState || prop.municipalityUf,
+        totalAreaInHa: prop.totalArea || prop.totalAreaInHa,
+        exploredAreaInHa: prop.exploredArea || prop.exploredAreaInHa,
+        ownerName: prop.ownerName,
+        ownerCpf: prop.ownerCpf,
+      }));
+    }
+
+    // 3.2 Explored Activities (Matriz ruralExploration)
+    if (data.ruralExploration && Array.isArray(data.ruralExploration)) {
+      data.exploredActivities = data.ruralExploration.map((row: any[]) => ({
+        activity: row[0],
+        purpose: row[1],
+      }));
+      delete data.ruralExploration;
+    }
+
+    // 3.3 IPI Info
+    data.ipiInfo = {
+      hasPayment: data.hasIpiTax === true,
+      periods: [],
+    };
+    if (data.ipiPeriod) {
+      data.ipiInfo.periods.push({ period: data.ipiPeriod });
+    }
+    delete data.hasIpiTax;
+    delete data.ipiPeriod;
+
+    // 3.4 Employee Info (Matriz employeesDetails)
+    data.employeeInfo = {
+      hasEmployees: data.hasEmployees === true,
+      employees: [],
+    };
+    if (data.employeesDetails && Array.isArray(data.employeesDetails)) {
+      data.employeeInfo.employees = data.employeesDetails.map((row: any[]) => ({
+        name: row[0],
+        cpf: row[1],
+        period: row[2],
+      }));
+      delete data.employeesDetails;
+    }
+    delete data.hasEmployees;
+
+    // 4. Section 4 - Other Income (Matriz otherActivitiesIncome)
+    data.otherIncomeInfo = {
+      hasOtherIncome: data.hasOtherActivityOrIncome === true,
+      incomes: [],
+    };
+    if (
+      data.otherActivitiesIncome &&
+      Array.isArray(data.otherActivitiesIncome)
+    ) {
+      data.otherIncomeInfo.incomes = data.otherActivitiesIncome.map(
+        (row: any[]) => ({
+          activity: row[0],
+          location: row[1],
+          period: row[2],
+        }),
+      );
+      delete data.otherActivitiesIncome;
+    }
+    delete data.hasOtherActivityOrIncome;
+
+    // 4.1 Special Income Sources (Matriz specificIncomeSources)
+    data.specialIncomeInfo = {
+      hasIncome: data.hasSpecificIncomeSources === true,
+      incomes: [],
+    };
+    if (
+      data.specificIncomeSources &&
+      Array.isArray(data.specificIncomeSources)
+    ) {
+      data.specialIncomeInfo.incomes = data.specificIncomeSources.map(
+        (row: any[]) => ({
+          activity: row[0],
+          period: row[1],
+          incomeBrl: row[2],
+          details: row[3],
+        }),
+      );
+      delete data.specificIncomeSources;
+    }
+    delete data.hasSpecificIncomeSources;
+
+    // 4.2 Cooperative Info
+    data.cooperativeInfo = {
+      isMember: data.isCooperativeMember === true,
+      cooperatives: [],
+    };
+    if (data.cooperativeEntity) {
+      data.cooperativeInfo.cooperatives.push({
+        entity: data.cooperativeEntity,
+        cnpj: data.cooperativeCnpj,
+        type: data.cooperativeType,
+      });
+    }
+    delete data.isCooperativeMember;
+    delete data.cooperativeEntity;
+    delete data.cooperativeCnpj;
+    delete data.cooperativeType;
+
+    // Footer - Declaration Location/Date
+    if (data.declarationLocation && !data.documentLocation) {
+      data.documentLocation = data.declarationLocation;
+      delete data.declarationLocation;
+    }
+    if (data.declarationDate && !data.documentDate) {
+      data.documentDate = data.declarationDate;
+      delete data.declarationDate;
+    }
+
+    // Remover campos residuais
     const fieldsToRemove = [
-      'addressNumber', 'addressNeighborhood', 'addressZipCode',
-      'declarationDate', 'declarationLocation', 'expirationDate',
-      'hasEmployees', 'hasIpiTax', 'ipiPeriod',
-      'isCooperativeMember', 'cooperativeEntity', 'cooperativeCnpj', 'cooperativeType',
-      'hasOtherActivityOrIncome', 'hasSpecificIncomeSources'
+      'addressNumber',
+      'addressNeighborhood',
+      'addressZipCode',
     ];
-    fieldsToRemove.forEach(field => delete data[field]);
+    fieldsToRemove.forEach((field) => delete data[field]);
 
     return data;
   }
 
-  private static adaptProcuracaoDeclaracaoJudicial(data: Record<string, any>): Record<string, any> {
+  private static adaptProcuracaoDeclaracaoJudicial(
+    data: Record<string, any>,
+  ): Record<string, any> {
     // Mover campos do grantor para client
     if ('grantorFullName' in data) {
       data.client = data.client || {};
-      data.client.nationality = data.grantorNationality || data.client.nationality;
+      data.client.nationality =
+        data.grantorNationality || data.client.nationality;
       delete data.grantorFullName;
       delete data.grantorNationality;
       delete data.grantorCpf;
@@ -238,7 +395,7 @@ export class PayloadAdapter {
         data.grantorCity,
         data.grantorState,
       ].filter(Boolean);
-      
+
       if (data.client) {
         data.client.address = addressParts.join(', ');
       }
@@ -270,12 +427,16 @@ export class PayloadAdapter {
     return data;
   }
 
-  private static adaptProcuracaoPessoaFisica(data: Record<string, any>): Record<string, any> {
+  private static adaptProcuracaoPessoaFisica(
+    data: Record<string, any>,
+  ): Record<string, any> {
     // Similar à Procuração Judicial
     return this.adaptProcuracaoDeclaracaoJudicial(data);
   }
 
-  private static adaptLoasAuxilioDoenca(data: Record<string, any>): Record<string, any> {
+  private static adaptLoasAuxilioDoenca(
+    data: Record<string, any>,
+  ): Record<string, any> {
     // Mover campos do nível raiz para client
     if ('fullName' in data) {
       data.client = data.client || {};
@@ -294,7 +455,7 @@ export class PayloadAdapter {
         data.city,
         data.state,
       ].filter(Boolean);
-      
+
       if (data.client) {
         data.client.address = addressParts.join(', ');
         data.client.cep = data.zipCode;
@@ -317,22 +478,22 @@ export class PayloadAdapter {
 
     // Mapear campos para estrutura esperada
     const fieldMappings: Record<string, string> = {
-      'jurisdiction': 'document.juizado',
-      'caseValue': 'document.valorCausa',
-      'caseValueInWords': 'document.valorCausaExtenso',
-      'expertSpecialty': 'document.especialidadePericia',
-      'deniedBenefitNumber': 'benefit.number',
-      'requestedBenefit': 'benefit.requested',
-      'denialDate': 'benefit.denialDate',
-      'der': 'benefit.der',
-      'denialReason': 'benefit.denialReason',
-      'illness': 'disease.name',
-      'medicalDiagnosis': 'disease.name',
-      'mainSymptoms': 'disease.symptoms',
-      'resultingLimitations': 'disease.limitations',
-      'medicalInconsistencies': 'disease.inconsistencies',
-      'occupationDescription': 'occupation.description',
-      'generalWorkConditions': 'occupation.conditions',
+      jurisdiction: 'document.juizado',
+      caseValue: 'document.valorCausa',
+      caseValueInWords: 'document.valorCausaExtenso',
+      expertSpecialty: 'document.especialidadePericia',
+      deniedBenefitNumber: 'benefit.number',
+      requestedBenefit: 'benefit.requested',
+      denialDate: 'benefit.denialDate',
+      der: 'benefit.der',
+      denialReason: 'benefit.denialReason',
+      illness: 'disease.name',
+      medicalDiagnosis: 'disease.name',
+      mainSymptoms: 'disease.symptoms',
+      resultingLimitations: 'disease.limitations',
+      medicalInconsistencies: 'disease.inconsistencies',
+      occupationDescription: 'occupation.description',
+      generalWorkConditions: 'occupation.conditions',
     };
 
     for (const [oldKey, newPath] of Object.entries(fieldMappings)) {
@@ -348,26 +509,35 @@ export class PayloadAdapter {
 
     // Adicionar valor padrão para benefício requerido se não fornecido
     if (data.benefit && !data.benefit.requested) {
-      data.benefit.requested = 'Auxílio por incapacidade temporária ou Aposentadoria por incapacidade permanente';
+      data.benefit.requested =
+        'Auxílio por incapacidade temporária ou Aposentadoria por incapacidade permanente';
     }
 
     // Adicionar inconsistências padrão se não fornecida
     if (data.disease && !data.disease.inconsistencies) {
-      data.disease.inconsistencies = 'O perito da Autarquia <span class="bold">NÃO RECONHECE A INCAPACIDADE</span> da Segurado, todavia, tal conclusão é divergente dos documentos médicos apresentados que indicavam a existência de incapacidade laborativa.';
+      data.disease.inconsistencies =
+        'O perito da Autarquia <span class="bold">NÃO RECONHECE A INCAPACIDADE</span> da Segurado, todavia, tal conclusão é divergente dos documentos médicos apresentados que indicavam a existência de incapacidade laborativa.';
     }
 
     // Remover campos não mapeados
     const fieldsToRemove = [
-      'waiverClause', 'legalFoundation', 'legalRequirements',
-      'benefitRequestDate', 'summaryDescription', 'workCapacityConclusion',
-      'jurisdictionCompetenceClause', 'requiredBenefitNumber'
+      'waiverClause',
+      'legalFoundation',
+      'legalRequirements',
+      'benefitRequestDate',
+      'summaryDescription',
+      'workCapacityConclusion',
+      'jurisdictionCompetenceClause',
+      'requiredBenefitNumber',
     ];
-    fieldsToRemove.forEach(field => delete data[field]);
+    fieldsToRemove.forEach((field) => delete data[field]);
 
     return data;
   }
 
-  private static adaptLoasBeneficioDeficiente(data: Record<string, any>): Record<string, any> {
+  private static adaptLoasBeneficioDeficiente(
+    data: Record<string, any>,
+  ): Record<string, any> {
     // Similar ao LOAS Auxílio-Doença
     if ('fullName' in data) {
       data.client = data.client || {};
@@ -413,15 +583,15 @@ export class PayloadAdapter {
 
     // Mapear campos
     const fieldMappings: Record<string, string> = {
-      'jurisdiction': 'document.juizado',
-      'caseValue': 'document.valorCausa',
-      'expertSpecialty': 'document.especialidadePericia',
-      'medicalExpertSpecialty': 'document.especialidadePericia',
-      'deniedBenefitNumber': 'document.numeroBeneficio',
-      'denialDate': 'document.dataIndeferimento',
-      'medicalReason': 'document.condicaoMedica',
-      'preliminaries': 'document.preliminares',
-      'familyCompositionDescription': 'document.composicaoFamiliar',
+      jurisdiction: 'document.juizado',
+      caseValue: 'document.valorCausa',
+      expertSpecialty: 'document.especialidadePericia',
+      medicalExpertSpecialty: 'document.especialidadePericia',
+      deniedBenefitNumber: 'document.numeroBeneficio',
+      denialDate: 'document.dataIndeferimento',
+      medicalReason: 'document.condicaoMedica',
+      preliminaries: 'document.preliminares',
+      familyCompositionDescription: 'document.composicaoFamiliar',
     };
 
     for (const [oldKey, newPath] of Object.entries(fieldMappings)) {
@@ -438,7 +608,9 @@ export class PayloadAdapter {
     return data;
   }
 
-  private static adaptLoasIdoso(data: Record<string, any>): Record<string, any> {
+  private static adaptLoasIdoso(
+    data: Record<string, any>,
+  ): Record<string, any> {
     // Similar aos outros LOAS
     if ('fullName' in data) {
       data.client = data.client || {};
@@ -462,7 +634,7 @@ export class PayloadAdapter {
         data.city,
         data.state,
       ].filter(Boolean);
-      
+
       if (data.client) {
         data.client.address = addressParts.join(', ');
         data.client.cep = data.zipCode;
@@ -479,12 +651,12 @@ export class PayloadAdapter {
 
     // Mapear campos
     const fieldMappings: Record<string, string> = {
-      'jurisdiction': 'document.juizado',
-      'caseValue': 'document.valorCausa',
-      'caseValueForTaxPurposes': 'document.valorCausaFiscal',
-      'benefitNumber': 'benefit.number',
-      'cessationDate': 'benefit.cessationDate',
-      'livingSituation': 'benefit.livingArrangement',
+      jurisdiction: 'document.juizado',
+      caseValue: 'document.valorCausa',
+      caseValueForTaxPurposes: 'document.valorCausaFiscal',
+      benefitNumber: 'benefit.number',
+      cessationDate: 'benefit.cessationDate',
+      livingSituation: 'benefit.livingArrangement',
     };
 
     for (const [oldKey, newPath] of Object.entries(fieldMappings)) {
@@ -501,7 +673,9 @@ export class PayloadAdapter {
     return data;
   }
 
-  private static adaptProcuracaoInss(data: Record<string, any>): Record<string, any> {
+  private static adaptProcuracaoInss(
+    data: Record<string, any>,
+  ): Record<string, any> {
     // Converter date para document.day/month/year
     if ('date' in data && !data.document?.day) {
       const date = new Date(data.date);
@@ -567,15 +741,20 @@ export class PayloadAdapter {
     }
 
     // Mapear poderes (powers)
-    if (!data.powers && (
-      'registerPasswordInternet' in data ||
-      'proofOfLifeBanking' in data ||
-      'receivePaymentsInability' in data
-    )) {
+    if (
+      !data.powers &&
+      ('registerPasswordInternet' in data ||
+        'proofOfLifeBanking' in data ||
+        'receivePaymentsInability' in data)
+    ) {
       data.powers = {
         passwordRegistration: data.registerPasswordInternet,
         proofOfLife: data.proofOfLifeBanking,
-        receivePayments: data.receivePaymentsInability || data.receivePaymentsTravelWithinCountry || data.receivePaymentsTravelAbroad || data.receivePaymentsResidenceAbroad,
+        receivePayments:
+          data.receivePaymentsInability ||
+          data.receivePaymentsTravelWithinCountry ||
+          data.receivePaymentsTravelAbroad ||
+          data.receivePaymentsResidenceAbroad,
         reasonInability: data.receivePaymentsInability,
         reasonDomesticTravel: data.receivePaymentsTravelWithinCountry,
         domesticTravelPeriod: data.travelWithinCountryPeriod || '',
@@ -609,11 +788,14 @@ export class PayloadAdapter {
     return data;
   }
 
-  private static adaptContratoHonorarios(data: Record<string, any>): Record<string, any> {
+  private static adaptContratoHonorarios(
+    data: Record<string, any>,
+  ): Record<string, any> {
     // Mover campos do client
     if ('clientFullName' in data) {
       data.client = data.client || {};
-      data.client.nationality = data.clientNationality || data.client.nationality;
+      data.client.nationality =
+        data.clientNationality || data.client.nationality;
       delete data.clientFullName;
       delete data.clientCpf;
       delete data.clientNationality;
@@ -628,7 +810,7 @@ export class PayloadAdapter {
         data.clientCity,
         data.clientState,
       ].filter(Boolean);
-      
+
       if (data.client) {
         data.client.address = addressParts.join(', ');
       }
@@ -659,11 +841,11 @@ export class PayloadAdapter {
 
     // Mapear campos de honorários
     const fieldMappings: Record<string, string> = {
-      'judicialSuccessPercentage': 'contract.judicialPercentage',
-      'administrativeSuccessPercentage': 'contract.administrativePercentage',
-      'judicialFutureInstallments': 'contract.judicialInstallments',
-      'administrativeInstallments': 'contract.administrativeInstallments',
-      'administrativeBenefitSalaries': 'contract.administrativeSalaries',
+      judicialSuccessPercentage: 'contract.judicialPercentage',
+      administrativeSuccessPercentage: 'contract.administrativePercentage',
+      judicialFutureInstallments: 'contract.judicialInstallments',
+      administrativeInstallments: 'contract.administrativeInstallments',
+      administrativeBenefitSalaries: 'contract.administrativeSalaries',
     };
 
     for (const [oldKey, newPath] of Object.entries(fieldMappings)) {
@@ -680,13 +862,19 @@ export class PayloadAdapter {
     // Adicionar campos por extenso
     if (data.contract) {
       if (data.contract.administrativeSalaries) {
-        data.contract.administrativeSalariesInWords = this.numberToWords(data.contract.administrativeSalaries);
+        data.contract.administrativeSalariesInWords = this.numberToWords(
+          data.contract.administrativeSalaries,
+        );
       }
       if (data.contract.administrativeInstallments) {
-        data.contract.administrativeInstallmentsInWords = this.numberToWords(data.contract.administrativeInstallments);
+        data.contract.administrativeInstallmentsInWords = this.numberToWords(
+          data.contract.administrativeInstallments,
+        );
       }
       if (data.contract.judicialInstallments) {
-        data.contract.judicialInstallmentsInWords = this.numberToWords(data.contract.judicialInstallments);
+        data.contract.judicialInstallmentsInWords = this.numberToWords(
+          data.contract.judicialInstallments,
+        );
       }
     }
 
@@ -698,10 +886,54 @@ export class PayloadAdapter {
    */
   private static numberToWords(number: string | number): string {
     const num = typeof number === 'string' ? parseInt(number, 10) : number;
-    const unidades = ['', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove'];
-    const especiais = ['dez', 'onze', 'doze', 'treze', 'catorze', 'quinze', 'dezesseis', 'dezessete', 'dezoito', 'dezenove'];
-    const dezenas = ['', '', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa'];
-    const centenas = ['', 'cento', 'duzentos', 'trezentos', 'quatrocentos', 'quinhentos', 'seiscentos', 'setecentos', 'oitocentos', 'novecentos'];
+    const unidades = [
+      '',
+      'um',
+      'dois',
+      'três',
+      'quatro',
+      'cinco',
+      'seis',
+      'sete',
+      'oito',
+      'nove',
+    ];
+    const especiais = [
+      'dez',
+      'onze',
+      'doze',
+      'treze',
+      'catorze',
+      'quinze',
+      'dezesseis',
+      'dezessete',
+      'dezoito',
+      'dezenove',
+    ];
+    const dezenas = [
+      '',
+      '',
+      'vinte',
+      'trinta',
+      'quarenta',
+      'cinquenta',
+      'sessenta',
+      'setenta',
+      'oitenta',
+      'noventa',
+    ];
+    const centenas = [
+      '',
+      'cento',
+      'duzentos',
+      'trezentos',
+      'quatrocentos',
+      'quinhentos',
+      'seiscentos',
+      'setecentos',
+      'oitocentos',
+      'novecentos',
+    ];
 
     if (num === 0) return 'zero';
     if (num < 10) return unidades[num];
@@ -715,10 +947,11 @@ export class PayloadAdapter {
     if (num > 100 && num < 1000) {
       const centena = Math.floor(num / 100);
       const resto = num % 100;
-      return centenas[centena] + (resto > 0 ? ' e ' + this.numberToWords(resto) : '');
+      return (
+        centenas[centena] + (resto > 0 ? ' e ' + this.numberToWords(resto) : '')
+      );
     }
 
     return number.toString();
   }
 }
-
