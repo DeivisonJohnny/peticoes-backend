@@ -106,16 +106,25 @@
             margin-left: 20px; /* Indentação para checkboxes */
         }
         .checkbox-item .checkbox {
-            margin-top: 4px; /* Alinhar com a primeira linha do texto */
-            margin-right: 10px;
+            margin-top: 2px; /* Alinhar com a primeira linha do texto */
+            margin-right: 8px;
             flex-shrink: 0; /* Impede que o checkbox encolha */
             display: inline-block;
             width: 14px;
             height: 14px;
-            border: 1px solid #000;
+            border: 1.5px solid #000;
             text-align: center;
+            font-size: 10px;
+            line-height: 12px;
+            font-weight: bold;
+            position: relative;
+        }
+        .checkbox-item .checkbox.checked::before {
+            content: '✓';
+            position: absolute;
+            top: -1px;
+            left: 1px;
             font-size: 12px;
-            line-height: 14px;
             font-weight: bold;
         }
         .date-location {
@@ -323,38 +332,48 @@
     </p>
 
     <div class="checkbox-item">
-        <span class="checkbox">{{#if powers.passwordRegistration}}✓{{/if}}</span> cadastro de senha para informações previdenciárias pela internet.
+        <span class="checkbox {{#if powers.passwordRegistration}}checked{{/if}}"></span> cadastro de senha para informações previdenciárias pela internet.
     </div>
     <div class="checkbox-item">
-        <span class="checkbox">{{#if powers.proofOfLife}}✓{{/if}}</span> comprovação de vida junto à rede bancária.
+        <span class="checkbox {{#if powers.proofOfLife}}checked{{/if}}"></span> comprovação de vida junto à rede bancária.
     </div>
     <div class="checkbox-item">
-        <span class="checkbox">{{#if powers.receivePayments}}✓{{/if}}</span> receber mensalidades de benefícios, receber quantias atrasadas e firmar os respectivos
+        <span class="checkbox {{#if powers.receivePayments}}checked{{/if}}"></span> receber mensalidades de benefícios, receber quantias atrasadas e firmar os respectivos
         recibos, devido à:
     </div>
+    {{#if powers.receivePayments}}
     <div class="checkbox-item" style="margin-left: 40px;">
-        <span class="checkbox">{{#if powers.reasonInability}}✓{{/if}}</span> incapacidade do outorgante em se locomover ou ser portador de moléstia contagiosa.
+        <span class="checkbox {{#if powers.reasonInability}}checked{{/if}}"></span> incapacidade do outorgante em se locomover ou ser portador de moléstia contagiosa.
     </div>
+    {{#if powers.reasonDomesticTravel}}
     <div class="checkbox-item" style="margin-left: 40px;">
-        <span class="checkbox">{{#if powers.reasonDomesticTravel}}✓{{/if}}</span> ausência devido à viagem dentro do país pelo período de: <span class="inline-field">{{ powers.domesticTravelPeriod }}</span>.
+        <span class="checkbox checked"></span> ausência devido à viagem dentro do país pelo período de: <span class="inline-field">{{ powers.domesticTravelPeriod }}</span>.
     </div>
+    {{/if}}
+    {{#if powers.reasonInternationalTravel}}
     <div class="checkbox-item" style="margin-left: 40px;">
-        <span class="checkbox">{{#if powers.reasonInternationalTravel}}✓{{/if}}</span> ausência devido à viagem ao exterior pelo período de: <span class="inline-field">{{ powers.internationalTravelPeriod }}</span>.
+        <span class="checkbox checked"></span> ausência devido à viagem ao exterior pelo período de: <span class="inline-field">{{ powers.internationalTravelPeriod }}</span>.
     </div>
+    {{/if}}
+    {{#if powers.reasonLivingAbroad}}
     <div class="checkbox-item" style="margin-left: 40px;">
-        <span class="checkbox">{{#if powers.reasonLivingAbroad}}✓{{/if}}</span> residência no exterior (qual país? <span class="inline-field">{{ powers.countryOfResidence }}</span>).
+        <span class="checkbox checked"></span> residência no exterior (qual país? <span class="inline-field">{{ powers.countryOfResidence }}</span>).
     </div>
+    {{/if}}
+    {{/if}}
     
     <div class="header" style="margin-top: 30px;">
         <h1>INSTITUTO NACIONAL DO SEGURO SOCIAL</h1>
     </div>
 
     <div class="checkbox-item" style="margin-top: 20px;">
-        <span class="checkbox">{{#if powers.requestBenefits}}✓{{/if}}</span> requerer benefícios, revisão e interpor recursos.
+        <span class="checkbox {{#if powers.requestBenefits}}checked{{/if}}"></span> requerer benefícios, revisão e interpor recursos.
     </div>
+    {{#if powers.otherRequest}}
     <div class="checkbox-item">
-        <span class="checkbox">{{#if powers.otherRequest}}✓{{/if}}</span> requerer: <span class="inline-field" style="min-width: 400px; flex-grow: 1;">{{ powers.otherRequestDescription }}</span>.
+        <span class="checkbox checked"></span> requerer: <span class="inline-field" style="min-width: 400px; flex-grow: 1;">{{ powers.otherRequestDescription }}</span>.
     </div>
+    {{/if}}
 
     <div class="date-location">
         <span class="field-label">Local:</span>
