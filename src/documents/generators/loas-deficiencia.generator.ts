@@ -19,6 +19,15 @@ export async function generateLoasDeficiencia(dataSnapshot: any): Promise<Buffer
   const templatePath = path.resolve(process.cwd(), 'templates', FOLDER_NAME, 'template.hbs');
   const templateContent = await fs.readFile(templatePath, 'utf-8');
 
+  // Gerar URL do mapa a partir do endereço do cliente usando Puppeteer
+  if (dataSnapshot.client?.address && !dataSnapshot.document?.mapaUrl) {
+    const address = encodeURIComponent(dataSnapshot.client.address);
+
+    // Vamos capturar o mapa usando Puppeteer visitando o Google Maps
+    dataSnapshot.document = dataSnapshot.document || {};
+    dataSnapshot.document.mapaUrl = `https://maps.google.com/maps?q=${address}&t=&z=17&ie=UTF8&iwloc=&output=embed`;
+  }
+
   const compiledTemplate = handlebars.compile(templateContent);
   const finalHtml = compiledTemplate(dataSnapshot);
 
@@ -28,7 +37,7 @@ export async function generateLoasDeficiencia(dataSnapshot: any): Promise<Buffer
 
   // Substitui a referência da logo no HTML com a logo padrão
   const htmlWithLogo = finalHtml.replace(
-    /src="\{\{\s*document\.logoUrl\s*\}\}"/g, 
+    /src="\{\{\s*document\.logoUrl\s*\}\}"/g,
     `src="${imgHeader}"`
   );
 

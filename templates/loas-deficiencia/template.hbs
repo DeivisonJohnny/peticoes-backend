@@ -92,8 +92,8 @@
         }
 
         .mapa-imagem {
-            max-width: 100%;
-            height: auto;
+            width: 100%;
+            height: 400px;
             display: block;
             margin: 1.5em auto;
             border: 1px solid #ccc;
@@ -213,11 +213,6 @@
 
 <body>
 
-    <div class="logo-header">
-        SOUSA BRITO & RIBEIRO<br>
-        SOCIEDADE DE ADVOGADOS
-    </div>
-
     <header style="display: flex; align-items: center; justify-content: end; margin-top: 40px; margin-bottom: 60px;">
         <img src="{{ document.logoUrl }}" alt="logo" style="width: 150px;">
     </header>
@@ -280,7 +275,7 @@
     </p>
 
     {{#if document.mapaUrl}}
-    <img src="{{ document.mapaUrl }}" alt="Mapa de localização" class="mapa-imagem">
+    <iframe src="{{ document.mapaUrl }}" class="mapa-imagem" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>
     {{/if}}
 
     <div class="titulo-caixa-cinza">
@@ -434,11 +429,6 @@
         Nestes Termos,<br>
         Pede e espera deferimento,
     </p>
-
-    <div class="logo-header">
-        SOUSA BRITO & RIBEIRO<br>
-        SOCIEDADE DE ADVOGADOS
-    </div>
 
     <div class="assinaturas">
         <div class="coluna-adv">
