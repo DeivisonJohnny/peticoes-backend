@@ -18,7 +18,42 @@
             width: 17cm; /* Largura de conteúdo (A4 = 21cm - margens) */
             margin: 2cm auto; /* Margens de página */
         }
-        
+
+        /* Logo no topo */
+        .logo {
+            text-align: right;
+            font-size: 9pt;
+            color: #aaa; /* Cor esmaecida */
+            margin-bottom: 20px;
+            height: 15px; /* Apenas para espaço */
+        }
+
+        /* Logo do rodapé final */
+        .closing-logo {
+            text-align: right;
+            font-size: 10pt;
+            color: #aaa;
+            margin: 30px 0 30px 0;
+            font-family: Arial, sans-serif;
+            letter-spacing: 0.5px;
+        }
+
+        /* Rodapé com endereço */
+        .footer-text {
+            text-align: center;
+            font-size: 10pt;
+            color: #777;
+            padding-top: 5px;
+            line-height: 1.4;
+        }
+
+        /* Linha horizontal acima do rodapé */
+        .footer-line {
+            border: 0;
+            border-top: 1px solid #000;
+            margin-top: 30px;
+        }
+
         /* Endereçamento (Exmo. Sr. Dr...) */
         .enderecamento {
             text-align: left;
@@ -177,9 +212,11 @@
 <body>
 
     <div class="container">
-        
+
+        <div class="logo">SOCIEDADE DE ADVOGADOS</div>
+
         <p class="enderecamento">
-            EXCELENTÍSSIMO(A) SENHOR(A) DOUTOR(A) JUIZ(A) FEDERAL DO {{ document.juizado }}.
+            EXCELENTÍSSIMO(A) SENHOR(A) DOUTOR(A) JUIZ(A) FEDERAL DO JUIZADO ESPECIAL FEDERAL DE {{ document.juizado }}.
         </p>
 
         <p class="qualificacao">
@@ -299,11 +336,16 @@
             À causa, para efeitos fiscais, o valor de <span class="bold">{{ document.valorCausaFiscal }} ({{ document.valorCausaFiscalExtenso }})</span>.
         </p>
         
-        <p class="no-indent" style="text-align: center; margin-top: 40px;">
+        <div class="closing-logo">
+            SOUSA BRITO & RIBEIRO<br>
+            SOCIEDADE DE ADVOGADOS
+        </div>
+
+        <p class="no-indent" style="text-align: center; margin-top: 20px;">
             Nestes Termos,<br>
             Pede e espera o deferimento,
         </p>
-        
+
         <div class="signature-block">
             CELSO DE SOUSA BRITO<br>
             OAB/SP 240.574
@@ -316,6 +358,13 @@
             <br><br>
             ÁGATA CUNHA S. FAGUNDES<br>
             OAB/SP 394.664
+        </div>
+
+        <hr class="footer-line" style="margin-top: 50px;">
+        <div class="footer-text">
+            Rua Flademir Roberto Lopes, n.º 96, Polvilho, Cajamar/SP<br>
+            Tel.: (11) 4448-2301<br>
+            E-mail: contato@sousabritoeribeiro.com.br
         </div>
 
     </div>
