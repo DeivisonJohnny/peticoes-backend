@@ -138,21 +138,32 @@ export class PayloadAdapter {
   private static adaptDeclaracaoNaoRecebimento(
     data: Record<string, any>,
   ): Record<string, any> {
-    // Converter receivesRetirementPension para benefit.receives
-    if ('receivesRetirementPension' in data) {
-      data.benefit = data.benefit || {};
-      data.benefit.receives = data.receivesRetirementPension === 'sim';
-      delete data.receivesRetirementPension;
+    // Mapear client (dados pessoais)
+    data.client = data.client || {};
+
+    if ('fullName' in data) {
+      data.client.name = data.fullName;
+      delete data.fullName;
     }
 
-    // Mover location para document.location
-    if ('location' in data && !data.document?.location) {
+    // CPF e RG podem já ter sido movidos pelo adaptador geral
+    if ('cpf' in data) {
+      data.client.cpf = data.cpf;
+      delete data.cpf;
+    }
+
+    if ('rg' in data) {
+      data.client.rg = data.rg;
+      delete data.rg;
+    }
+
+    // Mapear document (local e data)
+    if ('location' in data) {
       data.document = data.document || {};
       data.document.location = data.location;
       delete data.location;
     }
 
-    // Converter statementDate para document.day/month/year
     if ('statementDate' in data) {
       const date = new Date(data.statementDate);
       data.document = data.document || {};
@@ -162,9 +173,66 @@ export class PayloadAdapter {
       delete data.statementDate;
     }
 
-    // Remover campos obsoletos
-    delete data.fullName;
+    // Mapear benefit (benefícios)
+    data.benefit = data.benefit || {};
+
+    // Recebe ou não benefício
+    data.benefit.receives = data.receivesRetirementPension === 'sim';
+    delete data.receivesRetirementPension;
+
+    // Tipo de benefício
+    data.benefit.isPension = data.benefitType === 'pensao';
+    data.benefit.isRetirement = data.benefitType === 'aposentadoria';
+    delete data.benefitType;
+
+    // Relação com instituidor (cônjuge/companheiro)
+    data.benefit.isSpouseRelation =
+      data.relationshipWithProvider === 'conjuge' ||
+      data.relationshipWithProvider === 'companheiro';
+    delete data.relationshipWithProvider;
+
+    // Ente de origem (pode ser array no frontend)
+    const origins = Array.isArray(data.originatingEntity)
+      ? data.originatingEntity
+      : [data.originatingEntity];
+    data.benefit.originEstadual = origins.includes('estadual');
+    data.benefit.originMunicipal = origins.includes('municipal');
+    data.benefit.originFederal = origins.includes('federal');
     delete data.originatingEntity;
+
+    // Tipo de servidor
+    data.benefit.serverCivil = data.serverType === 'civil';
+    data.benefit.serverMilitar = data.serverType === 'militar';
+    delete data.serverType;
+
+    // Data de início do benefício
+    if (data.benefitStartDate) {
+      const startDate = new Date(data.benefitStartDate);
+      data.benefit.startDay = startDate.getDate().toString().padStart(2, '0');
+      data.benefit.startMonth = (startDate.getMonth() + 1).toString().padStart(2, '0');
+      data.benefit.startYear = startDate.getFullYear().toString();
+      delete data.benefitStartDate;
+    }
+
+    // Nome do órgão
+    if (data.benefitAgencyName) {
+      data.benefit.agencyName = data.benefitAgencyName;
+      delete data.benefitAgencyName;
+    }
+
+    // Última remuneração
+    if (data.lastGrossSalary) {
+      data.benefit.lastGrossSalary = data.lastGrossSalary;
+      delete data.lastGrossSalary;
+    }
+
+    // Mês/ano do salário
+    if (data.monthYearSalary) {
+      const [year, month] = data.monthYearSalary.split('-');
+      data.benefit.salaryMonth = month;
+      data.benefit.salaryYear = year;
+      delete data.monthYearSalary;
+    }
 
     return data;
   }

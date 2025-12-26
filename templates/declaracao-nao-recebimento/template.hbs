@@ -190,70 +190,67 @@
             <span class="checkbox">{{#if benefit.receives}}✓{{/if}}</span>
             <label>recebo aposentadoria/pensão de outro regime de previdência.</label>
         </div>
-        
-        {{#if benefit.receives}}
+
         <div class="conditional-section">
             <p>Caso receba aposentadoria ou pensão de outro regime de previdência, deverá declarar:</p>
-            
+
             <div class="form-row">
                 <span>- Tipo do benefício:</span>
                 <div class="form-option">
-                    <span class="checkbox">{{#if (eq benefit.type "pensao")}}✓{{/if}}</span>
+                    <span class="checkbox">{{#if benefit.isPension}}✓{{/if}}</span>
                     <label>Pensão*</label>
                 </div>
                 <div class="form-option">
-                    <span class="checkbox">{{#if (eq benefit.type "aposentadoria")}}✓{{/if}}</span>
+                    <span class="checkbox">{{#if benefit.isRetirement}}✓{{/if}}</span>
                     <label>Aposentadoria</label>
                 </div>
             </div>
-            
-            {{#if (eq benefit.type "pensao")}}
+
             <p class="footnote">
-                * Caso opção seja Pensão, informar se a relação com o instituidor era como cônjuge ou companheiro (a) - S/N 
+                * Caso opção seja Pensão, informar se a relação com o instituidor era como cônjuge ou companheiro (a) - S/N
                 <span class="checkbox" style="margin-left: 5px;">{{#if benefit.isSpouseRelation}}✓{{/if}}</span>
             </p>
-            {{/if}}
-            
+
             <div class="form-row">
                 <span>- Ente de origem:</span>
                 <div class="form-option">
-                    <span class="checkbox">{{#if (eq benefit.origin "estadual")}}✓{{/if}}</span>
+                    <span class="checkbox">{{#if benefit.originEstadual}}✓{{/if}}</span>
                     <label>Estadual</label>
                 </div>
                 <div class="form-option">
-                    <span class="checkbox">{{#if (eq benefit.origin "municipal")}}✓{{/if}}</span>
+                    <span class="checkbox">{{#if benefit.originMunicipal}}✓{{/if}}</span>
                     <label>Municipal</label>
                 </div>
                 <div class="form-option">
-                    <span class="checkbox">{{#if (eq benefit.origin "federal")}}✓{{/if}}</span>
+                    <span class="checkbox">{{#if benefit.originFederal}}✓{{/if}}</span>
                     <label>Federal</label>
                 </div>
             </div>
-            
+
             <div class="form-row">
                  <span>- Tipo de servidor:</span>
                 <div class="form-option">
-                    <span class="checkbox">{{#if (eq benefit.serverType "civil")}}✓{{/if}}</span>
+                    <span class="checkbox">{{#if benefit.serverCivil}}✓{{/if}}</span>
                     <label>Civil</label>
                 </div>
                 <div class="form-option">
-                    <span class="checkbox">{{#if (eq benefit.serverType "militar")}}✓{{/if}}</span>
+                    <span class="checkbox">{{#if benefit.serverMilitar}}✓{{/if}}</span>
                     <label>Militar</label>
                 </div>
             </div>
-            
+
             <div class="form-row" style="margin-top: 15px;">
                 <span>- Data de início do benefício no outro regime:</span>
                 <span class="input-line" style="width: 40px; margin-left: 10px;">{{ benefit.startDay }}</span> /
                 <span class="input-line" style="width: 40px; margin-left: 5px;">{{ benefit.startMonth }}</span> /
                 <span class="input-line" style="width: 60px; margin-left: 5px;">{{ benefit.startYear }}</span>.
             </div>
-            
+
             <div class="form-row">
                 <span>- Nome do órgão da pensão/aposentadoria:</span>
-                <span class="input-line" style="width: 380px; margin-left: 10px;">{{ benefit.organizationName }}</span>
+                <span class="input-line" style="width: 380px; margin-left: 10px;">{{ benefit.agencyName }}</span>
             </div>
-            
+
             <div class="form-row">
                 <span>- Última remuneração bruta*: R$</span>
                 <span class="input-line" style="width: 150px; margin-left: 10px;">{{ benefit.lastGrossSalary }}</span>
@@ -261,24 +258,23 @@
                 <span class="input-line" style="width: 40px; margin-left: 10px;">{{ benefit.salaryMonth }}</span> /
                 <span class="input-line" style="width: 60px; margin-left: 5px;">{{ benefit.salaryYear }}</span>
             </div>
-            
+
             <p class="footnote" style="margin-left: 0; margin-top: 5px;">
                 *Última remuneração bruta sem considerar valores de 13º salário (abono anual).
             </p>
-            
+
             <p class="legal-text">
                 Na Emenda Constitucional nº 103, de 12 de novembro de 2019, art. 24, § 1º, a acumulação de pensão por morte com outro benefício, sujeita à redução do valor daquele menos vantajoso, é admitida nas seguintes situações:
             </p>
-            
+
             <p class="list-item">
                 I - pensão por morte deixada por cônjuge ou companheiro (a) do RGPS com pensão por morte concedida por outro regime de previdência social, inclusive as decorrentes das atividades militares, exceto regime de previdência complementar; e
             </p>
-            
+
             <p class="list-item">
                 II - pensão por morte deixada por cônjuge ou companheiro (a) de qualquer regime de previdência social, inclusive as decorrentes das atividades militares, com aposentadoria concedida por qualquer regime de previdência social ou com proventos de inatividade decorrentes das atividades militares, exceto regime de previdência complementar.
             </p>
         </div>
-        {{/if}}
         
         <p class="legal-text" style="text-align: justify; margin-top: 25px;">
             A declaração falsa ou diversa de fato ou situação real ocorrida, além de obrigar à devolução de eventuais importâncias recebidas indevidamente, quando for o caso, sujeitar-me-á às penalidades previstas nos arts. 171 e 299 do Código Penal.
