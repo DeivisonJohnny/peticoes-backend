@@ -125,6 +125,9 @@ export class PayloadAdapter {
       case 'Contrato de Honorários':
         return this.adaptContratoHonorarios(adapted);
 
+      case 'Termo de Representação INSS':
+        return this.adaptTermoRepresentacaoInss(adapted);
+
       default:
         return adapted;
     }
@@ -953,5 +956,94 @@ export class PayloadAdapter {
     }
 
     return number.toString();
+  }
+
+  private static adaptTermoRepresentacaoInss(data: Record<string, any>): Record<string, any> {
+    // Converter documentDate para document.day/month/year
+    if ('documentDate' in data && !data.document?.day) {
+      const date = new Date(data.documentDate);
+      data.document = data.document || {};
+      data.document.day = date.getDate().toString().padStart(2, '0');
+      data.document.month = (date.getMonth() + 1).toString().padStart(2, '0');
+      data.document.year = date.getFullYear().toString();
+      delete data.documentDate;
+    }
+
+    // Mover location para document.location
+    if ('location' in data && !data.document?.location) {
+      data.document = data.document || {};
+      data.document.location = data.location;
+      delete data.location;
+    }
+
+    // Mapear represented (representado)
+    if ('representedName' in data) {
+      data.represented = {
+        name: data.representedName,
+        cpf: data.representedCpf,
+        rg: data.representedRg,
+        address: data.representedAddress,
+        city: data.representedCity,
+        cep: data.representedCep,
+      };
+      delete data.representedName;
+      delete data.representedCpf;
+      delete data.representedRg;
+      delete data.representedAddress;
+      delete data.representedCity;
+      delete data.representedCep;
+    }
+
+    // Mapear attorney (advogado)
+    if ('attorneyName' in data) {
+      data.attorney = {
+        name: data.attorneyName,
+        cpf: data.attorneyCpf,
+        oab: data.attorneyOab,
+        nit: data.attorneyNit,
+      };
+      delete data.attorneyName;
+      delete data.attorneyCpf;
+      delete data.attorneyOab;
+      delete data.attorneyNit;
+    }
+
+    // Mapear benefits (benefícios)
+    data.benefits = {
+      retirementAge: data.retirementAge || false,
+      retirementAgeUrban: data.retirementAgeUrban || false,
+      retirementAgeRural: data.retirementAgeRural || false,
+      retirementContributionTime: data.retirementContributionTime || false,
+      retirementSpecial: data.retirementSpecial || false,
+      pensionDeath: data.pensionDeath || false,
+      pensionDeathUrban: data.pensionDeathUrban || false,
+      pensionDeathRural: data.pensionDeathRural || false,
+      reclusionAid: data.reclusionAid || false,
+      reclusionAidUrban: data.reclusionAidUrban || false,
+      reclusionAidRural: data.reclusionAidRural || false,
+      maternityPay: data.maternityPay || false,
+      maternityPayUrban: data.maternityPayUrban || false,
+      maternityPayRural: data.maternityPayRural || false,
+      cadastralUpdate: data.cadastralUpdate || false,
+    };
+
+    // Remover campos originais
+    delete data.retirementAge;
+    delete data.retirementAgeUrban;
+    delete data.retirementAgeRural;
+    delete data.retirementContributionTime;
+    delete data.retirementSpecial;
+    delete data.pensionDeath;
+    delete data.pensionDeathUrban;
+    delete data.pensionDeathRural;
+    delete data.reclusionAid;
+    delete data.reclusionAidUrban;
+    delete data.reclusionAidRural;
+    delete data.maternityPay;
+    delete data.maternityPayUrban;
+    delete data.maternityPayRural;
+    delete data.cadastralUpdate;
+
+    return data;
   }
 }
