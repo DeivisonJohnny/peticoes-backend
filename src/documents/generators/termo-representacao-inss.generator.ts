@@ -17,8 +17,22 @@ export async function generateTermoRepresentacaoInss(
   );
   const templateContent = await fs.readFile(templatePath, 'utf-8');
 
+  // Carrega o brasão oficial do INSS e converte para base64
+  const brasaoPath = path.resolve(process.cwd(), 'templates', 'assets', 'brasaooficialcolorido.png');
+  const brasaoBuffer = await fs.readFile(brasaoPath);
+  const brasaoBase64 = `data:image/png;base64,${brasaoBuffer.toString('base64')}`;
+
+  // Adiciona a imagem do brasão ao dataSnapshot
+  const finalDataSnapshot = {
+    ...dataSnapshot,
+    document: {
+      ...dataSnapshot.document,
+      brasaoImage: brasaoBase64,
+    }
+  };
+
   const compiledTemplate = handlebars.compile(templateContent);
-  const finalHtml = compiledTemplate(dataSnapshot);
+  const finalHtml = compiledTemplate(finalDataSnapshot);
 
   const browser = await launchBrowser();
   const page = await browser.newPage();

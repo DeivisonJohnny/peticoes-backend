@@ -28,6 +28,7 @@ export async function generateAutodeclaracaoRural(dataSnapshot: any): Promise<Bu
   // Adiciona a imagem ao dataSnapshot para que o template possa usá-la
   const finalDataSnapshot = {
     ...dataSnapshot,
+    brasaoOficialBase64: brasaoBase64.replace('data:image/png;base64,', ''),
     document: {
         ...dataSnapshot.document,
         brasaoImage: brasaoBase64,
