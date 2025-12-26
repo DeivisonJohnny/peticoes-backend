@@ -86,4 +86,8 @@ export class CreateClientDto {
   @IsString()
   @IsOptional()
   occupation?: string;
+
+  @IsString()
+  @IsOptional()
+  address?: string;
 }
