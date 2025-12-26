@@ -77,6 +77,20 @@
             line-height: 14px; /* Garante alinhamento vertical */
             font-weight: bold;
             vertical-align: middle; /* Alinha a caixa com o texto */
+            position: relative;
+        }
+
+        .checkbox.checked::after {
+            content: 'X';
+            display: block;
+            text-align: center;
+            font-size: 11px;
+            font-weight: bold;
+            line-height: 14px;
+            position: absolute;
+            top: -1px;
+            left: 0;
+            right: 0;
         }
         
         .choice-group label {
@@ -183,11 +197,11 @@
         </p>
         
         <div class="choice-group">
-            <span class="checkbox">{{#unless benefit.receives}}✓{{/unless}}</span>
+            <span class="checkbox {{#unless benefit.receives}}checked{{/unless}}"></span>
             <label>não recebo aposentadoria/pensão de outro regime de previdência.</label>
         </div>
         <div class="choice-group">
-            <span class="checkbox">{{#if benefit.receives}}✓{{/if}}</span>
+            <span class="checkbox {{#if benefit.receives}}checked{{/if}}"></span>
             <label>recebo aposentadoria/pensão de outro regime de previdência.</label>
         </div>
 
@@ -197,32 +211,32 @@
             <div class="form-row">
                 <span>- Tipo do benefício:</span>
                 <div class="form-option">
-                    <span class="checkbox">{{#if benefit.isPension}}✓{{/if}}</span>
+                    <span class="checkbox {{#if benefit.isPension}}checked{{/if}}"></span>
                     <label>Pensão*</label>
                 </div>
                 <div class="form-option">
-                    <span class="checkbox">{{#if benefit.isRetirement}}✓{{/if}}</span>
+                    <span class="checkbox {{#if benefit.isRetirement}}checked{{/if}}"></span>
                     <label>Aposentadoria</label>
                 </div>
             </div>
 
             <p class="footnote">
                 * Caso opção seja Pensão, informar se a relação com o instituidor era como cônjuge ou companheiro (a) - S/N
-                <span class="checkbox" style="margin-left: 5px;">{{#if benefit.isSpouseRelation}}✓{{/if}}</span>
+                <span class="checkbox {{#if benefit.isSpouseRelation}}checked{{/if}}" style="margin-left: 5px;"></span>
             </p>
 
             <div class="form-row">
                 <span>- Ente de origem:</span>
                 <div class="form-option">
-                    <span class="checkbox">{{#if benefit.originEstadual}}✓{{/if}}</span>
+                    <span class="checkbox {{#if benefit.originEstadual}}checked{{/if}}"></span>
                     <label>Estadual</label>
                 </div>
                 <div class="form-option">
-                    <span class="checkbox">{{#if benefit.originMunicipal}}✓{{/if}}</span>
+                    <span class="checkbox {{#if benefit.originMunicipal}}checked{{/if}}"></span>
                     <label>Municipal</label>
                 </div>
                 <div class="form-option">
-                    <span class="checkbox">{{#if benefit.originFederal}}✓{{/if}}</span>
+                    <span class="checkbox {{#if benefit.originFederal}}checked{{/if}}"></span>
                     <label>Federal</label>
                 </div>
             </div>
@@ -230,11 +244,11 @@
             <div class="form-row">
                  <span>- Tipo de servidor:</span>
                 <div class="form-option">
-                    <span class="checkbox">{{#if benefit.serverCivil}}✓{{/if}}</span>
+                    <span class="checkbox {{#if benefit.serverCivil}}checked{{/if}}"></span>
                     <label>Civil</label>
                 </div>
                 <div class="form-option">
-                    <span class="checkbox">{{#if benefit.serverMilitar}}✓{{/if}}</span>
+                    <span class="checkbox {{#if benefit.serverMilitar}}checked{{/if}}"></span>
                     <label>Militar</label>
                 </div>
             </div>
