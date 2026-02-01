@@ -14,6 +14,7 @@ async function bootstrap() {
   const allowedOrigins = process.env.FRONTEND_URL
     ? process.env.FRONTEND_URL.split(',')
     : [
+        '*',
         'http://localhost:3000',
         'http://localhost:3001',
         'https://peticoes-worxbase.vercel.app',
