@@ -58,15 +58,20 @@ export async function generateContratoHonorarios(dataSnapshot: any): Promise<Buf
     printBackground: true,
     displayHeaderFooter: true,
     margin: {
-      top: "150px",
-      bottom: "80px",
+      top: '150px',
+      bottom: '80px',
     },
     headerTemplate: `
-      <div style="width:100%; display: flex; align-items: center; justify-content: center;">
+      <div style="width:100%; display: flex; align-items: center; justify-content: end; padding-right: 70px">
         <img src="${imgHeader}" style="height:80px; margin-top: 30px;" />
       </div>
     `,
-    footerTemplate: "",
+    footerTemplate: `
+      <div style="width: 100%; text-align: center; font-family: Arial, sans-serif; font-size: 10px; color: #b2b2b2; border-top: 0.5px solid #eee; padding-top: 5px; margin: 0 50px; line-height: 10px;">
+        Avenida Copacabana, n.º 268, Sala 1702, Alphaville, Barueri/SP, CEP: 06472-001<br>
+        Tel: (11) 4375-0530 | E-mail: contato@sousabritoeribeiro.com.br
+      </div>
+    `,
   });
 
   await browser.close();
