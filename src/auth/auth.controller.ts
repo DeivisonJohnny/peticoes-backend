@@ -1,4 +1,4 @@
-import { Controller, Post, UseGuards, Res } from '@nestjs/common';
+import { Controller, Post, Get, UseGuards, Res } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -71,5 +71,17 @@ export class AuthController {
     console.log('✅ [Logout] Cookie removido com sucesso');
 
     return { message: 'Logout bem-sucedido' };
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('me')
+  @ApiOperation({ summary: 'Retorna dados do usuário autenticado' })
+  @ApiResponse({
+    status: 200,
+    description: 'Dados do usuário autenticado.',
+  })
+  @ApiResponse({ status: 401, description: 'Não autenticado.' })
+  getMe(@GetUser() user: AuthUser) {
+    return user;
   }
 }
